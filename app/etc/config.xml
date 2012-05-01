@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Mage
+ * @package    Mage_Core
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <global>
+        <install>
+            <date></date>
+        </install>
+        <locale>
+            <allow>
+                <codes>
+                    <ar_EG/><!-- Arabic (Egypt) -->
+                    <ar_KW/><!-- Arabic (Kuwait) -->
+                    <ar_SA/><!-- Arabic (Saudi Arabia) -->
+                    <bg_BG/><!-- Bulgarian (Bulgaria) -->
+                    <cs_CZ/><!-- Czech (Czech Republic) -->
+                    <da_DK/><!-- Danish (Denmark) -->
+                    <de_CH/><!-- German (Switzerland) -->
+                    <de_DE/><!-- German (Germany) -->
+                    <el_GR/><!-- Greek (Greece) -->
+                    <en_AU/><!-- English (Australian) -->
+                    <en_GB/><!-- English (United Kingdom) -->
+                    <en_US/><!-- English (United States) -->
+                    <es_ES/><!-- Spanish (Spain) -->
+                    <es_AR/><!-- Spanish (Argentina) -->
+                    <fa_IR/><!-- Persian (Iran) -->
+                    <fi_FI/><!-- Finnish (Finland) -->
+                    <fr_FR/><!-- French (France) -->
+                    <he_IL/><!-- Hebrew (Israel) -->
+                    <hr_HR/><!-- Croatian (Croatia) -->
+                    <hu_HU/><!-- Hungarian (Hungary) -->
+                    <id_ID/><!-- Indonesian (Indonesia) -->
+                    <it_IT/><!-- Italian (Italy) -->
+                    <ja_JP/><!-- Japanese (Japan) -->
+                    <lt_LT/><!-- Lithuanian (Lithuania) -->
+                    <mk_MK/><!-- Macedonian (Macedonia) -->
+                    <ms_MY/><!-- Malaysian (Malaysia) -->
+                    <nl_NL/><!-- Dutch (Netherlands) -->
+                    <nn_NO/><!-- Norwegian (Norway) -->
+                    <pl_PL/><!-- Polish (Poland) -->
+                    <pt_BR/><!-- Portuguese (Brazil) -->
+                    <pt_PT/><!-- Portuguese (Portugal) -->
+                    <ro_RO/><!-- Romanian (Romania) -->
+                    <ru_RU/><!-- Russian (Russia) -->
+                    <sk_SK/><!-- Slovak (Slovakia) -->
+                    <sl_SI/><!-- Slovenian (Slovenia) -->
+                    <sr_RS/><!-- Serbian (Serbia) -->
+                    <sv_SE/><!-- Swedish (Sweden) -->
+                    <th_TH/><!-- Thai (Thailand) -->
+                    <tr_TR/><!-- Turkish (Turkey) -->
+                    <uk_UA/><!-- Ukrainian (Ukraine) -->
+                    <vi_VN/><!-- Vietnamese (Vietnam) -->
+                    <zh_CN/><!-- Chinese (China) -->
+                    <zh_TW/><!-- Chinese (Taiwan) -->
+                </codes>
+                <currencies>
+                    <AFN/><!-- Afghani -->
+                    <ALL/><!-- Albanian Lek -->
+                    <DZD/><!-- Algerian Dinar -->
+                    <ADP/><!-- Andorran Peseta -->
+                    <AOA/><!-- Angolan Kwanza -->
+                    <ARA/><!-- Argentine Austral -->
+                    <ARS/><!-- Argentine Peso -->
+                    <AMD/><!-- Armenian Dram -->
+                    <AWG/><!-- Aruban Guilder -->
+                    <AUD/><!-- Australian Dollar -->
+                    <ATS/><!-- Austrian Schilling -->
+                    <BSD/><!-- Bahamian Dollar -->
+                    <BHD/><!-- Bahraini Dinar -->
+                    <BDT/><!-- Bangladesh Taka -->
+                    <BBD/><!-- Barbados Dollar -->
+                    <BYR/><!-- Belarussian Ruble -->
+                    <BZD/><!-- Belize Dollar -->
+                    <BMD/><!-- Bermudan Dollar -->
+                    <BTN/><!-- Bhutan Ngultrum -->
+                    <BOV/><!-- Bolivian Mvdol -->
+                    <BOP/><!-- Bolivian Peso -->
+                    <BOB/><!-- Boliviano -->
+                    <BAM/><!-- Bosnia-Herzegovina Convertible Mark -->
+                    <BAD/><!-- Bosnia-Herzegovina Dinar -->
+                    <BWP/><!-- Botswanan Pula -->
+                    <BRC/><!-- Brazilian Cruzado -->
+                    <BRN/><!-- Brazilian Cruzado Novo -->
+                    <BRR/><!-- Brazilian Cruzeiro -->
+                    <BRL/><!-- Brazilian Real -->
+                    <GBP/><!-- British Pound Sterling -->
+                    <BND/><!-- Brunei Dollar -->
+                    <BGN/><!-- Bulgarian New Lev -->
+                    <BUK/><!-- Burmese Kyat -->
+                    <BIF/><!-- Burundi Franc -->
+                    <KHR/><!-- Cambodian Riel -->
+                    <CAD/><!-- Canadian Dollar -->
+                    <CVE/><!-- Cape Verde Escudo -->
+                    <KYD/><!-- Cayman Islands Dollar -->
+                    <CLP/><!-- Chilean Peso -->
+                    <CLF/><!-- Chilean Unidades de Fomento -->
+                    <CNY/><!-- Chinese Yuan Renminbi -->
+                    <COP/><!-- Colombian Peso -->
+                    <KMF/><!-- Comoro Franc -->
+                    <CDF/><!-- Congolese Franc Congolais -->
+                    <CRC/><!-- Costa Rican Colon -->
+                    <HRK/><!-- Croatian Kuna -->
+                    <CUP/><!-- Cuban Peso -->
+                    <CYP/><!-- Cyprus Pound -->
+                    <DKK/><!-- Danish Krone -->
+                    <DEM/><!-- Deutsche Mark -->
+                    <DJF/><!-- Djibouti Franc -->
+                    <DOP/><!-- Dominican Peso -->
+                    <XCD/><!-- East Caribbean Dollar -->
+                    <ECS/><!-- Ecuador Sucre -->
+                    <EGP/><!-- Egyptian Pound -->
+                    <SVC/><!-- El Salvador Colon -->
+                    <GQE/><!-- Equatorial Guinea Ekwele Guineana -->
+                    <ERN/><!-- Eritrean Nakfa -->
+                    <EEK/><!-- Estonian Kroon -->
+                    <ETB/><!-- Ethiopian Birr -->
+                    <EUR/><!-- Euro -->
+                    <FKP/><!-- Falkland Islands Pound -->
+                    <FJD/><!-- Fiji Dollar -->
+                    <FIM/><!-- Finnish Markka -->
+                    <GMD/><!-- Gambia Dalasi -->
+                    <GEK/><!-- Georgian Kupon Larit -->
+                    <GHS/><!-- Ghana Cedi -->
+                    <GIP/><!-- Gibraltar Pound -->
+                    <GRD/><!-- Greek Drachma -->
+                    <GTQ/><!-- Guatemala Quetzal -->
+                    <GNF/><!-- Guinea Franc -->
+                    <GNS/><!-- Guinea Syli -->
+                    <GWP/><!-- Guinea-Bissau Peso -->
+                    <GYD/><!-- Guyana Dollar -->
+                    <HTG/><!-- Haitian Gourde -->
+                    <HNL/><!-- Honduras Lempira -->
+                    <HKD/><!-- Hong Kong Dollar -->
+                    <HUF/><!-- Hungarian Forint -->
+                    <ISK/><!-- Icelandic Krona -->
+                    <INR/><!-- Indian Rupee -->
+                    <IDR/><!-- Indonesian Rupiah -->
+                    <IRR/><!-- Iranian Rial -->
+                    <IQD/><!-- Iraqi Dinar -->
+                    <IEP/><!-- Irish Pound -->
+                    <ILS/><!-- Israeli New Sheqel -->
+                    <ITL/><!-- Italian Lira -->
+                    <JMD/><!-- Jamaican Dollar -->
+                    <JPY/><!-- Japanese Yen -->
+                    <JOD/><!-- Jordanian Dinar -->
+                    <KZT/><!-- Kazakhstan Tenge -->
+                    <KES/><!-- Kenyan Shilling -->
+                    <KWD/><!-- Kuwaiti Dinar -->
+                    <KGS/><!-- Kyrgystan Som -->
+                    <LAK/><!-- Laotian Kip -->
+                    <LVL/><!-- Latvian Lats -->
+                    <LBP/><!-- Lebanese Pound -->
+                    <LSL/><!-- Lesotho Loti -->
+                    <LRD/><!-- Liberian Dollar -->
+                    <LYD/><!-- Libyan Dinar -->
+                    <LTL/><!-- Lithuanian Lita -->
+                    <LTT/><!-- Lithuanian Talonas -->
+                    <LUF/><!-- Luxembourg Franc -->
+                    <MOP/><!-- Macao Pataca -->
+                    <MKD/><!-- Macedonian Denar -->
+                    <MGA/><!-- Madagascar Ariary -->
+                    <MGF/><!-- Madagascar Franc -->
+                    <MWK/><!-- Malawi Kwacha -->
+                    <MYR/><!-- Malaysian Ringgit -->
+                    <MVR/><!-- Maldive Islands Rufiyaa -->
+                    <MLF/><!-- Mali Franc -->
+                    <LSM/><!-- Maloti -->
+                    <MTL/><!-- Maltese Lira -->
+                    <MTP/><!-- Maltese Pound -->
+                    <MRO/><!-- Mauritania Ouguiya -->
+                    <MUR/><!-- Mauritius Rupee -->
+                    <MXN/><!-- Mexican Peso -->
+                    <MDL/><!-- Moldovan Leu -->
+                    <MNT/><!-- Mongolian Tugrik -->
+                    <MAD/><!-- Moroccan Dirham -->
+                    <MAF/><!-- Moroccan Franc -->
+                    <MZE/><!-- Mozambique Escudo -->
+                    <MZN/><!-- Mozambique Metical -->
+                    <MMK/><!-- Myanmar Kyat -->
+                    <NAD/><!-- Namibia Dollar -->
+                    <NPR/><!-- Nepalese Rupee -->
+                    <ANG/><!-- Netherlands Antillan Guilder -->
+                    <TRY/><!-- New Turkish Lira -->
+                    <NZD/><!-- New Zealand Dollar -->
+                    <NIC/><!-- Nicaraguan Cordoba -->
+                    <NGN/><!-- Nigerian Naira -->
+                    <KPW/><!-- North Korean Won -->
+                    <NOK/><!-- Norwegian Krone -->
+                    <OMR/><!-- Oman Rial -->
+                    <PKR/><!-- Pakistan Rupee -->
+                    <PAB/><!-- Panamanian Balboa -->
+                    <PGK/><!-- Papua New Guinea Kina -->
+                    <PYG/><!-- Paraguay Guarani -->
+                    <PEI/><!-- Peruvian Inti -->
+                    <PES/><!-- Peruvian Sol -->
+                    <PHP/><!-- Philippine Peso -->
+                    <PLN/><!-- Polish Zloty -->
+                    <QAR/><!-- Qatari Rial -->
+                    <RHD/><!-- Rhodesian Dollar -->
+                    <RON/><!-- Romanian Leu -->
+                    <RUB/><!-- Russian Ruble -->
+                    <RWF/><!-- Rwandan Franc -->
+                    <SHP/><!-- Saint Helena Pound -->
+                    <STD/><!-- Sao Tome and Principe Dobra -->
+                    <SAR/><!-- Saudi Riyal -->
+                    <RSD/><!-- Serbian Dinar -->
+                    <SCR/><!-- Seychelles Rupee -->
+                    <SLL/><!-- Sierra Leone Leone -->
+                    <SGD/><!-- Singapore Dollar -->
+                    <SKK/><!-- Slovak Koruna -->
+                    <SIT/><!-- Slovenia Tolar -->
+                    <SBD/><!-- Solomon Islands Dollar -->
+                    <SOS/><!-- Somali Shilling -->
+                    <ZAR/><!-- South African Rand -->
+                    <KRW/><!-- South Korean Won -->
+                    <LKR/><!-- Sri Lanka Rupee -->
+                    <SDG/><!-- Sudanese Pound -->
+                    <SRD/><!-- Surinam Dollar -->
+                    <SRG/><!-- Suriname Guilder -->
+                    <SZL/><!-- Swaziland Lilangeni -->
+                    <SEK/><!-- Swedish Krona -->
+                    <CHF/><!-- Swiss Franc -->
+                    <SYP/><!-- Syrian Pound -->
+                    <TWD/><!-- Taiwan New Dollar -->
+                    <TJR/><!-- Tajikistan Ruble -->
+                    <TJS/><!-- Tajikistan Somoni -->
+                    <TZS/><!-- Tanzanian Shilling -->
+                    <THB/><!-- Thai Baht -->
+                    <TPE/><!-- Timor Escudo -->
+                    <TOP/><!-- Tonga Pa?anga -->
+                    <TTD/><!-- Trinidad and Tobago Dollar -->
+                    <TND/><!-- Tunisian Dinar -->
+                    <TMM/><!-- Turkmenistan Manat -->
+                    <USD/><!-- US Dollar -->
+                    <UGX/><!-- Ugandan Shilling -->
+                    <UAH/><!-- Ukrainian Hryvnia -->
+                    <COU/><!-- Unidad de Valor Real -->
+                    <AED/><!-- United Arab Emirates Dirham -->
+                    <UYU/><!-- Uruguay Peso Uruguayo -->
+                    <UZS/><!-- Uzbekistan Sum -->
+                    <VUV/><!-- Vanuatu Vatu -->
+                    <VEB/><!-- Venezuelan Bolivar -->
+                    <VND/><!-- Vietnamese Dong -->
+                    <CHE/><!-- WIR Euro -->
+                    <CHW/><!-- WIR Franc -->
+                    <WST/><!-- Western Samoa Tala -->
+                    <YER/><!-- Yemeni Rial -->
+                    <ZRN/><!-- Zairean New Zaire -->
+                    <ZRZ/><!-- Zairean Zaire -->
+                    <ZMK/><!-- Zambian Kwacha -->
+                    <ZWD/><!-- Zimbabwe Dollar -->
+                </currencies>
+            </allow>
+        </locale>
+
+        <resources>
+            <default_setup>
+                <connection>
+                    <host>localhost</host>
+                    <username></username>
+                    <password/>
+                    <dbname>magento</dbname>
+
+                    <model>mysql4</model>
+                    <initStatements>SET NAMES utf8</initStatements>
+                    <type>pdo_mysql</type>
+                    <active>0</active>
+                </connection>
+            </default_setup>
+            <default_write>
+                <connection>
+                    <use>default_setup</use>
+                </connection>
+            </default_write>
+            <default_read>
+                <connection>
+                    <use>default_setup</use>
+                </connection>
+            </default_read>
+
+            <core_setup>
+                <setup>
+                    <module>Mage_Core</module>
+                </setup>
+                <connection>
+                    <use>default_setup</use>
+                </connection>
+            </core_setup>
+            <core_write>
+                <connection>
+                    <use>default_write</use>
+                </connection>
+            </core_write>
+            <core_read>
+                <connection>
+                    <use>default_read</use>
+                </connection>
+            </core_read>
+        </resources>
+
+        <resource>
+
+            <connection>
+                <types>
+                    <pdo_mysql>
+                        <class>Mage_Core_Model_Resource_Type_Db_Pdo_Mysql</class>
+                    </pdo_mysql>
+                    <mysqli>
+                        <class>Mage_Core_Model_Resource_Type_Db_Mysqli</class>
+                    </mysqli>
+                </types>
+            </connection>
+        </resource>
+        <models>
+            <varien>
+                <class>Varien</class>
+            </varien>
+
+            <core>
+                <class>Mage_Core_Model</class>
+                <resourceModel>core_mysql4</resourceModel>
+            </core>
+
+            <core_mysql4>
+                <class>Mage_Core_Model_Mysql4</class>
+                <entities>
+                    <config_data>
+                        <table>core_config_data</table>
+                    </config_data>
+                    <website>
+                        <table>core_website</table>
+                    </website>
+                    <store>
+                        <table>core_store</table>
+                    </store>
+                    <resource>
+                        <table>core_resource</table>
+                    </resource>
+                </entities>
+            </core_mysql4>
+        </models>
+    </global>
+
+    <default>
+        <system>
+            <filesystem>
+                <base>{{root_dir}}</base>
+                <app>{{root_dir}}/app</app>
+                <code>{{app_dir}}/code</code>
+                <design>{{app_dir}}/design</design>
+                <locale>{{app_dir}}/locale</locale>
+                <etc>{{app_dir}}/etc</etc>
+                <media>{{root_dir}}/media</media>
+                <upload>{{root_dir}}/media/upload</upload>
+                <skin>{{root_dir}}/skin</skin>
+                <var>{{var_dir}}</var>
+                <cache>{{var_dir}}/cache</cache>
+                <session>{{var_dir}}/session</session>
+                <tmp>{{var_dir}}/tmp</tmp>
+                <pear>{{var_dir}}/pear</pear>
+                <export>{{var_dir}}/export</export>
+            </filesystem>
+        </system>
+    </default>
+</config>

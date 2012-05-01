@@ -1,0 +1,184 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php $_items = $this->getCreditmemo()->getAllItems() ?>
+<?php if (count($_items)) : ?>
+<div class="grid">
+    <table cellspacing="0" class="data" id="creditmemo_items_grid_table">
+        <col/>
+        <col width="100"/>
+        <col width="100"/>
+        <col width="60"/>
+        <col width="100"/>
+        <col width="100"/>
+        <col width="100"/>
+        <col width="100"/>
+        <thead>
+            <tr class="headings">
+                <th><?php echo $this->helper('sales')->__('Product') ?></th>
+                <th><?php echo $this->helper('sales')->__('Price') ?></th>
+                <th><?php echo $this->helper('sales')->__('Qty') ?></th>
+                <th><?php echo $this->helper('sales')->__('Qty to Refund') ?></th>
+                <th><?php echo $this->helper('sales')->__('Subtotal') ?></th>
+                <th><?php echo $this->helper('sales')->__('Tax Amount') ?></th>
+                <th><?php echo $this->helper('sales')->__('Discount Amount') ?></th>
+                <th class="last"><?php echo $this->helper('sales')->__('Row Total') ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $_i=0;foreach ($_items as $_item):$_i++ ?>
+                <?php $this->setPriceDataObject($_item); ?>
+                <tr class="<?php echo $_i%2?'odd':'even' ?>">
+                    <td>
+                        <?php echo $_item->getName() ?>
+                        <div class="nobr"><strong><?php echo $this->helper('sales')->__('SKU') ?>:</strong> <?php echo $_item->getSku() ?></div>
+                        <?php echo $_item->getDescription() ?>
+                    </td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('price') ?></td>
+                    <td><?php echo $this->getQtyHtml($_item->getOrderItem()) ?></td>
+                    <td class="a-center">
+                    <?php if ($this->canEditQty()) : ?>
+                        <input type="text" class="input-text qty-input" name="creditmemo[items][<?php echo $_item->getOrderItemId() ?>]" value="<?php echo $_item->getQty()*1 ?>"/>
+                    <?php else : ?>
+                        <?php echo $_item->getQty()*1 ?>
+                    <?php endif; ?>
+                    </td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('row_total') ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('discount_amount') ?></td>
+                    <td class="last price">
+                        <?php echo $this->displayPrices(
+                            $_item->getBaseRowTotal()+$_item->getBaseTaxAmount()-$_item->getBaseDiscountAmount(),
+                            $_item->getRowTotal()+$_item->getTaxAmount()-$_item->getDiscountAmount()
+                        ) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+        <?php if ($this->canEditQty()): ?>
+        <tfoot>
+            <tr>
+                <td colspan="2"></td>
+                <td colspan="3" class="a-center">
+                    <?php echo $this->getUpdateButtonHtml() ?>
+                </td>
+                <td colspan="3" class="last"></td>
+            </tr>
+        </tfoot>
+        <?php endif; ?>
+    </table>
+</div>
+<?php else : ?>
+    <div class="entry-edit">
+        <fieldset><center><?php echo $this->helper('sales')->__('No Items To Refund') ?></center></fieldset>
+    </div>
+<?php endif; ?>
+
+<div class="clear"></div>
+<?php echo $this->getChildHtml('totals_bar') ?>
+<div class="clear"></div>
+
+<input type="hidden" name="creditmemo[do_offline]" id="creditmemo_do_offline" value="0"/>
+
+<div class="box-left entry-edit">
+    <div class="entry-edit-head"><h4>Credit Memo Comments</h4></div>
+    <fieldset id="history_form">
+    <label class="normal" for="history_comment"><?php echo Mage::helper('sales')->__('Credit Memo Comments') ?></label><br/>
+    <textarea id="creditmemo_comment_text" name="creditmemo[comment_text]" style="width:95%"></textarea>
+    </fieldset>
+</div>
+<div class="box-right entry-edit">
+    <div class="entry-edit-head"><h4>Refund Totals</h4></div>
+    <div class="order-totals">
+                <?php echo $this->getChildHtml('totals') ?>
+                <div class="divider"></div>
+                <p>
+                    <label class="normal" for="notify_customer"><?php echo Mage::helper('sales')->__('Append Comments') ?></label>
+                    <input id="notify_customer" name="creditmemo[comment_customer_notify]" value="1" type="checkbox">
+                </p>
+                <p>
+                    <label class="normal" for="send_email"><?php echo Mage::helper('sales')->__('Email Copy of Credit Memo') ?></label>
+                    <input id="send_email" name="creditmemo[send_email]" value="1" type="checkbox">
+                </p>
+                    <?php echo $this->getChildHtml('submit_offline') ?>
+                    <?php echo $this->getChildHtml('submit_button') ?>
+     </div>
+</div>
+<div class="clear"></div>
+
+
+
+<script type="text/javascript">
+var submitButtons = document.getElementsByClassName('submit-button');
+var updateButtons = document.getElementsByClassName('update-button');
+var fields = document.getElementsByClassName('qty-input');
+
+updateButtons.each(function (elem) {elem.disabled=true;elem.addClassName('disabled');});
+
+for(var i=0;i<fields.length;i++){
+    fields[i].observe('change', checkButtonsRelation)
+    fields[i].baseValue = fields[i].value;
+}
+
+function checkButtonsRelation() {
+    var hasChanges = false;
+    fields.each(function (elem) {
+        if (elem.baseValue != elem.value) {
+            hasChanges = true;
+        }
+    }.bind(this));
+    if (hasChanges) {
+        submitButtons.each(function (elem) {elem.disabled=true;elem.addClassName('disabled');});
+        updateButtons.each(function (elem) {elem.disabled=false;elem.removeClassName('disabled');});
+    }
+    else {
+        submitButtons.each(function (elem) {elem.disabled=false;elem.removeClassName('disabled');});
+        updateButtons.each(function (elem) {elem.disabled=true;elem.addClassName('disabled');});
+    }
+}
+
+function submitCreditMemo() {
+    if ($('creditmemo_do_offline')) $('creditmemo_do_offline').value=0;
+    editForm.submit()
+}
+function submitCreditMemoOffline() {
+    if ($('creditmemo_do_offline')) $('creditmemo_do_offline').value=1;
+    editForm.submit()
+}
+
+var sendEmailCheckbox = $('send_email');
+if (sendEmailCheckbox) {
+    var notifyCustomerCheckbox = $('notify_customer');
+    var creditmemoCommentText = $('creditmemo_comment_text');
+    Event.observe(sendEmailCheckbox, 'change', bindSendEmail);
+    bindSendEmail();
+}
+function bindSendEmail()
+{
+    if (sendEmailCheckbox.checked == true) {
+        notifyCustomerCheckbox.disabled = false;
+        creditmemoCommentText.disabled = false;
+    }
+    else {
+        notifyCustomerCheckbox.disabled = true;
+        creditmemoCommentText.disabled = true;
+    }
+}
+</script>

@@ -1,0 +1,104 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/**
+ * Product view template
+ *
+ * @see Mage_Catalog_Block_Product_View
+ */
+?>
+<div id="messages_product_view"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+<?php $_product=$this->getProduct() ?>
+<div class="product-info-box">
+    <div class="product-essential">
+
+        <div class="product-img-box">
+            <?php echo $this->getChildHtml('media') ?>
+        </div>
+
+        <div class="product-shop">
+            <h3 class="product-name"><?php echo $this->htmlEscape($_product->getName()) ?></h3>
+
+            <?php if ($this->canEmailToFriend()): ?>
+                <a href="<?php echo $this->helper('catalog/product')->getEmailToFriendUrl($_product) ?>"><?php echo $this->__('Email to a Friend') ?></a><br />
+            <?php endif; ?>
+
+            <?php echo $this->helper('review/product')->getSummaryHtml($_product, null, 1) ?>
+
+            <form action="<?php echo $this->getAddToCartUrl($_product) ?>" method="post" id="product_addtocart_form">
+            <fieldset>
+            <input type="hidden" name="product" value="<?php echo $_product->getId() ?>"/>
+            <input type="hidden" name="related_product" id="related-products-field" value=""/>
+            </fieldset>
+
+                <?php echo $this->getChildHtml('alert_urls') ?>
+
+                <?php echo $this->getChildHtml('product_type_data') ?>
+
+            </form>
+
+            <script type="text/javascript">
+                var productAddToCartForm = new VarienForm('product_addtocart_form');
+                productAddToCartForm.submit = function() {
+                    if(this.validator.validate()) {
+                        this.form.submit();
+                    }
+                }.bind(productAddToCartForm);
+            </script>
+
+            <div class="clear"></div>
+            <div class="divider"></div>
+
+            <h4><?php echo $this->__('Quick Overview') ?></h4>
+            <div class="short-description"><?php echo nl2br($_product->getShortDescription()) ?></div>
+
+        </div>
+    </div>
+
+    <div class="product-collateral">
+
+        <div class="collateral-box">
+            <div class="head">
+                <h4><?php echo $this->__('Product Description') ?></h4>
+            </div>
+            <div class="product-specs"><?php echo nl2br($_product->getDescription()) ?></div>
+        </div>
+
+        <?php if($_additional = $this->getAdditionalData()): ?>
+        <div class="collateral-box attribute-specs">
+            <div class="head">
+                <h4><?php echo $this->__('Additional Information') ?></h4>
+            </div>
+            <table cellspacing="0" class="data-table" id="product-attribute-specs-table">
+            <?php foreach ($_additional as $_data): ?>
+            <tr>
+                <td class="label"><?php echo $_data['label'] ?></td>
+                <td class="data"><?php echo $_data['value'] ?></td>
+            </tr>
+            <?php endforeach; ?>
+            </table>
+            <script type="text/javascript">decorateTable('product-attribute-specs-table')</script>
+        </div>
+        <?php endif; ?>
+
+        <?php echo $this->getChildHtml('upsell_products') ?>
+        <?php echo $this->getChildHtml('product_additional_data') ?>
+    </div>
+</div>

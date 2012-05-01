@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Mage
+ * @package    Mage_Checkout
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <modules>
+        <Mage_Checkout>
+            <version>0.7.0</version>
+            <depends>
+                <Mage_Sales />
+            </depends>
+        </Mage_Checkout>
+    </modules>
+    <global>
+        <blocks>
+            <checkout><class>Mage_Checkout_Block</class></checkout>
+        </blocks>
+        <models>
+            <checkout>
+                <class>Mage_Checkout_Model</class>
+                <resourceModel>checkout_mysql4</resourceModel>
+            </checkout>
+            <checkout_mysql4>
+                <class>Mage_Checkout_Model_Mysql4</class>
+            </checkout_mysql4>
+        </models>
+
+        <cache>
+            <types>
+                <checkout_quote><label>Shopping Cart data</label></checkout_quote>
+            </types>
+        </cache>
+
+    </global>
+    <frontend>
+          <secure_url>
+                <checkout_onepage>/checkout/onepage</checkout_onepage>
+                <checkout_multishipping>/checkout/multishipping</checkout_multishipping>
+          </secure_url>
+        <events>
+            <customer_login>
+                <observers>
+                    <loadCustomerQuote>
+                        <type>singleton</type>
+                        <class>checkout/observer</class>
+                        <method>loadCustomerQuote</method>
+                    </loadCustomerQuote>
+                </observers>
+            </customer_login>
+            <customer_logout>
+                <observers>
+                    <unsetAll>
+                        <type>singleton</type>
+                        <class>checkout/observer</class>
+                        <method>unsetAll</method>
+                    </unsetAll>
+                </observers>
+            </customer_logout>
+            <sales_quote_save_after>
+                <observers>
+                    <set_checkout_quote_id>
+                        <type>singleton</type>
+                        <class>checkout/observer</class>
+                        <method>sales_quote_save_after</method>
+                    </set_checkout_quote_id>
+                </observers>
+            </sales_quote_save_after>
+        </events>
+        <routers>
+            <checkout>
+                <use>standard</use>
+                <args>
+                    <module>Mage_Checkout</module>
+                    <frontName>checkout</frontName>
+                </args>
+            </checkout>
+        </routers>
+        <translate>
+            <modules>
+                <Mage_Checkout>
+                     <files>
+                          <default>Mage_Checkout.csv</default>
+                     </files>
+                </Mage_Checkout>
+            </modules>
+        </translate>
+        <layout>
+             <updates>
+                  <checkout>
+                        <file>checkout.xml</file>
+                  </checkout>
+             </updates>
+        </layout>
+    </frontend>
+    <adminhtml>
+        <translate>
+            <modules>
+                <Mage_Checkout>
+                     <files>
+                          <default>Mage_Checkout.csv</default>
+                     </files>
+                </Mage_Checkout>
+            </modules>
+        </translate>
+    </adminhtml>
+    <default>
+        <checkout>
+            <options>
+                <guest_checkout>1</guest_checkout>
+            </options>
+            <cart>
+                <delete_quote_after>30</delete_quote_after>
+                <redirect_to_cart>1</redirect_to_cart>
+                <grouped_product_image>itself</grouped_product_image>
+                <configurable_product_image>parent</configurable_product_image>
+            </cart>
+            <cart_link>
+                <use_qty>1</use_qty>
+            </cart_link>
+        </checkout>
+    </default>
+</config>

@@ -1,0 +1,33 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<h1 class="page-head"><?php echo $this->__('Search Results') ?></h1>
+<p><?php echo $this->__("Search Results for: '%s'", $query) ?></p>
+<?php if(!empty($hits)): ?>
+    <?php foreach($hits as $hit): ?>
+        <?php echo $this->__('Score: %s', round($hit->score,3)) ?><br/>
+        <?php echo $this->__('SKU: %s', $hit->sku) ?><br/>
+        <?php echo $this->__('Manufacturer: %s', $hit->manufacturer) ?><br/>
+        <?php echo $this->__('Shoe Type: %s', $hit->shoe_type) ?><br/>
+        <a href="<?php echo $hit->url ?>"><?php echo $hit->name ?></a><br/>
+     <?php endforeach; ?>
+<?php else: ?>
+    <p><?php echo $this->__("There are no products under search term '%s'", $query) ?></p>
+<?php endif; ?>

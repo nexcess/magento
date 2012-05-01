@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Mage
+ * @package    Mage_Sales
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <modules>
+        <Mage_Sales>
+            <version>0.8.21</version>
+            <depends>
+                <Mage_Catalog />
+                <Mage_Customer />
+            </depends>
+        </Mage_Sales>
+    </modules>
+    <global>
+        <models>
+            <sales>
+                <class>Mage_Sales_Model</class>
+                <resourceModel>sales_entity</resourceModel>
+            </sales>
+            <sales_entity>
+                <class>Mage_Sales_Model_Entity</class>
+                <entities>
+                    <quote><table>sales_quote</table></quote>
+                    <quote_address><table>sales_quote_address</table></quote_address>
+                    <quote_item><table>sales_quote_item</table></quote_item>
+                    <quote_entity><table>sales_quote_entity</table></quote_entity>
+                    <quote_temp><table>sales_quote_temp</table></quote_temp>
+                    <order><table>sales_order</table></order>
+                    <order_entity><table>sales_order_entity</table></order_entity>
+                </entities>
+            </sales_entity>
+        </models>
+        <template>
+            <email>
+               <sales_email_order_template translate="label" module="sales">
+                   <label>New order</label>
+                   <file>order_new.html</file>
+                   <type>html</type>
+               </sales_email_order_template>
+               <sales_email_order_comment_template translate="label" module="sales">
+                   <label>Order Update</label>
+                   <file>order_update.html</file>
+                   <type>html</type>
+               </sales_email_order_comment_template>
+               <sales_email_invoice_template translate="label" module="sales">
+                   <label>New Invoice</label>
+                   <file>order_invoice.html</file>
+                   <type>html</type>
+               </sales_email_invoice_template>
+               <sales_email_invoice_comment_template translate="label" module="sales">
+                   <label>Order Update (Invoice)</label>
+                   <file>order_update.html</file>
+                   <type>html</type>
+               </sales_email_invoice_comment_template>
+               <sales_email_creditmemo_template translate="label" module="sales">
+                   <label>New Credit Memo</label>
+                   <file>order_creditmemo.html</file>
+                   <type>html</type>
+               </sales_email_creditmemo_template >
+               <sales_email_creditmemo_comment_template translate="label" module="sales">
+                   <label>Order Update (Credit Memo)</label>
+                   <file>order_update.html</file>
+                   <type>html</type>
+               </sales_email_creditmemo_comment_template>
+               <sales_email_shipment_template translate="label" module="sales">
+                   <label>New Shipment</label>
+                   <file>order_shipment.html</file>
+                   <type>html</type>
+               </sales_email_shipment_template >
+               <sales_email_shipment_comment_template translate="label" module="sales">
+                   <label>Order Update (Shipment)</label>
+                   <file>order_update.html</file>
+                   <type>html</type>
+               </sales_email_shipment_comment_template>
+            </email>
+        </template>
+        <resources>
+            <sales_setup>
+                <setup>
+                    <module>Mage_Sales</module>
+                    <class>Mage_Sales_Model_Entity_Setup</class>
+                </setup>
+                <connection><use>core_setup</use></connection>
+            </sales_setup>
+            <sales_write>
+                <connection><use>core_write</use></connection>
+            </sales_write>
+            <sales_read>
+                <connection><use>core_read</use></connection>
+            </sales_read>
+        </resources>
+        <blocks>
+            <sales><class>Mage_Sales_Block</class></sales>
+        </blocks>
+        <sales>
+            <quote>
+                <totals>
+                    <subtotal>
+                        <class>sales/quote_address_total_subtotal</class>
+                        <before>grand_total</before>
+                    </subtotal>
+                    <discount>
+                        <class>sales/quote_address_total_discount</class>
+                        <after>subtotal</after>
+                        <before>grand_total,shipping</before>
+                    </discount>
+                    <shipping>
+                        <class>sales/quote_address_total_shipping</class>
+                        <after>subtotal,discount</after>
+                        <before>grand_total</before>
+                    </shipping>
+                    <tax>
+                        <class>sales/quote_address_total_tax</class>
+                        <after>subtotal,shipping</after>
+                        <before>grand_total</before>
+                    </tax>
+                    <grand_total>
+                        <class>sales/quote_address_total_grand</class>
+                        <after>subtotal</after>
+                    </grand_total>
+                </totals>
+            </quote>
+            <order>
+                <statuses>
+                    <pending translate="label"><label>Pending</label></pending>
+                    <processing translate="label"><label>Processing</label></processing>
+                    <holded translate="label"><label>On Hold</label></holded>
+                    <complete translate="label"><label>Complete</label></complete>
+                    <closed translate="label"><label>Closed</label></closed>
+                    <canceled translate="label"><label>Canceled</label></canceled>
+                </statuses>
+                <states>
+                    <new>
+                        <statuses>
+                            <pending/>
+                            <processing/>
+                        </statuses>
+                    </new>
+                    <processing>
+                        <statuses>
+                            <processing/>
+                        </statuses>
+                    </processing>
+                    <complete>
+                        <statuses>
+                            <complete/>
+                        </statuses>
+                    </complete>
+                    <closed>
+                        <statuses>
+                            <closed/>
+                        </statuses>
+                    </closed>
+                    <canceled>
+                        <statuses>
+                            <canceled/>
+                        </statuses>
+                    </canceled>
+                    <holded>
+                        <statuses>
+                            <holded/>
+                        </statuses>
+                    </holded>
+                </states>
+            </order>
+            <order_invoice>
+                <totals>
+                    <subtotal>
+                        <class>sales/order_invoice_total_subtotal</class>
+                    </subtotal>
+                    <discount>
+                        <class>sales/order_invoice_total_discount</class>
+                    </discount>
+                    <shipping>
+                        <class>sales/order_invoice_total_shipping</class>
+                    </shipping>
+                    <tax>
+                        <class>sales/order_invoice_total_tax</class>
+                    </tax>
+                    <grand_total>
+                        <class>sales/order_invoice_total_grand</class>
+                    </grand_total>
+                </totals>
+            </order_invoice>
+            <order_creditmemo>
+                <totals>
+                    <subtotal>
+                        <class>sales/order_creditmemo_total_subtotal</class>
+                    </subtotal>
+                    <tax>
+                        <class>sales/order_creditmemo_total_tax</class>
+                    </tax>
+                    <discount>
+                        <class>sales/order_creditmemo_total_discount</class>
+                    </discount>
+                    <grand_total>
+                        <class>sales/order_creditmemo_total_grand</class>
+                    </grand_total>
+                </totals>
+            </order_creditmemo>
+        </sales>
+    </global>
+
+    <frontend>
+        <secure_url>
+            <sales>/sales/</sales>
+        </secure_url>
+        <routers>
+            <sales>
+                <use>standard</use>
+                <args>
+                    <module>Mage_Sales</module>
+                    <frontName>sales</frontName>
+                </args>
+            </sales>
+        </routers>
+        <translate>
+            <modules>
+                <Mage_Sales>
+                    <files>
+                        <default>Mage_Sales.csv</default>
+                    </files>
+                </Mage_Sales>
+            </modules>
+        </translate>
+        <layout>
+            <updates>
+                <sales>
+                    <file>sales.xml</file>
+                </sales>
+            </updates>
+        </layout>
+    </frontend>
+    <adminhtml>
+        <menu>
+             <sales translate="title" module="sales">
+                <title>Sales</title>
+                <sort_order>20</sort_order>
+                <depends><module>Mage_Sales</module></depends>
+                <children>
+                    <order translate="title" module="sales">
+                        <title>Orders</title>
+                        <action>adminhtml/sales_order</action>
+                        <sort_order>10</sort_order>
+                    </order>
+                    <invoice translate="title" module="sales">
+                        <title>Invoices</title>
+                        <action>*/sales_invoice</action>
+                        <sort_order>20</sort_order>
+                    </invoice>
+                    <shipment translate="title" module="sales">
+                        <title>Shipments</title>
+                        <action>*/sales_shipment</action>
+                        <sort_order>30</sort_order>
+                    </shipment>
+                    <creditmemo translate="title" module="sales">
+                        <title>Credit Memos</title>
+                        <action>*/sales_creditmemo</action>
+                        <sort_order>40</sort_order>
+                    </creditmemo>
+                </children>
+             </sales>
+        </menu>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <sales translate="title">
+                            <title>Sales</title>
+                            <children>
+                                <order translate="title">
+                                    <title>Orders</title>
+                                    <children>
+                                        <actions translate="title">
+                                            <title>Actions</title>
+                                            <children>
+                                                <create translate="title"><title>Create</title></create>
+                                                <view translate="title"><title>View</title></view>
+                                                <reorder translate="title"><title>Reorder</title></reorder>
+                                                <edit translate="title"><title>Edit</title></edit>
+                                                <cancel translate="title"><title>Cancel</title></cancel>
+                                                <capture translate="title"><title>Capture</title></capture>
+                                                <invoice translate="title"><title>Invoice</title></invoice>
+                                                <creditmemo translate="title"><title>Creditmemo</title></creditmemo>
+                                                <hold translate="title"><title>Hold</title></hold>
+                                                <unhold translate="title"><title>Unhold</title></unhold>
+                                                <ship translate="title"><title>Ship</title></ship>
+                                                <comment translate="title"><title>Comment</title></comment>
+                                                <reorder translate="title"><title>Reorder</title></reorder>
+                                            </children>
+                                        </actions>
+                                    </children>
+                                </order>
+                                <invoice translate="title">
+                                    <title>Invoices</title>
+                                </invoice>
+                                <shipment translate="title">
+                                    <title>Shipments</title>
+                                </shipment>
+                                <creditmemo translate="title">
+                                    <title>Credit Memos</title>
+                                </creditmemo>
+                            </children>
+                        </sales>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <translate>
+            <modules>
+                <Mage_Sales>
+                    <files>
+                        <default>Mage_Sales.csv</default>
+                    </files>
+                </Mage_Sales>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <default>
+        <payment>
+            <googlecheckout>
+                <active>1</active>
+                <model>googlecheckout/payment</model>
+                <title>Google Checkout</title>
+            </googlecheckout>
+        </payment>
+
+        <sales>
+            <totals_sort>
+                <discount>20</discount>
+                <grand_total>100</grand_total>
+                <shipping>30</shipping>
+                <subtotal>10</subtotal>
+                <tax>40</tax>
+            </totals_sort>
+            <reorder>
+                <allow>1</allow>
+            </reorder>
+            <tax>
+                <apply_after_discount>0</apply_after_discount>
+                <shipping_tax_class></shipping_tax_class>
+                <based_on>shipping</based_on>
+                <price_includes_tax>0</price_includes_tax>
+            </tax>
+        </sales>
+        <sales_email>
+            <order>
+                <template>sales_email_order_template</template>
+                <identity>sales</identity>
+            </order>
+            <order_comment>
+                <template>sales_email_order_comment_template</template>
+                <identity>sales</identity>
+            </order_comment>
+            <invoice>
+                <template>sales_email_invoice_template</template>
+                <identity>sales</identity>
+            </invoice>
+            <invoice_comment>
+                <template>sales_email_invoice_comment_template</template>
+                <identity>sales</identity>
+            </invoice_comment>
+            <shipment>
+                <template>sales_email_shipment_template</template>
+                <identity>sales</identity>
+            </shipment>
+            <shipment_comment>
+                <template>sales_email_shipment_comment_template</template>
+                <identity>sales</identity>
+            </shipment_comment>
+            <creditmemo>
+                <template>sales_email_creditmemo_template</template>
+                <identity>sales</identity>
+            </creditmemo>
+            <creditmemo_comment>
+                <template>sales_email_creditmemo_comment_template</template>
+                <identity>sales</identity>
+            </creditmemo_comment>
+        </sales_email>
+    </default>
+
+    <crontab>
+        <jobs>
+            <sales_clean_quotes>
+                <schedule><cron_expr>0 0 * * *</cron_expr></schedule>
+                <run><model>sales/observer::cleanExpiredQuotes</model></run>
+            </sales_clean_quotes>
+        </jobs>
+    </crontab>
+</config>

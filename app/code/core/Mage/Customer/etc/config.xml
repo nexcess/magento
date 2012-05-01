@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Mage
+ * @package    Mage_Customer
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <modules>
+        <Mage_Customer>
+            <version>0.8.2</version>
+            <depends>
+                <Mage_Eav />
+            </depends>
+        </Mage_Customer>
+    </modules>
+    <global>
+        <customer>
+            <address>
+                <formats>
+                    <text translate="title" module="customer">
+                        <title>Text</title>
+                        <defaultFormat><![CDATA[
+{{var firstname}} {{var lastname}}
+{{depend company}}{{var company}}{{/depend}}
+{{var street1}}
+{{depend street2}}{{var street2}}{{/depend}}
+{{depend city}}{{var city}},  {{/depend}}{{depend postcode}}{{var postcode}}, {{/depend}}{{var region}}
+{{var country}}
+T: {{var telephone}}
+{{depend fax}}F: {{var fax}}{{/depend}}
+                        ]]></defaultFormat>
+                    </text>
+                    <oneline translate="title" module="customer">
+                        <title>Text One Line</title>
+                        <htmlEscape>true</htmlEscape>
+                        <defaultFormat>
+<![CDATA[{{var firstname}} {{var lastname}}, {{var street}}, {{var city}}, {{var region}} {{var postcode}}, {{var country}}]]>
+                        </defaultFormat>
+                    </oneline>
+                    <html translate="title" module="customer">
+                        <title>HTML</title>
+                        <htmlEscape>true</htmlEscape>
+                        <defaultFormat><![CDATA[
+{{var firstname}} {{var lastname}}<br/>
+{{depend company}}{{var company}}<br />{{/depend}}
+{{var street1}}<br />
+{{depend street2}}{{var street2}}<br />{{/depend}}
+{{depend city}}{{var city}},  {{/depend}}{{depend postcode}}{{var postcode}}, {{/depend}}{{var region}}<br/>
+{{var country}}<br/>
+{{depend telephone}}T: {{var telephone}}{{/depend}}
+{{depend fax}}<br/>F: {{var fax}}{{/depend}}
+            ]]></defaultFormat>
+                    </html>
+                    <pdf translate="title" module="customer">
+                        <title>PDF</title>
+                        <defaultFormat><![CDATA[
+{{var firstname}} {{var lastname}}|
+{{depend company}}{{var company}}|{{/depend}}
+{{var street1}}|
+{{depend street2}}{{var street2}}|{{/depend}}
+{{depend city}}{{var city}},  {{/depend}}{{depend postcode}}{{var postcode}}, {{/depend}}{{var region}}|
+{{var country}}|
+{{depend telephone}}T: {{var telephone}}{{/depend}}|
+{{depend fax}}<br/>F: {{var fax}}{{/depend}}|
+            ]]></defaultFormat>
+                    </pdf>
+                </formats>
+            </address>
+        </customer>
+        <blocks>
+            <customer><class>Mage_Customer_Block</class></customer>
+        </blocks>
+        <models>
+            <customer>
+                <class>Mage_Customer_Model</class>
+                <resourceModel>customer_entity</resourceModel>
+            </customer>
+            <customer_entity>
+                <class>Mage_Customer_Model_Entity</class>
+                <entities>
+                    <entity>
+                        <table>customer_entity</table>
+                    </entity>
+                    <address_entity>
+                        <table>customer_address_entity</table>
+                    </address_entity>
+                    <value_prefix>
+                        <table>customer_entity</table>
+                    </value_prefix>
+                    <customer_group>
+                        <table>customer_group</table>
+                    </customer_group>
+                </entities>
+            </customer_entity>
+        </models>
+        <resources>
+            <customer_setup>
+                <setup>
+                    <module>Mage_Customer</module>
+                    <class>Mage_Customer_Model_Entity_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </customer_setup>
+            <customer_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </customer_write>
+            <customer_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </customer_read>
+        </resources>
+        <rewrite>
+            <review>
+                <from>/customer\/review/</from>
+                <to>review/customer</to>
+            </review>
+        </rewrite>
+        <template>
+            <email>
+                <customer_create_account_email_template translate="label" module="customer">
+                    <label>New account</label>
+                    <file>account_new.html</file>
+                    <type>html</type>
+                </customer_create_account_email_template>
+                <customer_password_forgot_email_template translate="label" module="customer">
+                    <label>New passowrd</label>
+                    <file>password_new.html</file>
+                    <type>html</type>
+                </customer_password_forgot_email_template>
+            </email>
+        </template>
+    </global>
+    <adminhtml>
+        <translate>
+            <modules>
+                <Mage_Customer>
+                    <files>
+                        <default>Mage_Customer.csv</default>
+                    </files>
+                </Mage_Customer>
+            </modules>
+        </translate>
+        <menu>
+            <customer translate="title" module="customer">
+                <title>Customers</title>
+                <sort_order>40</sort_order>
+                <!-- action>adminhtml/customer/</action -->
+                <children>
+                    <manage translate="title" module="customer">
+                        <title>Manage Customers</title>
+                        <action>adminhtml/customer/</action>
+                        <acl><resource>admin/customer</resource><privilege>list</privilege></acl>
+                    </manage>
+                    <group translate="title" module="customer">
+                        <title>Customer Groups</title>
+                        <action>adminhtml/customer_group/</action>
+                        <resource>admin/customer/group</resource>
+                    </group>
+                    <online translate="title" module="customer">
+                        <title>Online Customers</title>
+                        <action>adminhtml/customer_online/</action>
+                        <resource>admin/customer/online</resource>
+                    </online>
+                </children>
+             </customer>
+        </menu>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <customer>
+                            <title>Customers</title>
+                            <sort_order>40</sort_order>
+                            <children>
+                                <group>
+                                    <title>Customer Groups</title>
+                                    <sort_order>0</sort_order>
+                                </group>
+                                <manage>
+                                    <title>Manage Customers</title>
+                                    <sort_order>10</sort_order>
+                                </manage>
+                                <online>
+                                    <title>Online Customers</title>
+                                    <sort_order>20</sort_order>
+                                </online>
+                            </children>
+                        </customer>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+    <frontend>
+        <secure_url>
+            <customer>/customer/</customer>
+        </secure_url>
+        <events>
+            <controller_action_layout_load_before>
+                <observers>
+                    <customer_is_logged_in_observer>
+                        <type>singleton</type>
+                        <class>customer/observer</class>
+                        <method>beforeLoadLayout</method>
+                    </customer_is_logged_in_observer>
+                </observers>
+            </controller_action_layout_load_before>
+        </events>
+        <routers>
+            <customer>
+                <use>standard</use>
+                <args>
+                    <module>Mage_Customer</module>
+                    <frontName>customer</frontName>
+                </args>
+            </customer>
+        </routers>
+        <translate>
+            <modules>
+                <Mage_Customer>
+                    <files>
+                        <default>Mage_Customer.csv</default>
+                    </files>
+                </Mage_Customer>
+            </modules>
+        </translate>
+      <layout>
+          <updates>
+              <customer>
+                  <file>customer.xml</file>
+              </customer>
+          </updates>
+      </layout>
+    </frontend>
+
+    <default>
+        <customer>
+            <account_share>
+                <scope>1</scope> <!--0 - global, 1 - per website-->
+            </account_share>
+            <create_account>
+                <confirm>0</confirm>
+                <default_group>1</default_group>
+                <email_domain>emaildomain.com</email_domain>
+                <email_identity>general</email_identity>
+                <email_template>customer_create_account_email_template</email_template>
+            </create_account>
+
+            <default>
+                <group>1</group>
+            </default>
+
+            <password>
+                <forgot_email_identity>support</forgot_email_identity>
+                <forgot_email_template>customer_password_forgot_email_template</forgot_email_template>
+            </password>
+        </customer>
+    </default>
+</config>

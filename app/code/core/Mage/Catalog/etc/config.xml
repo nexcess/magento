@@ -1,0 +1,389 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Mage
+ * @package    Mage_Catalog
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <modules>
+        <Mage_Catalog>
+            <version>0.7.32</version>
+            <depends>
+                <Mage_Customer />
+            </depends>
+        </Mage_Catalog>
+    </modules>
+    <global>
+        <models>
+            <catalog>
+                <class>Mage_Catalog_Model</class>
+                <resourceModel>catalog_resource_eav_mysql4</resourceModel>
+            </catalog>
+
+            <catalog_resource_eav_mysql4>
+                <class>Mage_Catalog_Model_Resource_Eav_Mysql4</class>
+                <entities>
+                    <product>
+                        <table>catalog_product_entity</table>
+                    </product>
+                    <category>
+                        <table>catalog_category_entity</table>
+                    </category>
+                    <category_product>
+                        <table>catalog_category_product</table>
+                    </category_product>
+                    <compare_item>
+                        <table>catalog_compare_item</table>
+                    </compare_item>
+
+                    <product_website>
+                        <table>catalog_product_website</table>
+                    </product_website>
+
+                    <product_link>
+                        <table>catalog_product_link</table>
+                    </product_link>
+                    <product_link_type>
+                        <table>catalog_product_link_type</table>
+                    </product_link_type>
+                    <product_link_attribute>
+                        <table>catalog_product_link_attribute</table>
+                    </product_link_attribute>
+                    <product_link_attribute_decimal>
+                        <table>catalog_product_link_attribute_decimal</table>
+                    </product_link_attribute_decimal>
+                    <product_link_attribute_int>
+                        <table>catalog_product_link_attribute_int</table>
+                    </product_link_attribute_int>
+                    <product_link_attribute_varchar>
+                        <table>catalog_product_link_attribute_varchar</table>
+                    </product_link_attribute_varchar>
+
+                    <product_super_attribute>
+                        <table>catalog_product_super_attribute</table>
+                    </product_super_attribute>
+                    <product_super_attribute_label>
+                        <table>catalog_product_super_attribute_label</table>
+                    </product_super_attribute_label>
+                    <product_super_attribute_pricing>
+                        <table>catalog_product_super_attribute_pricing</table>
+                    </product_super_attribute_pricing>
+                    <product_super_link>
+                        <table>catalog_product_super_link</table>
+                    </product_super_link>
+
+                    <product_attribute_tier_price>
+                        <table>catalog_product_entity_tier_price</table>
+                    </product_attribute_tier_price>
+
+                    <product_attribute_media_gallery>
+                        <table>catalog_product_entity_media_gallery</table>
+                    </product_attribute_media_gallery>
+
+                    <product_attribute_media_gallery_value>
+                        <table>catalog_product_entity_media_gallery_value</table>
+                    </product_attribute_media_gallery_value>
+
+                    <product_attribute_media_gallery_image>
+                        <table>catalog_product_entity_media_gallery_image</table>
+                    </product_attribute_media_gallery_image>
+                </entities>
+            </catalog_resource_eav_mysql4>
+
+            <catalog_mysql4>
+                <class>Mage_Catalog_Model_Mysql4</class>
+            </catalog_mysql4>
+        </models>
+        <resources>
+            <catalog_setup>
+                <setup>
+                    <module>Mage_Catalog</module>
+                    <class>Mage_Catalog_Model_Resource_Eav_Mysql4_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </catalog_setup>
+            <catalog_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </catalog_write>
+            <catalog_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </catalog_read>
+        </resources>
+
+        <blocks>
+            <catalog><class>Mage_Catalog_Block</class></catalog>
+        </blocks>
+
+        <catalog>
+            <product>
+                <type>
+                    <simple translate="label" module="catalog">
+                        <label>Simple Product</label>
+                        <model>catalog/product_type_simple</model>
+                    </simple>
+                    <grouped translate="label" module="catalog">
+                        <label>Grouped Product</label>
+                        <model>catalog/product_type_grouped</model>
+                    </grouped>
+                    <configurable translate="label" module="catalog">
+                        <label>Configurable Product</label>
+                        <model>catalog/product_type_configurable</model>
+                    </configurable>
+                </type>
+            </product>
+        </catalog>
+    </global>
+    <adminhtml>
+        <menu>
+            <catalog translate="title" module="catalog">
+                <title>Catalog</title>
+                <sort_order>30</sort_order>
+                <!--action>adminhtml/catalog</action-->
+                <depends>
+                    <module>Mage_Catalog</module>
+                </depends>
+                <children>
+                    <products translate="title" module="catalog">
+                        <title>Manage Products</title>
+                        <action>adminhtml/catalog_product/</action>
+                    </products>
+                    <categories translate="title" module="catalog">
+                        <title>Manage Categories</title>
+                        <action>adminhtml/catalog_category/</action>
+                    </categories>
+                    <attributes translate="title" module="catalog">
+                        <title>Attributes</title>
+                        <children>
+                            <attributes translate="title" module="catalog">
+                                <title>Manage Attributes</title>
+                                <action>adminhtml/catalog_product_attribute/</action>
+                            </attributes>
+                            <sets translate="title" module="catalog">
+                                <title>Manage Attribute Sets</title>
+                                <action>adminhtml/catalog_product_set/</action>
+                            </sets>
+                        </children>
+                    </attributes>
+                    <urlrewrite translate="title" module="catalog">
+                        <title>Url Rewrite Management</title>
+                        <action>adminhtml/urlrewrite/index</action>
+                    </urlrewrite>
+                </children>
+            </catalog>
+        </menu>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <catalog>
+                                            <title>Catalog Section</title>
+                                        </catalog>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                        <catalog>
+                            <title>Catalog</title>
+                            <sort_order>30</sort_order>
+                            <children>
+                                <attributes>
+                                    <title>Attributes</title>
+                                    <children>
+                                        <attributes>
+                                            <title>Manage Attributes</title>
+                                        </attributes>
+                                        <sets>
+                                            <title>Manage Attribute Sets</title>
+                                        </sets>
+                                    </children>
+                                </attributes>
+                                <categories>
+                                    <title>Manage Categories</title>
+                                </categories>
+                                <products>
+                                    <title>Manage Products</title>
+                                </products>
+                                <reviews_ratings>
+                                    <title>Reviews and Ratings</title>
+                                    <children>
+                                        <ratings>
+                                            <title>Manage Ratings</title>
+                                        </ratings>
+                                        <reviews>
+                                            <title>Customer Reviews</title>
+                                            <children>
+                                                <all>
+                                                    <title>All Reviews</title>
+                                                </all>
+                                                <pending>
+                                                    <title>Pending Reviews</title>
+                                                </pending>
+                                            </children>
+                                        </reviews>
+                                     </children>
+                                </reviews_ratings>
+                                <search>
+                                    <title>Search</title>
+                                </search>
+                                <tag>
+                                    <title>Tags</title>
+                                    <children>
+                                        <all>
+                                            <title>All Tags</title>
+                                        </all>
+                                        <pending>
+                                            <title>Pending Tags</title>
+                                        </pending>
+                                    </children>
+                                </tag>
+                                <urlrewrite>
+                                    <title>Url Rewrite Management</title>
+                                </urlrewrite>
+                            </children>
+                        </catalog>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <events>
+            <store_add>
+                <observers>
+                    <catalog>
+                        <type>singleton</type>
+                        <class>catalog/observer</class>
+                        <method>storeAdd</method>
+                    </catalog>
+                </observers>
+            </store_add>
+            <store_edit>
+                <observers>
+                    <catalog>
+                        <type>singleton</type>
+                        <class>catalog/observer</class>
+                        <method>storeEdit</method>
+                    </catalog>
+                </observers>
+            </store_edit>
+            <store_group_save>
+                <observers>
+                    <catalog>
+                        <type>singleton</type>
+                        <class>catalog/observer</class>
+                        <method>storeGroupSave</method>
+                    </catalog>
+                </observers>
+            </store_group_save>
+            <category_move>
+                <observers>
+                    <catalog>
+                        <type>singleton</type>
+                        <class>catalog/observer</class>
+                        <method>categoryMove</method>
+                    </catalog>
+                </observers>
+            </category_move>
+        </events>
+        <translate>
+            <modules>
+                <Mage_Catalog>
+                    <files>
+                        <default>Mage_Catalog.csv</default>
+                    </files>
+                </Mage_Catalog>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <frontend>
+        <routers>
+            <catalog>
+                <use>standard</use>
+                <args>
+                    <module>Mage_Catalog</module>
+                    <frontName>catalog</frontName>
+                </args>
+            </catalog>
+        </routers>
+        <default>
+            <router>catalog</router>
+        </default>
+        <events>
+            <customer_login>
+                <observers>
+                    <catalog>
+                        <type>model</type>
+                        <class>catalog/product_compare_item</class>
+                        <method>bindCustomerLogin</method>
+                    </catalog>
+                </observers>
+            </customer_login>
+        </events>
+        <translate>
+            <modules>
+                <Mage_Catalog>
+                    <files>
+                        <default>Mage_Catalog.csv</default>
+                    </files>
+                </Mage_Catalog>
+            </modules>
+        </translate>
+        <layout>
+            <updates>
+                <catalog>
+                    <file>catalog.xml</file>
+                </catalog>
+            </updates>
+        </layout>
+        <catalog>
+            <per_page_values>
+                <grid>9,15,30</grid>
+                <list>5,10,15,20,25</list>
+            </per_page_values>
+        </catalog>
+    </frontend>
+
+    <default>
+        <catalog>
+            <frontend>
+                <list_mode>grid-list</list_mode>
+                <grid_per_page>9</grid_per_page>
+                <list_per_page>10</list_per_page>
+            </frontend>
+
+            <product>
+                <default_tax_group>2</default_tax_group>
+            </product>
+
+            <seo>
+                <product_url_suffix>.html</product_url_suffix>
+                <product_use_categories>1</product_use_categories>
+                <title_separator>-</title_separator>
+            </seo>
+        </catalog>
+    </default>
+</config>

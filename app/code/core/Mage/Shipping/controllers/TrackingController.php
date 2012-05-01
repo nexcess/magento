@@ -1,0 +1,76 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Mage
+ * @package    Mage_Sales
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/**
+ * Sales orders controller
+ *
+ * @category   Mage
+ * @package    Mage_Sales
+ */
+
+class Mage_Shipping_TrackingController extends Mage_Core_Controller_Front_Action
+{
+    public function ajaxAction()
+    {
+        if ($order = $this->_initOrder()) {
+            $response = '';
+            $tracks = $order->getTracksCollection();
+
+            $className = Mage::getConfig()->getBlockClassName('core/template');
+            $block = new $className();
+            $block->setType('core/template')
+                ->setIsAnonymous(true)
+                ->setTemplate('sales/order/trackinginfo.phtml');
+
+            foreach ($tracks as $track){
+                $trackingInfo = $track->getNumberDetail();
+                $block->setTrackingInfo($trackingInfo);
+                $response .= $block->toHtml()."\n<br />";
+            }
+
+            $this->getResponse()->setBody($response);
+        }
+    }
+
+    public function popupAction()
+    {
+        $this->loadLayout();
+        $this->renderLayout();
+    }
+
+
+    /**
+     * Initialize order model instance
+     *
+     * @return Mage_Sales_Model_Order || false
+     */
+    protected function _initOrder()
+    {
+        $id = $this->getRequest()->getParam('order_id');
+
+        $order = Mage::getModel('sales/order')->load($id);
+
+        if (!$order->getId() || !$order->belongsToCurrentCustomer()) {
+            return false;
+        }
+        return $order;
+    }
+
+}

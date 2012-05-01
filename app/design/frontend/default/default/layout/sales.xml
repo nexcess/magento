@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+-->
+<layout version="0.1.0">
+
+<!--
+Customer account pages, rendered for all tabs in dashboard
+-->
+
+
+    <default>
+        <reference name="right">
+            <block type="sales/reorder_sidebar" name="sale.reorder.sidebar" as="reorder" template="sales/reorder/sidebar.phtml"/>
+        </reference>
+    </default>
+
+    <checkout_onepage_reorder>
+        <reference name="right">
+            <action method="unsetChild"><name>reorder</name></action>
+        </reference>
+    </checkout_onepage_reorder>
+
+    <customer_account>
+        <!-- Mage_Sales -->
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="sales"><name>orders</name><path>sales/order/history/</path><label>My Orders</label></action>
+        </reference>
+
+    </customer_account>
+
+<!--
+Customer account home dashboard layout
+-->
+
+    <customer_account_index>
+        <!-- Mage_Sales -->
+        <reference name="customer_account_dashboard">
+            <action method="unsetChild"><name>top</name></action>
+            <block type="sales/order_recent" name="customer_account_dashboard_top" as="top" template="sales/order/recent.phtml"/>
+        </reference>
+
+    </customer_account_index>
+
+    <sales_order_history>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sales/order_history" name="sales.order.history"/>
+            <block type="customer/account_link" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+        </reference>
+    </sales_order_history>
+
+
+    <sales_order_view>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sales/order_info" as="info" name="sales.order.info"/>
+            <block type="sales/order_view" name="sales.order.view"/>
+        </reference>
+        <reference name="sales.order.info">
+            <action method="addLink" translate="label" module="sales"><name>view</name><path></path><label>Items Ordered</label></action>
+            <action method="addLink" translate="label" module="sales"><name>invoice</name><path>*/*/invoice</path><label>Invoices</label></action>
+            <action method="addLink" translate="label" module="sales"><name>shipment</name><path>*/*/shipment</path><label>Shipments</label></action>
+            <action method="addLink" translate="label" module="sales"><name>creditmemo</name><path>*/*/creditmemo</path><label>Refunds</label></action>
+        </reference>
+    </sales_order_view>
+
+    <sales_order_invoice>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sales/order_info" as="info" name="sales.order.info"/>
+            <block type="sales/order_invoice" name="sales.order.invoice"/>
+        </reference>
+        <reference name="sales.order.info">
+            <action method="addLink" translate="label" module="sales"><name>view</name><path>*/*/view</path><label>Items Ordered</label></action>
+            <action method="addLink" translate="label" module="sales"><name>invoice</name><path></path><label>Invoices</label></action>
+            <action method="addLink" translate="label" module="sales"><name>shipment</name><path>*/*/shipment</path><label>Shipments</label></action>
+            <action method="addLink" translate="label" module="sales"><name>creditmemo</name><path>*/*/creditmemo</path><label>Refunds</label></action>
+        </reference>
+    </sales_order_invoice>
+
+    <sales_order_shipment>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sales/order_info" as="info" name="sales.order.info"/>
+            <block type="sales/order_shipment" name="sales.order.shipment"/>
+        </reference>
+        <reference name="sales.order.info">
+            <action method="addLink" translate="label" module="sales"><name>view</name><path>*/*/view</path><label>Items Ordered</label></action>
+            <action method="addLink" translate="label" module="sales"><name>invoice</name><path>*/*/invoice</path><label>Invoices</label></action>
+            <action method="addLink" translate="label" module="sales"><name>shipment</name><path></path><label>Shipments</label></action>
+            <action method="addLink" translate="label" module="sales"><name>creditmemo</name><path>*/*/creditmemo</path><label>Refunds</label></action>
+        </reference>
+    </sales_order_shipment>
+
+    <sales_order_creditmemo>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sales/order_info" as="info" name="sales.order.info"/>
+            <block type="sales/order_creditmemo" name="sales.order.creditmemo"/>
+        </reference>
+        <reference name="sales.order.info">
+            <action method="addLink" translate="label" module="sales"><name>view</name><path>*/*/view</path><label>Items Ordered</label></action>
+            <action method="addLink" translate="label" module="sales"><name>invoice</name><path>*/*/invoice</path><label>Invoices</label></action>
+            <action method="addLink" translate="label" module="sales"><name>shipment</name><path>*/*/shipment</path><label>Shipments</label></action>
+            <action method="addLink" translate="label" module="sales"><name>creditmemo</name><path></path><label>Refunds</label></action>
+        </reference>
+    </sales_order_creditmemo>
+
+    <sales_order_reorder>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sales/order_view" name="sales.order.view"/>
+        </reference>
+    </sales_order_reorder>
+
+    <sales_order_printinvoice>
+        <reference name="root">
+            <action method="setHeaderTitle" translate="title" module="sales"><title>Order Details</title></action>
+        </reference>
+        <reference name="content">
+            <block type="sales/order_print_invoice" name="sales.order.print.invoice" template="sales/order/print/invoice.phtml"/>
+        </reference>
+    </sales_order_printinvoice>
+
+    <sales_order_printshipment>
+        <reference name="root">
+            <action method="setHeaderTitle" translate="title" module="sales"><title>Order Details</title></action>
+        </reference>
+        <reference name="content">
+            <block type="sales/order_print_shipment" name="sales.order.print.shipment" template="sales/order/print/shipment.phtml"/>
+        </reference>
+    </sales_order_printshipment>
+
+    <sales_order_printcreditmemo>
+        <reference name="root">
+            <action method="setHeaderTitle" translate="title" module="sales"><title>Order Details</title></action>
+        </reference>
+        <reference name="content">
+            <block type="sales/order_print_creditmemo" name="sales.order.print.creditmemo" template="sales/order/print/creditmemo.phtml"/>
+        </reference>
+    </sales_order_printcreditmemo>
+
+</layout>

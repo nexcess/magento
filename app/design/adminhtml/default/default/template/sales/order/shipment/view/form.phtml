@@ -1,0 +1,93 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php  $_order = $this->getShipment()->getOrder() ?>
+<?php echo $this->getChildHtml('order_info') ?>
+
+<div class="box-left">
+    <!--Billing Address-->
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-payment-method"><?php echo $this->helper('sales')->__('Payment Information') ?></h4>
+        </div>
+        <fieldset>
+            <div><?php echo $this->getChildHtml('payment_info') ?></div>
+            <div><?php echo Mage::helper('sales')->__('Order was placed using %s', $_order->getOrderCurrencyCode()) ?></div>
+        </fieldset>
+    </div>
+</div>
+<div class="box-right">
+    <!--Shipping Address-->
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-shipping-method"><?php echo $this->helper('sales')->__('Shipping and Tracking Information') ?></h4>
+        </div>
+        <fieldset>
+            <div>
+                <?php if($this->getShipment()->getTracksCollection()->count()): ?>
+                <a href="#" id="linkId" onclick="popWin('<?php echo $this->helper('shipping')->getTrackingPopUpUrlByShipId($this->getShipment()->getId()) ?>','trackshipment','width=800,height=600,resizable=yes,scrollbars=yes')" title="<?php echo $this->__('Track this shipment') ?>"><?php echo $this->__('Track this shipment') ?></a>
+                <br/>
+                <?php endif; ?>
+                <strong><?php echo $_order->getShippingDescription() ?></strong>
+                (<?php echo $this->helper('sales')->__('Total Shipping Charges %s', $this->displayPriceAttribute('shipping_amount', false, ' ')) ?>)
+            </div>
+            <div><?php echo $this->getChildHtml('tracking') ?></div>
+        </fieldset>
+    </div>
+</div>
+<div class="clear"></div>
+
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+        <h4 class="icon-head head-products"><?php echo $this->helper('sales')->__('Items Shipped') ?></h4>
+        </div>
+</div>
+<div>
+    <div class="grid">
+        <table cellspacing="0" class="data">
+            <col/>
+            <col width="100"/>
+            <thead>
+                <tr class="headings">
+                    <th><?php echo $this->helper('sales')->__('Product') ?></th>
+                    <th class="last"><?php echo $this->helper('sales')->__('Qty Shipped') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $_items = $this->getShipment()->getAllItems() ?>
+                <?php $i=0;foreach ($_items as $_item):$i++ ?>
+                    <tr class="<?php echo ($i%2==0)?'even':'odd' ?>">
+                        <td>
+                            <?php echo $_item->getName() ?>
+                            <div class="nobr"><strong><?php echo $this->helper('sales')->__('SKU') ?>:</strong> <?php echo $_item->getSku() ?></div>
+                            <?php echo $_item->getDescription() ?>
+                        </td>
+                        <td class="last"><?php echo $_item->getQty()*1 ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="box-left entry-edit">
+    <div class="entry-edit-head"><h4><?php echo $this->__('Shipment History') ?></h4></div>
+    <fieldset><?php echo $this->getChildHtml('comments') ?></fieldset>
+</div>
+<div class="clear"></div>

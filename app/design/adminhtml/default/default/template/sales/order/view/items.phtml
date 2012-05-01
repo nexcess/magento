@@ -1,0 +1,69 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php $_order=$this->getOrder() ?>
+<div class="grid">
+    <table cellspacing="0" class="data">
+        <col/>
+        <col width="70"/>
+        <col width="80"/>
+        <col width="80"/>
+        <col width="100"/>
+        <col width="90"/>
+        <col width="90"/>
+        <col width="100"/>
+        <col width="100"/>
+        <thead>
+            <tr class="headings">
+                <th><?php echo $this->helper('sales')->__('Product') ?></th>
+                <th><?php echo $this->helper('sales')->__('Item Status') ?></th>
+                <th><?php echo $this->helper('sales')->__('Original Price') ?></th>
+                <th><?php echo $this->helper('sales')->__('Price') ?></th>
+                <th><?php echo $this->helper('sales')->__('Qty') ?></th>
+                <th><?php echo $this->helper('sales')->__('Subtotal') ?></th>
+                <th><?php echo $this->helper('sales')->__('Tax Amount') ?></th>
+                <th><?php echo $this->helper('sales')->__('Discount Amount') ?></th>
+                <th class="last"><?php echo $this->helper('sales')->__('Row Total') ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $_items = $this->getItemsCollection() ?>
+            <?php $i=0;foreach ($_items as $_item):$i++ ?>
+                <?php $this->setPriceDataObject($_item) ?>
+                <tr class="<?php echo ($i%2==0)?'even':'odd' ?>">
+                    <td class="giftmessage-single-item"><?php echo $this->renderInfoColumn($_item) ?></td>
+                    <td><?php echo $_item->getStatus() ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('original_price') ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('price') ?></td>
+                    <td><?php echo $this->getQtyHtml($_item) ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('row_total') ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
+                    <td class="price"><?php echo $this->displayPriceAttribute('discount_amount') ?></td>
+                    <td class="last price">
+                        <?php echo $this->displayPrices(
+                            $_item->getBaseRowTotal()-$_item->getBaseDiscountAmount()+$_item->getBaseTaxAmount(),
+                            $_item->getRowTotal()-$_item->getDiscountAmount()+$_item->getTaxAmount()
+                        ) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

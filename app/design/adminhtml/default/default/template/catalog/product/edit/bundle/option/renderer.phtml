@@ -1,0 +1,51 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php echo $this->getAddButtonHtml() ?>
+<input type="text" id="<?php echo $this->getTemplateHtmlId() ?>_count_of_items" class="validate-no-items" value="no-items" style="display:none">
+<span class="field-row" id="<?php echo $this->getContainerHtmlId() ?>"></span>
+<script type="text/javascript">
+<!--
+	Validation.addAllThese([
+    ['validate-no-items', '<?php echo Mage::helper('catalog')->__('Please add one or more options') ?>', function(v) {
+                return v != 'no-items';
+            }]]);
+//-->
+</script>
+<div class="no-display" id="<?php echo $this->getTemplateHtmlId() ?>">
+<div class="bundle-option-row" id="new__id__">
+<table cellspacing="0">
+	<tbody>
+	 <tr>
+	  	<td>
+		<label for="new__id__label" class="bold"><?php echo Mage::helper('catalog')->__('Name') ?></label> <input type="text" id="new__id__label" disabled="no-validation" tabindex="'1111#{index}'" onkeyup="'<?php echo $this->getJsObjectName() ?>.update(#{index})'" value="'#{label}'" class="'<?php echo $this->getElement()->getClass() ?> option-label'" />
+		</td>
+		<td>
+		<label for="new__id__position" class="bold"><?php echo Mage::helper('catalog')->__('Position') ?></label> <input type="text"  id="new__id__position" disabled="no-validation" tabindex="'1111#{index}'" onkeyup="'<?php echo $this->getJsObjectName() ?>.update(#{index})'" value="'#{position}'" class="'<?php echo $this->getElement()->getClass() ?> option-position validate-number'" />
+		</td>
+		<td>
+		<?php echo $this->getDeleteButtonHtml() ?>
+		</td>
+	  </tr>
+	</tbody>
+</table>
+</div>
+</div>
+

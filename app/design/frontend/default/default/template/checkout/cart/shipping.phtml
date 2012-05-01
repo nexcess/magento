@@ -1,0 +1,89 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<div class="shipping-estimate box">
+<h4><?php echo $this->__('Estimate Shipping and Tax') ?></h4>
+<form action="<?php echo $this->getUrl('checkout/cart/estimatePost') ?>" method="post" id="shipping-zip-form">
+    <p><div><?php echo $this->__('Enter your destination to get a shipping estimate.') ?></div></p>
+    <p><div><label for="country"><?php echo $this->__('Country') ?></label><br/><span><?php echo Mage::getBlockSingleton('directory/data')->getCountryHtmlSelect($this->getEstimateCountryId()) ?></span></div></p>
+    <?php //if($this->getStateActive()): ?>
+    <p><div>
+       <label for="state"><?php echo $this->__('State/Province') ?></label><br/>
+
+       <select id="region_id" name="region_id" title="<?php echo $this->__('State/Province') ?>" class="validate-select" style="display:none" defaultValue="<?php echo $this->getEstimateRegionId() ?>">
+            <option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+       </select>
+       <input type="text" id="region" name="region" value="<?php echo $this->htmlEscape($this->getEstimateRegion()) ?>"  title="<?php echo $this->__('State/Province') ?>" class="input-text" style="display:none" />
+
+    </div></p>
+    <?php //endif; ?>
+    <?php if($this->getCityActive()): ?>
+     <p><div><label for="city"><?php echo $this->__('City') ?></label><br/>
+     <input class="input-text" id="city" type="text" name="estimate_city" value="<?php echo $this->htmlEscape($this->getEstimateCity()) ?>" />
+     </div></p>
+    <?php endif; ?>
+    <p><div><label for="postcode"><?php echo $this->__('Zip/Postal Code') ?></label><br/>
+    <input  class="input-text" type="text" id="postcode" name="estimate_postcode" value="<?php echo $this->htmlEscape($this->getEstimatePostcode()) ?>" /></div></p>
+    <p><div><button type="button" onclick="coShippingMethodForm.submit()" class="form-button-alt"><span><?php echo $this->__('Get a Quote') ?></span></button></div></p>
+</form>
+<script type="text/javascript">
+    new RegionUpdater('country', 'region', 'region_id', <?php echo $this->helper('directory')->getRegionJson() ?>);
+</script>
+
+<?php if (($_shippingRateGroups = $this->getEstimateRates())): ?>
+<div class="divider"></div>
+<form id="co-shipping-method-form" action="<?php echo $this->getUrl('checkout/cart/estimateUpdatePost') ?>">
+    <dl class="shipment-methods">
+        <?php foreach ($_shippingRateGroups as $code => $_rates): ?>
+            <dt><?php echo $this->getCarrierName($code) ?></dt>
+            <dd>
+                <ul>
+                <?php foreach ($_rates as $_rate): ?>
+                    <li class="<?php if ($_rate->getErrorMessage()) echo 'error-msg';?>">
+                       <?php if ($_rate->getErrorMessage()): ?>
+                            <?php echo $_rate->getErrorMessage() ?>
+                       <?php else: ?>
+                            <input name="estimate_method" type="radio" value="<?php echo $this->htmlEscape($_rate->getCode()) ?>" id="s_method_<?php echo $_rate->getCode() ?>"<?php if($_rate->getCode()===$this->getAddressShippingMethod()) echo ' checked="checked"' ?>/>
+                            <label for="s_method_<?php echo $_rate->getCode() ?>"><?php echo $_rate->getMethodDescription() ?> - <strong><?php echo $_rate->getPrice() ?></strong></label>
+                       <?php endif ?>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            </dd>
+        <?php endforeach; ?>
+    </dl>
+    <fieldset><button type="submit" class="form-button-alt" name="do" value="<?php echo $this->__('Update Total') ?>"><span><?php echo $this->__('Update Total') ?></span></button></fieldset>
+</form>
+<?php endif; ?>
+
+<script type="text/javascript">
+    var coShippingMethodForm = new VarienForm('shipping-zip-form');
+    Validation.addAllThese(
+    [
+           ['validate-postcode', '<?php echo $this->__('Please enter a valid zip code. For example 90602 or 90602-1234.') ?>', function(v) {
+                if( $('shipping-postcode').value.match(/(^[A-z0-9]{2,10}([\s]{0,2}|[\-]{0,2})[A-z0-9]{2,10}$)/ )) {
+                    return true;
+                } else {
+                    return false;
+                }
+           }]
+    ]
+    );
+</script>
+</div>

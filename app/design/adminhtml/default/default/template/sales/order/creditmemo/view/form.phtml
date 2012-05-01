@@ -1,0 +1,116 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php  $_order = $this->getCreditmemo()->getOrder() ?>
+<?php echo $this->getChildHtml('order_info') ?>
+<div class="box-left">
+    <!--Billing Address-->
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-payment-method"><?php echo $this->helper('sales')->__('Payment Information') ?></h4>
+        </div>
+        <fieldset>
+            <div><?php echo $this->getChildHtml('payment_info') ?></div>
+            <div><?php echo Mage::helper('sales')->__('Order was placed using %s', $_order->getOrderCurrencyCode()) ?></div>
+        </fieldset>
+    </div>
+</div>
+<div class="box-right">
+    <!--Shipping Address-->
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-shipping-method"><?php echo $this->helper('sales')->__('Shipping Information') ?></h4>
+        </div>
+        <fieldset>
+            <strong><?php echo $_order->getShippingDescription() ?></strong>
+            (<?php echo $this->helper('sales')->__('Total Shipping Charges %s', $this->displayPriceAttribute('shipping_amount', false, ' ')) ?>)
+        </fieldset>
+    </div>
+</div>
+<div class="clear"></div>
+<?php $_items = $this->getCreditmemo()->getAllItems() ?>
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-products"><?php echo $this->helper('sales')->__('Items Refunded') ?></h4>
+    </div>
+</div>
+<?php if (count($_items)): ?>
+<div>
+    <div class="grid">
+        <table cellspacing="0" class="data" id="invoice_items_grid_table">
+            <col/>
+            <col width="100"/>
+            <col width="70"/>
+            <col width="90"/>
+            <col width="90"/>
+            <col width="100"/>
+            <col width="100"/>
+            <thead>
+                <tr class="headings">
+                    <th><?php echo $this->helper('sales')->__('Product') ?></th>
+                    <th><?php echo $this->helper('sales')->__('Price') ?></th>
+                    <th><?php echo $this->helper('sales')->__('Qty') ?></th>
+                    <th><?php echo $this->helper('sales')->__('Subtotal') ?></th>
+                    <th><?php echo $this->helper('sales')->__('Tax Amount') ?></th>
+                    <th><?php echo $this->helper('sales')->__('Discount Amount') ?></th>
+                    <th class="last"><?php echo $this->helper('sales')->__('Row Total') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $i=0;foreach ($_items as $_item):$i++ ?>
+                    <?php $this->setPriceDataObject($_item) ?>
+                    <tr class="<?php echo ($i%2==0)?'even':'odd' ?>">
+                        <td>
+                            <?php echo $_item->getName() ?>
+                            <div class="nobr"><strong><?php echo $this->helper('sales')->__('SKU') ?>:</strong> <?php echo $_item->getSku() ?></div>
+                            <?php echo $_item->getDescription() ?>
+                        </td>
+                        <td class="price"><?php echo $this->displayPriceAttribute('price') ?></td>
+                        <td><?php echo $_item->getQty()*1 ?></td>
+                        <td class="price"><?php echo $this->displayPriceAttribute('row_total') ?></td>
+                        <td class="price"><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
+                        <td class="price"><?php echo $this->displayPriceAttribute('discount_amount') ?></td>
+                        <td class="price last">
+                            <?php echo $this->displayPrices(
+                                $_item->getBaseRowTotal()-$_item->getBaseDiscountAmount()+$_item->getBaseTaxAmount(),
+                                $_item->getRowTotal()-$_item->getDiscountAmount()+$_item->getTaxAmount()
+                            ) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="entry-edit">
+    <fieldset><center><?php echo $this->helper('sales')->__('No Items') ?></center></fieldset>
+</div>
+<?php endif; ?>
+<div class="box-left entry-edit">
+    <div class="entry-edit-head"><h4><?php echo $this->__('Credit Memo History') ?></h4></div>
+    <fieldset><?php echo $this->getChildHtml('comments') ?></fieldset>
+</div>
+
+<div class="box-right entry-edit" id="history_form">
+    <div class="entry-edit-head"><h4><?php echo $this->__('Credit Memo Totals') ?></h4></div>
+    <div class="order-totals"><?php echo $this->getChildHtml('totals') ?></div>
+</div>
+<div class="clear"></div>
