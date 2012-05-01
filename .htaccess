@@ -20,6 +20,7 @@
 
     #AddType x-mapp-php5 .php
     #AddHandler x-mapp-php5 .php
+    RemoveHandler .php
 
 ############################################
 ## default index file
@@ -143,7 +144,7 @@
 ############################################
 ## rewrite everything else to index.php
 
-    RewriteRule .* index.php [L]
+    RewriteRule .* /scgi/ [L]
 
 </IfModule>
 

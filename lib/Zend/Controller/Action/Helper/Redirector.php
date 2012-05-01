@@ -487,7 +487,9 @@ class Zend_Controller_Action_Helper_Redirector extends Zend_Controller_Action_He
         }
 
         $this->getResponse()->sendHeaders();
-        exit();
+        if( !Maxwell::isActive() ) {
+          exit();
+        }
     }
 
     /**

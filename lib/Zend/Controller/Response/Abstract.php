@@ -145,9 +145,13 @@ abstract class Zend_Controller_Response_Abstract
      */
     public function setRedirect($url, $code = 302)
     {
-        $this->canSendHeaders(true);
-        $this->setHeader('Location', $url, true)
-             ->setHttpResponseCode($code);
+        if( Maxwell::isActive() ) {
+          Maxwell::redirect( $url, $code );
+        } else {
+          $this->canSendHeaders(true);
+          $this->setHeader('Location', $url, true)
+               ->setHttpResponseCode($code);
+        }
 
         return $this;
     }
@@ -293,6 +297,7 @@ abstract class Zend_Controller_Response_Abstract
         }
 
         $this->_httpResponseCode = $code;
+        Maxwell::setCode( $code );
         return $this;
     }
 
@@ -315,7 +320,11 @@ abstract class Zend_Controller_Response_Abstract
      */
     public function canSendHeaders($throw = false)
     {
-        $ok = headers_sent($file, $line);
+        if( Maxwell::isActive() ) {
+          $ok = Maxwell::isResponseLocked();
+        } else {
+          $ok = headers_sent($file, $line);
+        }
         if ($ok && $throw && $this->headersSentThrowsException) {
             #require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Cannot send headers; headers already sent in ' . $file . ', line ' . $line);
@@ -342,29 +351,33 @@ abstract class Zend_Controller_Response_Abstract
             return $this;
         }
 
-        $httpCodeSent = false;
+        if( Maxwell::isActive() ) {
+          Maxwell::setHeaders( $this->_headers );
+        } else {
+            $httpCodeSent = false;
 
-        foreach ($this->_headersRaw as $header) {
-            if (!$httpCodeSent && $this->_httpResponseCode) {
-                header($header, true, $this->_httpResponseCode);
-                $httpCodeSent = true;
-            } else {
-                header($header);
+            foreach ($this->_headersRaw as $header) {
+                if (!$httpCodeSent && $this->_httpResponseCode) {
+                    header($header, true, $this->_httpResponseCode);
+                    $httpCodeSent = true;
+                } else {
+                    header($header);
+                }
             }
-        }
 
-        foreach ($this->_headers as $header) {
-            if (!$httpCodeSent && $this->_httpResponseCode) {
-                header($header['name'] . ': ' . $header['value'], $header['replace'], $this->_httpResponseCode);
-                $httpCodeSent = true;
-            } else {
-                header($header['name'] . ': ' . $header['value'], $header['replace']);
+            foreach ($this->_headers as $header) {
+                if (!$httpCodeSent && $this->_httpResponseCode) {
+                    header($header['name'] . ': ' . $header['value'], $header['replace'], $this->_httpResponseCode);
+                    $httpCodeSent = true;
+                } else {
+                    header($header['name'] . ': ' . $header['value'], $header['replace']);
+                }
             }
-        }
 
-        if (!$httpCodeSent) {
-            header('HTTP/1.1 ' . $this->_httpResponseCode);
-            $httpCodeSent = true;
+            if (!$httpCodeSent) {
+                header('HTTP/1.1 ' . $this->_httpResponseCode);
+                $httpCodeSent = true;
+            }
         }
 
         return $this;
@@ -583,7 +596,10 @@ abstract class Zend_Controller_Response_Abstract
     public function outputBody()
     {
         $body = implode('', $this->_body);
-        echo $body;
+        Maxwell::setContent( $body );
+        if( !Maxwell::isActive() ) {
+          echo $body;
+        }
     }
 
     /**
