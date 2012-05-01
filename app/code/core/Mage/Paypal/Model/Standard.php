@@ -22,6 +22,7 @@
  *
  * PayPal Standard Checkout Module
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Paypal_Model_Standard extends Mage_Payment_Model_Method_Abstract
 {
@@ -121,7 +122,7 @@ class Mage_Paypal_Model_Standard extends Mage_Payment_Model_Method_Abstract
 
     public function getOrderPlaceRedirectUrl()
     {
-          return Mage::getUrl('paypal/standard/redirect');
+          return Mage::getUrl('paypal/standard/redirect', array('_secure' => true));
     }
 
     public function getStandardCheckoutFormFields()
@@ -143,8 +144,8 @@ class Mage_Paypal_Model_Standard extends Mage_Payment_Model_Method_Abstract
 
         $sArr = array(
             'business'          => Mage::getStoreConfig('paypal/wps/business_account'),
-            'return'            => Mage::getUrl('paypal/standard/success'),
-            'cancel_return'     => Mage::getUrl('paypal/standard/cancel'),
+            'return'            => Mage::getUrl('paypal/standard/success',array('_secure' => true)),
+            'cancel_return'     => Mage::getUrl('paypal/standard/cancel',array('_secure' => false)),
             'notify_url'        => Mage::getUrl('paypal/standard/ipn'),
             'invoice'           => $this->getCheckout()->getLastRealOrderId(),
             'currency_code'     => $currency_code,

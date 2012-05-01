@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Mysql4_Translate extends Mage_Core_Model_Mysql4_Abstract
 {
@@ -92,11 +93,10 @@ class Mage_Core_Model_Mysql4_Translate extends Mage_Core_Model_Mysql4_Abstract
 
         $select = $read->select()
             ->from($this->getMainTable())
-            ->where('string in (?)', $strings)
+            ->where('string in (:tr_strings)')
             ->where('store_id = ?', $storeId);
-
         $result = array();
-        foreach ($read->fetchAll($select) as $row) {
+        foreach ($read->fetchAll($select, array('tr_strings'=>$read->quote($strings))) as $row) {
             $result[$row['string']] = $row['translate'];
         }
 

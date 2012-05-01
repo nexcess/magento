@@ -21,6 +21,7 @@
 /**
  *
  * @file        Image.php
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Varien_File_Uploader_Image extends Varien_File_Uploader

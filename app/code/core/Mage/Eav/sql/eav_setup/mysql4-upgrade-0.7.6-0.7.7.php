@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 $installer = $this;
 /* @var $installer Mage_Eav_Model_Entity_Setup */

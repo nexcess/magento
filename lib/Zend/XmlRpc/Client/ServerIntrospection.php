@@ -21,7 +21,7 @@
 
 
 /** Zend_XmlRpc_Client_IntrospectException */
-require_once 'Zend/XmlRpc/Client/IntrospectException.php';
+#require_once 'Zend/XmlRpc/Client/IntrospectException.php';
 
 
 /**

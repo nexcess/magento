@@ -25,7 +25,7 @@
         <?php if( $this->getQuote()->isAllowedGuestCheckout() ): ?>
             <p><?php echo $this->__('Register with us for future convenience:') ?></p>
         <?php else: ?>
-            <strong><?php echo $this->__('Register and save time!') ?></strong><br/>
+            <strong><?php echo $this->__('Register and save time!') ?></strong><br />
             <?php echo $this->__('Register with us for future convenience:') ?>
             <ul class="disc">
                 <li><?php echo $this->__('Fast and easy check out') ?></li>
@@ -36,40 +36,40 @@
             <ul class="form-list">
                 <?php if( $this->getQuote()->isAllowedGuestCheckout() ): ?>
                 <li>
-                    <input type="radio" name="checkout_method" id="login:guest" value="guest"<?php if($this->getQuote()->getCheckoutMethod()=='guest'): ?> checked="checked"<?php endif ?>/>
+                    <input type="radio" name="checkout_method" id="login:guest" value="guest"<?php if($this->getQuote()->getCheckoutMethod()=='guest'): ?> checked="checked"<?php endif ?> />
                     <label for="login:guest"><?php echo $this->__('Checkout as Guest') ?></label>
                 </li>
                 <?php endif; ?>
                 <li>
-                    <input type="radio" name="checkout_method" id="login:register" value="register"<?php if($this->getQuote()->getCheckoutMethod()=='register' || !$this->getQuote()->isAllowedGuestCheckout()): ?> checked="checked"<?php endif ?>/>
+                    <input type="radio" name="checkout_method" id="login:register" value="register"<?php if($this->getQuote()->getCheckoutMethod()=='register' || !$this->getQuote()->isAllowedGuestCheckout()): ?> checked="checked"<?php endif ?> />
                     <label for="login:register"><?php echo $this->__('Register') ?></label>
                 </li>
             </ul>
-            <strong><?php echo $this->__('Register and save time!') ?></strong><br/>
+            <strong><?php echo $this->__('Register and save time!') ?></strong><br />
             <?php echo $this->__('Register with us for future convenience:') ?>
             <ul class="disc">
                 <li><?php echo $this->__('Fast and easy check out') ?></li>
                 <li><?php echo $this->__('Easy access to your order history and status') ?></li>
             </ul>
         <?php else: ?>
-            <input type="hidden" name="checkout_method" id="login:register" value="register" checked />
+            <input type="hidden" name="checkout_method" id="login:register" value="register" checked="checked" />
         <?php endif; ?>
     </div>
     <div class="col-2">
         <h4>Login</h4><?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
         <form id="login-form" action="<?php echo $this->getPostAction() ?>" method="post">
-            <p><strong><?php echo $this->__('Already registered?') ?></strong><br/>
+            <p><strong><?php echo $this->__('Already registered?') ?></strong><br />
             <?php echo $this->__('Please log in below:') ?></p>
             <ul class="form-list">
                 <li>
                     <div class="input-box">
-                        <label for="email"><?php echo $this->__('Email Address') ?> <span class="required">*</span></label><br/>
-                        <input type="text" class="input-text required-entry validate-email" id="email" name="login[username]" value="<?php echo $this->htmlEscape($this->getUsername()) ?>"/>
+                        <label for="email"><?php echo $this->__('Email Address') ?> <span class="required">*</span></label><br />
+                        <input type="text" class="input-text required-entry validate-email" id="email" name="login[username]" value="<?php echo $this->htmlEscape($this->getUsername()) ?>" />
                     </div>
                 </li>
                 <li>
                     <div class="input-box">
-                        <label for="password"><?php echo $this->__('Password') ?> <span class="required">*</span></label><br/>
+                        <label for="password"><?php echo $this->__('Password') ?> <span class="required">*</span></label><br />
                         <input type="password" class="input-text required-entry" id="password" name="login[password]" />
                     </div>
                 </li>

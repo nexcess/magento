@@ -38,6 +38,7 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'billing_address_id'=> array('type'=>'static'),
                     'orig_order_id'     => array('type'=>'static'),
                     'converted_at'      => array('type'=>'static'),
+                    'reserved_order_id' => array('type'=>'static'),
 
                     'coupon_code'           => array('type'=>'static'),
                     'base_currency_code'    => array('type'=>'static'),
@@ -63,8 +64,11 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'customer_tax_class_id' => array('type'=>'static'),
                     'customer_group_id' => array('type'=>'static'),
                     'customer_email'    => array('type'=>'static'),
+                    'customer_prefix'   => array('type'=>'static'),
                     'customer_firstname'=> array('type'=>'static'),
+                    'customer_middlename'=>array('type'=>'static'),
                     'customer_lastname' => array('type'=>'static'),
+                    'customer_suffix'   => array('type'=>'static'),
                     'customer_note'     => array('type'=>'static'),
                     'customer_note_notify' => array('type'=>'static'),
                     'customer_is_guest' => array('type'=>'static'),
@@ -106,6 +110,8 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'row_weight'        => array('type'=>'static'),
                     'applied_rule_ids'  => array('type'=>'static'),
                     'additional_data'   => array('type'=>'static'),
+
+                    'tax_string'   => array('type'=>'text'),
                 ),
             ),
 
@@ -119,9 +125,13 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
 
                     'customer_id'   => array('type'=>'static'),
                     'customer_address_id' => array('type'=>'static'),
+                    'save_in_address_book' => array('type'=>'static'),
                     'email'     => array('type'=>'static'),
+                    'prefix'    => array('type'=>'static'),
                     'firstname' => array('type'=>'static'),
+                    'middlename'=> array('type'=>'static'),
                     'lastname'  => array('type'=>'static'),
+                    'suffix'    => array('type'=>'static'),
                     'company'   => array('type'=>'static'),
                     'street'    => array('type'=>'static'),
                     'city'      => array('type'=>'static'),
@@ -157,6 +167,8 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'base_grand_total'          => array('type'=>'static'),
 
                     'customer_notes' => array('type'=>'static'),
+
+                    'tax_string'   => array('type'=>'text'),
                 ),
             ),
             'quote_address_item' => array(
@@ -344,8 +356,11 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'customer_id'       => array('type'=>'static', 'visible'=>false),
                     'customer_group_id' => array('type'=>'int', 'visible'=>false),
                     'customer_email'    => array('type'=>'varchar', 'visible'=>false),
+                    'customer_prefix'   => array('type'=>'varchar', 'visible'=>false),
                     'customer_firstname'=> array('type'=>'varchar', 'visible'=>false),
+                    'customer_middlename'   => array('type'=>'varchar', 'visible'=>false),
                     'customer_lastname' => array('type'=>'varchar', 'visible'=>false),
+                    'customer_suffix'   => array('type'=>'varchar', 'visible'=>false),
                     'customer_note'     => array('type'=>'text', 'visible'=>false),
                     'customer_note_notify' => array('type'=>'int', 'visible'=>false),
                     'customer_is_guest' => array('type'=>'int', 'visible'=>false),
@@ -362,8 +377,11 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'customer_id' => array('type'=>'int'),
                     'customer_address_id' => array('type'=>'int'),
                     'email' => array(),
+                    'prefix'    => array(),
                     'firstname' => array(),
+                    'middlename'=> array(),
                     'lastname'  => array(),
+                    'suffix'    => array(),
                     'company'   => array(),
                     'street'    => array(),
                     'city'      => array(),
@@ -373,7 +391,7 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'country_id'=> array('type'=>'varchar'),
                     'telephone' => array(),
                     'fax'       => array(),
-
+                    'tax_string'   => array('type'=>'text'),
                 ),
             ),
             'order_item' => array(
@@ -413,6 +431,7 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'tax_percent'       => array('type'=>'decimal'),
                     'tax_amount'        => array('type'=>'decimal'),
                     'tax_invoiced'      => array('type'=>'decimal'),
+                    'tax_string'        => array('type'=>'text'),
 
                     'row_total'         => array('type'=>'decimal'),
                     'row_weight'        => array('type'=>'decimal'),
@@ -446,7 +465,7 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     'quote_payment_id'      => array('type'=>'int'),
                     'method'                => array(),
                     'additional_data'       => array('type'=>'text'),
-
+                    'last_trans_id'         => array(),
                     'po_number'     => array(),
 
                     'cc_type'       => array(),
@@ -514,16 +533,16 @@ class Mage_Sales_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
 
             'invoice' => array(
                 'entity_model'      => 'sales/order_invoice',
-                //'table'=>'sales/invoice',
-                'table'=>'sales/order_entity',
-                'increment_model'=>'eav/entity_increment_numeric',
+                'table'             =>'sales/order_entity',
+                'increment_model'   =>'eav/entity_increment_numeric',
                 'increment_per_store'=>true,
-                'backend_prefix'=>'sales_entity/order_attribute_backend',
+                'backend_prefix'    =>'sales_entity/order_attribute_backend',
                 'attributes' => array(
-                    'entity_id'     => array(
+                    'entity_id' => array(
                         'type'=>'static',
                         'backend'=>'sales_entity/order_invoice_attribute_backend_parent'
                     ),
+
                     'state'    => array('type'=>'int'),
                     'is_used_for_refund' => array('type'=>'int'),
                     'transaction_id' => array(),

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Category extends Mage_Catalog_Model_Resource_Eav_Mysql4_Abstract
 {
@@ -39,6 +40,14 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category extends Mage_Catalog_Model
      * @var string
      */
     protected $_categoryProductTable;
+
+
+    /**
+     * Id of 'is_active' category attribute
+     *
+     * @var int
+     */
+    protected $_isActiveAttributeId = null;
 
     public function __construct()
     {
@@ -83,6 +92,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category extends Mage_Catalog_Model
 
         if (!$object->getId()) {
             $object->setPosition($this->_getMaxPosition($object->getPath()) + 1);
+            $object->setLevel(count(explode('/', $object->getPath())));
             $object->setPath($object->getPath() . '/');
         }
         return $this;
@@ -375,11 +385,31 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category extends Mage_Catalog_Model
 
     public function getChildrenAmount($category, $isActiveFlag = true)
     {
+        $storeId = Mage::app()->getStore()->getId();
+        $attributeId = $this->_getIsActiveAttributeId();
+        $table = Mage::getSingleton('core/resource')->getTableName('catalog/category') . '_int';
+
         $select = $this->_getReadAdapter()->select()
-            ->from($this->getEntityTable(), array('COUNT(entity_id)'))
-            ->where('path like ?', $category->getPath() . '/%')
-            ->where('is_active = ?', $isActiveFlag);
+            ->from(array('m'=>$this->getEntityTable()), array('COUNT(m.entity_id)'))
+            ->joinLeft(array('d'=>$table), "d.attribute_id = '{$attributeId}' AND d.store_id = 0 AND d.entity_id = m.entity_id", array())
+            ->joinLeft(array('c'=>$table), "c.attribute_id = '{$attributeId}' AND c.store_id = '{$storeId}' AND c.entity_id = m.entity_id", array())
+            ->where('m.path like ?', $category->getPath() . '/%')
+            ->where('(IFNULL(c.value, d.value) = ?)', $isActiveFlag);
 
         return $this->_getReadAdapter()->fetchOne($select);
+    }
+
+    protected function _getIsActiveAttributeId()
+    {
+        if (is_null($this->_isActiveAttributeId)) {
+            $select = $this->_getReadAdapter()->select()
+                ->from(array('a'=>$this->getTable('eav/attribute')), array('attribute_id'))
+                ->join(array('t'=>$this->getTable('eav/entity_type')), 'a.entity_type_id = t.entity_type_id')
+                ->where('entity_type_code = ?', 'catalog_category')
+                ->where('attribute_code = ?', 'is_active');
+
+            $this->_isActiveAttributeId = $this->_getReadAdapter()->fetchOne($select);
+        }
+        return $this->_isActiveAttributeId;
     }
 }

@@ -127,11 +127,13 @@ class Mage_CatalogRule_Model_Mysql4_Rule extends Mage_Core_Model_Mysql4_Abstract
             ->from($this->getTable('catalogrule/rule_product'))
             ->where($read->quoteInto('from_time=0 or from_time<=?', strtotime($toDate))
             ." or ".$read->quoteInto('to_time=0 or to_time>=?', strtotime($fromDate)))
-            ->order(array('from_time', 'to_time', 'website_id', 'customer_group_id', 'product_id', 'sort_order'));
+            ->order(array('website_id', 'customer_group_id', 'product_id', 'sort_order'));
+        // crucial for logic sort order: website_id, customer_group_id, product_id, sort_order
+        // had 'from_time', 'to_time' in the beginning before
         if (!is_null($productId)) {
             $select->where('product_id=?', $productId);
         }
-
+//echo (string)$select; exit;
         if (!$ruleProducts = $read->fetchAll($select)) {
             return false;
         }
@@ -175,103 +177,103 @@ class Mage_CatalogRule_Model_Mysql4_Rule extends Mage_Core_Model_Mysql4_Abstract
         $ruleProducts = $this->getRuleProductsForDateRange($fromDate, $toDate, $productId);
         if (empty($ruleProducts)) {
             Mage::app()->cleanCache(array_keys($productIdTags));
-            return $this;
         }
+        else {
+            $prices = array();
+            $stop = array();
+            $fromTime = strtotime($fromDate);
+            $toTime = strtotime($toDate);
 
-        $prices = array();
-        $stop = array();
-        $fromTime = strtotime($fromDate);
-        $toTime = strtotime($toDate);
+            $rulePrice = null;
+            $rows = array();
 
-        $rulePrice = null;
-        $rows = array();
+            $write = $this->_getWriteAdapter();
+            $header = 'replace into '.$this->getTable('catalogrule/rule_product_price').' (rule_date, website_id, customer_group_id, product_id, rule_price, latest_start_date, earliest_end_date) values ';
 
-        $write = $this->_getWriteAdapter();
-        $header = 'replace into '.$this->getTable('catalogrule/rule_product_price').' (rule_date, website_id, customer_group_id, product_id, rule_price, latest_start_date, earliest_end_date) values ';
+            try {
+                $write->beginTransaction();
 
-        try {
-            $write->beginTransaction();
-
-            $ruleProductCount = count($ruleProducts);
-            for ($time=$fromTime; $time<=$toTime; $time+=86400) {
-                for ($i=0, $l=count($ruleProducts); $i<$l; $i++) {
-                    $r = $ruleProducts[$i];
-
-                    if (!(($r['from_time']==0 || $r['from_time']<=$time) && ($r['to_time']==0 || $r['to_time']>=$time))) {
-                        continue;
-                    }
-
+                $ruleProductCount = count($ruleProducts);
+                for ($time=$fromTime; $time<=$toTime; $time+=86400) {
                     $rulePrice = null;
 
-                    if (isset($r['price'])) {
-                        if (is_null($rulePrice)) {
-                            $rulePrice = $r['price'];
-                            $latestFromTime = $r['from_time'];
-                            $earliestToTime = $r['to_time'];
+                    for ($i=0, $l=count($ruleProducts); $i<$l; $i++) {
+                        $r = $ruleProducts[$i];
+
+                        if (!(($r['from_time']==0 || $r['from_time']<=$time) && ($r['to_time']==0 || $r['to_time']>=$time))) {
+                            continue;
                         }
 
-                        $amount = $r['action_amount'];
-                        switch ($r['action_operator']) {
-                            case 'to_fixed':
-                                $rulePrice = $amount;
-                                break;
-
-                            case 'to_percent':
-                                $rulePrice = $rulePrice*$amount/100;
-                                break;
-
-                            case 'by_fixed':
-                                $rulePrice -= $amount;
-                                break;
-
-                            case 'by_percent':
-                                $rulePrice = $rulePrice*(1-$amount/100);
-                                break;
-                        }
-
-                        $latestFromTime = max($latestFromTime, $r['from_time']);
-                        $earliestToTime = min($earliestToTime, $r['to_time']);
-                        $rulePrice = max($rulePrice, 0);
-                    }
-
-                    if ($r['action_stop']) {
-                        while ($i+1 == $l && !$this->_compareTwo($ruleProducts[$i+1], $r)) {
-                            $i++;
-                        }
-                    }
-
-                    if ($i+1 == $l || $this->_compareTwo($ruleProducts[$i+1], $r)) {
-                        if (!is_null($rulePrice)) {
-                            $rows[] = "('{$this->formatDate($time)}', '{$r['website_id']}', '{$r['customer_group_id']}', '{$r['product_id']}', '$rulePrice', '{$this->formatDate($latestFromTime)}', '{$this->formatDate($earliestToTime)}')";
-                        }
-                        if ($i+1==$l || count($rows)===100) {
-                            if (!empty($rows)) {
-                                $sql = $header.join(',', $rows);
-                                $write->query($sql);
+                        if (isset($r['price'])) {
+                            if (is_null($rulePrice)) {
+                                $rulePrice = $r['price'];
+                                $latestFromTime = $r['from_time'];
+                                $earliestToTime = $r['to_time'];
                             }
-                            $rows = array();
+
+                            $amount = $r['action_amount'];
+                            switch ($r['action_operator']) {
+                                case 'to_fixed':
+                                    $rulePrice = $amount;
+                                    break;
+
+                                case 'to_percent':
+                                    $rulePrice = $rulePrice*$amount/100;
+                                    break;
+
+                                case 'by_fixed':
+                                    $rulePrice -= $amount;
+                                    break;
+
+                                case 'by_percent':
+                                    $rulePrice = $rulePrice*(1-$amount/100);
+                                    break;
+                            }
+
+                            $latestFromTime = max($latestFromTime, $r['from_time']);
+                            $earliestToTime = min($earliestToTime, $r['to_time']);
+                            $rulePrice = max($rulePrice, 0);
                         }
-                        $rulePrice = null;
+
+                        if ($r['action_stop']) {
+                            while (($i+1 < $l) && isset($ruleProducts[$i+1]) && !$this->_isDifferent($ruleProducts[$i+1], $r)) {
+                                $i++;
+                            }
+                        }
+
+                        if (($i+1 == $l) || !isset($ruleProducts[$i+1]) ||  $this->_isDifferent($ruleProducts[$i+1], $r)) {
+                            if (!is_null($rulePrice)) {
+                                $rows[] = "('{$this->formatDate($time)}', '{$r['website_id']}', '{$r['customer_group_id']}', '{$r['product_id']}', '$rulePrice', '{$this->formatDate($latestFromTime)}', '{$this->formatDate($earliestToTime)}')";
+                            }
+                            if ($i+1==$l || count($rows)===100) {
+                                if (!empty($rows)) {
+                                    $sql = $header.join(',', $rows);
+                                    $write->query($sql);
+                                }
+                                $rows = array();
+                            }
+                            $rulePrice = null;
+                        }
+                        $productIdTags['catalog_product_'.$r['product_id']] = true;
                     }
-                    $productIdTags['catalog_product_'.$r['product_id']] = true;
                 }
+                Mage::app()->cleanCache(array_keys($productIdTags));
+
+                $write->commit();
+
+            } catch (Exception $e) {
+
+                $write->rollback();
+                throw $e;
+
             }
-            Mage::app()->cleanCache(array_keys($productIdTags));
-
-            $write->commit();
-
-        } catch (Exception $e) {
-
-            $write->rollback();
-            throw $e;
-
         }
 
         Mage::dispatchEvent('catalogrule_after_apply', array('product'=>$product));
         return $this;
     }
 
-    protected function _compareTwo($first, $second)
+    protected function _isDifferent($first, $second)
     {
         return
             $first['product_id']!=$second['product_id'] ||

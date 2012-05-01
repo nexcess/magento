@@ -23,6 +23,7 @@ class Mage_CatalogSearch_Model_Mysql4_Search_Collection
     extends Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
 {
     protected $_attributesCollection;
+    protected $_searchQuery;
 
     /**
      * Add search query filter
@@ -32,8 +33,7 @@ class Mage_CatalogSearch_Model_Mysql4_Search_Collection
      */
     public function addSearchFilter($query)
     {
-        $query = '%'.$query.'%';
-        $this->addBindParam('search_query', $query);
+        $this->_searchQuery = '%'.$query.'%';
         $this->addFieldToFilter('entity_id', array('in'=>new Zend_Db_Expr($this->_getSearchEntityIdsSql($query))));
         return $this;
     }
@@ -92,16 +92,19 @@ class Mage_CatalogSearch_Model_Mysql4_Search_Collection
                 }
 
                 if ($attribute->getBackendType() == 'static') {
-                   $selects[] = $this->getConnection()->select()
-                   ->from($table, 'entity_id')
-                   ->where($attribute->getAttributeCode().' LIKE :search_query');
+                    $param = $attribute->getAttributeCode().'_search_query';
+                    $selects[] = $this->getConnection()->select()
+                        ->from($table, 'entity_id')
+                        ->where($attribute->getAttributeCode().' LIKE :'.$param);
+                    $this->addBindParam($param, $this->_searchQuery);
                 } else {
-                   $tables[$table][] = $attribute->getId();
+                    $tables[$table][] = $attribute->getId();
                 }
             }
         }
 
         foreach ($tables as $table => $attributeIds) {
+            $param = $table.'_search_query';
             $selects[] = $this->getConnection()->select()
                 ->from(array('t1' => $table), 'entity_id')
                 ->joinLeft(
@@ -111,7 +114,8 @@ class Mage_CatalogSearch_Model_Mysql4_Search_Collection
                 )
                 ->where('t1.attribute_id IN (?)', $attributeIds)
                 ->where('t1.store_id = ?', 0)
-                ->where('IFNULL(t2.value, t1.value) LIKE :search_query');
+                ->where('IFNULL(t2.value, t1.value) LIKE :'.$param);
+                $this->addBindParam($param, $this->_searchQuery);
         }
 
         if ($sql = $this->_getSearchInOptionSql($query)) {
@@ -163,10 +167,10 @@ class Mage_CatalogSearch_Model_Mysql4_Search_Collection
             ->where('default.store_id=0')
             ->where('option.attribute_id IN (?)', $attributeIds);
 
-        $searchCondition = '(store.value IS NULL AND default.value LIKE :search_query) OR (store.value LIKE :search_query)';
+        $searchCondition = 'IFNULL(store.value, default.value) LIKE :search_query';
         $select->where($searchCondition);
 
-        $options = $this->getConnection()->fetchAll($select, $this->_bindParams);
+        $options = $this->getConnection()->fetchAll($select, array('search_query'=>$this->_searchQuery));
 
         if (empty($options)) {
             return false;

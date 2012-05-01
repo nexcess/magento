@@ -52,7 +52,7 @@
 	                <?php $_labels = $this->getLabelValues() ?>
 	                <?php foreach ($this->getStores() as $_store): ?>
 	                <td>
-	                    <input class="input-text<?php if($_store->getId()==0): ?> required-option<?php endif; ?>" type="text" name="frontend_label[<?php echo $_store->getId() ?>]" value="<?php echo $_labels[$_store->getId()] ?>"/>
+	                    <input class="input-text<?php if($_store->getId()==0): ?> required-option<?php endif; ?>" type="text" name="frontend_label[<?php echo $_store->getId() ?>]" value="<?php echo $this->htmlEscape($_labels[$_store->getId()]) ?>" />
 	                </td>
 	                <?php endforeach; ?>
 	            </tr>
@@ -68,32 +68,27 @@
     </div>
     <div class="box">
 		<div class="hor-scroll">
-	        <table class="dynamic-grid" cellspacing="0" id="attribute-options-table"  cellpadding="0" style="width:">
-	            <tr>
-	            <?php foreach ($this->getStores() as $_store): ?>
-	                <th><?php echo $_store->getName() ?></th>
-	            <?php endforeach; ?>
-	                <th><?php echo Mage::helper('catalog')->__('Position') ?></th>
-	                <th class="nobr"><?php echo Mage::helper('catalog')->__('Is Default') ?></th>
-	                <th><?php echo $this->getAddNewButtonHtml() ?></th>
-	            </tr>
-	        </table>
-
-	        <div class="no-display template" id="row-template">
-		        <table class="dynamic-grid" cellspacing="0">
-		    	    <tr>
+	        <table class="dynamic-grid" cellspacing="0"  cellpadding="0">
+	            <tr id="attribute-options-table">
+		            <?php foreach ($this->getStores() as $_store): ?>
+		                <th><?php echo $_store->getName() ?></th>
+		            <?php endforeach; ?>
+		                <th><?php echo Mage::helper('catalog')->__('Position') ?></th>
+		                <th class="nobr a-center"><?php echo Mage::helper('catalog')->__('Is Default') ?></th>
+		                <th><?php echo $this->getAddNewButtonHtml() ?></th>
+		            </tr>
+		    	    <tr class="no-display template" id="row-template">
 		                <?php foreach ($this->getStores() as $_store): ?>
-		                <td><input name="option[value][{{id}}][<?php echo $_store->getId() ?>]" value="{{store<?php echo $_store->getId() ?>}}" class="input-text<?php if($_store->getId()==0): ?> required-option<?php endif; ?>" type="text"/></td>
+		                <td><input name="option[value][{{id}}][<?php echo $_store->getId() ?>]" value="{{store<?php echo $_store->getId() ?>}}" class="input-text<?php if($_store->getId()==0): ?> required-option<?php endif; ?>" type="text" /></td>
 		                <?php endforeach; ?>
-		                <td><input class="input-text" type="text" name="option[order][{{id}}]" value="{{sort_order}}"></td>
-		                <td><input class="input-radio" type="radio" name="default[]" value="{{id}}"></td>
+		                <td class="a-center"><input class="input-text" type="text" name="option[order][{{id}}]" value="{{sort_order}}" /></td>
+		                <td><input class="input-radio" type="radio" name="default[]" value="{{id}}" /></td>
 		                <td class="a-left">
-		                    <input type="hidden" class="delete-flag" name="option[delete][{{id}}]" value="">
+		                    <input type="hidden" class="delete-flag" name="option[delete][{{id}}]" value="" />
 		                    <?php echo $this->getDeleteButtonHtml() ?>
 		                </td>
 		            </tr>
-		        </table>
-	        </div>
+	        </table>
 		</div>
 		<input type="hidden" id="option-count-check" value=""/>
     </div>
@@ -101,22 +96,19 @@
 <script type="text/javascript">
 var optionDefaultInputType = 'radio';
 
-
 // IE removes quotes from element.innerHTML whenever it thinks they're not needed, which breaks html.
 var templateText =
-    '<table class="dynamic-grid" cellspacing="0">'+
-        '<tr>'+
+        '<tr class="option-row">'+
 <?php foreach ($this->getStores() as $_store): ?>
-            '<td><input name="option[value][{{id}}][<?php echo $_store->getId() ?>]" value="{{store<?php echo $_store->getId() ?>}}" class="input-text<?php if($_store->getId()==0): ?> required-option<?php endif; ?>" type="text"/></td>'+
+            '<td><input name="option[value][{{id}}][<?php echo $_store->getId() ?>]" value="{{store<?php echo $_store->getId() ?>}}" class="input-text<?php if($_store->getId()==0): ?> required-option<?php endif; ?>" type="text"/><\/td>'+
 <?php endforeach; ?>
-            '<td><input class="input-text" type="text" name="option[order][{{id}}]" value="{{sort_order}}"></td>'+
-            '<td><input class="input-radio" type="{{intype}}" name="default[]" value="{{id}}" {{checked}}></td>'+
+            '<td><input class="input-text" type="text" name="option[order][{{id}}]" value="{{sort_order}}"><\/td>'+
+            '<td class="a-center"><input class="input-radio" type="{{intype}}" name="default[]" value="{{id}}" {{checked}}><\/td>'+
             '<td class="a-left">'+
                 '<input type="hidden" class="delete-flag" name="option[delete][{{id}}]" value="">'+
                 '<?php echo $this->getDeleteButtonHtml() ?>'+
-            '</td>'+
-        '</tr>'+
-    '</table>';
+            '<\/td>'+
+        '<\/tr>';
 
 var attributeOption = {
     table : $('attribute-options-table'),
@@ -143,11 +135,11 @@ var attributeOption = {
         this.updateItemsCountField();
     },
     remove : function(event){
-        var element = $(Event.findElement(event, 'table')); // !!! Button already
+        var element = $(Event.findElement(event, 'tr')); // !!! Button already
                                                                // have table parent in safari
         // Safari workaround
         element.ancestors().each(function(parentItem){
-           if (parentItem.hasClassName('dynamic-grid')) {
+           if (parentItem.hasClassName('option-row')) {
                element = parentItem;
                throw $break;
            } else if (parentItem.hasClassName('box')) {
@@ -184,48 +176,8 @@ var attributeOption = {
                 Event.observe(buttons[i], 'click', this.remove.bind(this));
             }
         }
-    },
-    /** Fix resizing of columns **/
-    syncTableSize: function() {
-        if (!this.sizeSyncFlag) {
-            var row = this.findFirstRow();
-            if (row) {
-                var headers = this.table.getElementsBySelector('tr th');
-                var cells   = row.getElementsBySelector('tr td');
-                var tableSize = row.getDimensions().width;
-                var cellSizeSum = 0;
-                var dimensionsCell = [];
-                var dimensionsHeader = [];
-                if(tableSize) {
-                    var i;
-                    for (i=0; i<headers.size(); i++) {
-                        dimensionsCell.push($(cells[i]).getDimensions());
-                        dimensionsHeader.push($(headers[i]).getDimensions());
-                        if(dimensionsHeader[i].width > dimensionsCell[i].width) {
-                            tableSize +=  (dimensionsHeader[i].width - dimensionsCell[i].width);
-                        }
-                    }
-
-                    for (i=0; i<headers.size(); i++) {
-                        if(dimensionsHeader[i].width <= dimensionsCell[i].width) {
-                            headers[i].style.width = Math.round(dimensionsCell[i].width/tableSize*1000)/10 + '%';
-                        } else {
-                            headers[i].style.width = Math.round(dimensionsHeader[i].width/tableSize*1000)/10 + '%';
-                        }
-                    }
-
-                    this.table.style.width = tableSize + 'px';
-                    this.sizeSyncFlag = true;
-                    if(this.intervalIdentifier) {
-                        clearInterval(this.intervalIdentifier);
-                    }
-                }
-            }
-        }
-    },
-    findFirstRow: function () {
-        return (this.table.nextSiblings().size() ? this.table.nextSiblings()[0] : false);
     }
+
 }
 if($('row-template')){
     $('row-template').remove();
@@ -246,8 +198,4 @@ Validation.addAllThese([
 <?php foreach ($this->getOptionValues() as $_value): ?>
     attributeOption.add(<?php echo $_value->toJson() ?>);
 <?php endforeach; ?>
-attributeOption.intervalIdentifier = setInterval(
-    attributeOption.syncTableSize.bind(attributeOption),
-    3000
-);
 </script>

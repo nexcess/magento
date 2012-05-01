@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Poll
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Poll_Model_Poll_Answer extends Mage_Core_Model_Abstract

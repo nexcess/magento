@@ -158,7 +158,7 @@ class Mage_CatalogRule_Model_Rule extends Mage_Rule_Model_Rule
             foreach ($categoryCollection as $category) {
                 $categories[] = $category->getId();
             }
-            $product->setCategories($categories);
+            $product->setCategoryIds($categories);
         }
         if ($this->getConditions()->validate($product)) {
             $this->_productIds[] = $product->getId();

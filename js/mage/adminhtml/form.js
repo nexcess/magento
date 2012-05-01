@@ -237,6 +237,11 @@ RegionUpdater.prototype = {
                     this.regionTextEl.disabled = false;
                 }
                 this.regionSelectEl.disabled = true;
+            } else if (this.disableAction=='nullify') {
+                this.regionSelectEl.options.length = 1;
+                this.regionSelectEl.value = '';
+                this.regionSelectEl.selectedIndex = 0;
+                this.lastCountryId = '';
             }
             this.setMarkDisplay(this.regionSelectEl, false);
         }

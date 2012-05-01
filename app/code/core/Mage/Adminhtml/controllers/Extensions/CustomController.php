@@ -26,6 +26,7 @@ require_once 'Varien/Pear/Package.php';
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Extensions_CustomController extends Mage_Adminhtml_Controller_Action
 {
@@ -166,7 +167,7 @@ class Mage_Adminhtml_Extensions_CustomController extends Mage_Adminhtml_Controll
             }
             echo '</tbody></table><button type="submit">Save and Generate Packages</button></form></body></html>';
         } else {
-            set_time_limit(0);
+            @set_time_limit(0);
             ob_implicit_flush();
             foreach ($_POST['pkgs'] as $r) {
                 if (empty($r['name'])) {

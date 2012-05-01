@@ -40,13 +40,13 @@
 
 	 <?php $_showAddButtonFlag = false ?>
      <?php foreach($_order->getItemsRandomCollection(5) as $_item): ?>
-     <?php if ($_item->getProduct()): ?>
+     <?php if ($_item->getProduct() && is_null($_item->getParentItem())): ?>
         <li class="field-row">
 
         	<div class="product-checkbox">
         		<?php if ($_item->getProduct()->getStockItem()->getIsInStock()): ?>
         		<?php $_showAddButtonFlag = true ?>
-        			<input type="checkbox" name="products[]" value="<?php echo $_item->getProductId() ?>" class="validate-one-required-by-name"/>
+        			<input type="checkbox" name="order_items[]" value="<?php echo $_item->getId() ?>" class="validate-one-required-by-name" />
         		<?php endif; ?>
 	        </div>
             <div class="product-names">
@@ -60,7 +60,7 @@
     </ol>
     <?php if ($_showAddButtonFlag): ?>
     	<div class="actions">
-        	<button class="form-button" type="submit"><span><?php echo $this->__('Add to Cart') ?></span></button><br/>
+        	<button class="form-button" type="submit"><span><?php echo $this->__('Add to Cart') ?></span></button><br />
     	</div>
     <?php endif; ?>
 </form>

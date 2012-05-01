@@ -44,9 +44,21 @@
             <fieldset>
                 <div>
                     <strong><?php echo $_order->getShippingDescription() ?></strong>
-                    (<?php echo $this->helper('sales')->__('Total Shipping Charges %s', $this->displayPriceAttribute('shipping_amount', false, ' ')) ?>)
+                    <?php echo $this->helper('sales')->__('Total Shipping Charges'); ?>:
+
+                    <?php if ($this->helper('tax')->displayShippingPriceIncludingTax()): ?>
+                        <?php $_excl = $this->displayShippingPriceInclTax($_order); ?>
+                    <?php else: ?>
+                        <?php $_excl = $this->displayPriceAttribute('shipping_amount', false, ' '); ?>
+                    <?php endif; ?>
+                    <?php $_incl = $this->displayShippingPriceInclTax($_order); ?>
+
+                    <?php echo $_excl; ?>
+                    <?php if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                        (<?php echo $this->__('Incl. Tax'); ?> <?php echo $_incl; ?>)
+                    <?php endif; ?>
                 </div>
-                <div><?php echo $this->getChildHtml('tracking') ?></div>
+                <div><?php echo $this->getChildHtml('shipment_tracking') ?></div>
             </fieldset>
         </div>
     </div>
@@ -57,7 +69,5 @@
             <h4 class="icon-head head-products"><?php echo Mage::helper('sales')->__('Items to Ship') ?></h4>
         </div>
     </div>
-    <div>
-        <?php echo $this->getItemsHtml() ?>
-    </div>
+    <div id="ship_items_container"><?php echo $this->getItemsHtml() ?></div>
 </form>

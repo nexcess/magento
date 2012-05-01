@@ -27,25 +27,32 @@
     <h4 class="legend"><?php echo $this->__('Account Information') ?></h4>
     <ul>
         <li>
-            <div class="input-box">
-                <label for="firstname"><?php echo $this->__('First Name') ?> <span class="required">*</span></label><br/>
-                <input type="text" name="firstname" id="firstname" value="<?php echo $this->htmlEscape($this->getCustomer()->getFirstname()) ?>" title="<?php echo $this->__('First Name') ?>"  class="required-entry input-text"/>
-            </div>
-            <div class="input-box">
-                <label for="lastname"><?php echo $this->__('Last Name') ?> <span class="required">*</span></label><br/>
-                <input type="text" name="lastname" id="lastname" value="<?php echo $this->htmlEscape($this->getCustomer()->getLastname()) ?>" title="<?php echo $this->__('Last Name') ?>"  class="required-entry input-text"/>
-            </div>
+            <?php echo $this->getLayout()->createBlock('customer/widget_name')->setObject($this->getCustomer())->toHtml() ?>
         </li>
         <li>
             <div class="input-box">
-            <label for="email"><?php echo $this->__('Email Address') ?> <span class="required">*</span></label><br/>
-            <input type="text" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" title="<?php echo $this->__('Email Address') ?>" class="required-entry validate-email input-text"/>
+            <label for="email"><?php echo $this->__('Email Address') ?> <span class="required">*</span></label><br />
+            <input type="text" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" title="<?php echo $this->__('Email Address') ?>" class="required-entry validate-email input-text" />
             </div>
         </li>
+
+<?php $_dob = $this->getLayout()->createBlock('customer/widget_dob') ?>
+<?php if ($_dob->isEnabled()): ?>
+        <li>
+            <?php echo $_dob->setDate($this->getCustomer()->getDob())->toHtml() ?>
+        </li>
+<?php endif ?>
+
+<?php $_taxvat = $this->getLayout()->createBlock('customer/widget_taxvat') ?>
+<?php if ($_taxvat->isEnabled()): ?>
+        <li>
+            <?php echo $_taxvat->toHtml() ?>
+        </li>
+<?php endif ?>
+
     </ul>
 </fieldset>
-<p>
-    <input type="checkbox" name="change_password" id="change_password" value="1" onclick="setPasswordForm(this.checked)" title="<?php echo $this->__('Change Password') ?>" <?php if($this->getCustomer()->getChangePassword()==1): ?>checked="checked" <?php endif; ?>/> <label for="change_password"><?php echo $this->__('Change Password') ?></label>
+<p><input type="checkbox" name="change_password" id="change_password" value="1" onclick="setPasswordForm(this.checked)" title="<?php echo $this->__('Change Password') ?>"<?php if($this->getCustomer()->getChangePassword()==1): ?> checked="checked"<?php endif; ?> /> <label for="change_password"><?php echo $this->__('Change Password') ?></label>
 </p>
 <fieldset class="group-select" style="display:none">
     <h4 class="legend"><?php echo $this->__('Change Password') ?></h4>
@@ -53,17 +60,17 @@
         <li>
             <div class="input-box">
                 <label for="current_password"><?php echo $this->__('Current Password') ?></label><br/>
-                <input type="password" class="input-text" name="current_password" id="current_password"/>
+                <input type="password" class="input-text" name="current_password" id="current_password" />
             </div>
         </li>
         <li>
             <div class="input-box">
                 <label for="password"><?php echo $this->__('New Password') ?></label><br/>
-                <input type="password" class="validate-password input-text" name="password" id="password"/>
+                <input type="password" class="validate-password input-text" name="password" id="password" />
             </div>
             <div class="input-box">
                 <label for="confirmation"><?php echo $this->__('Confirm New Password') ?></label><br/>
-                <input type="password" class="validate-cpassword input-text" name="confirmation" id="confirmation"/>
+                <input type="password" class="validate-cpassword input-text" name="confirmation" id="confirmation" />
             </div>
         </li>
     </ul>

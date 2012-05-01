@@ -23,12 +23,25 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_View_Info extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
-    protected function _construct()
+    /**
+     * Retrieve required options from parent
+     */
+    protected function _beforeToHtml()
     {
-        $this->setTemplate('sales/order/view/info.phtml');
+        if (!$this->getParentBlock()) {
+            Mage::throwException(Mage::helper('adminhtml')->__('Invalid parrent block for this block'));
+        }
+        $this->setOrder($this->getParentBlock()->getOrder());
+
+        foreach ($this->getParentBlock()->getOrderInfoData() as $k => $v) {
+            $this->setDataUsingMethod($k, $v);
+        }
+
+        parent::_beforeToHtml();
     }
 
     public function getOrderStoreName()

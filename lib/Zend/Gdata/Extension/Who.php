@@ -22,17 +22,17 @@
 /**
  * @see Zend_Gdata_Extension
  */
-require_once 'Zend/Gdata/Extension.php';
+#require_once 'Zend/Gdata/Extension.php';
 
 /**
  * @see Zend_Gdata_Extension_AttendeeStatus
  */
-require_once 'Zend/Gdata/Extension/AttendeeStatus.php';
+#require_once 'Zend/Gdata/Extension/AttendeeStatus.php';
 
 /**
  * @see Zend_Gdata_Extension_AttendeeType
  */
-require_once 'Zend/Gdata/Extension/AttendeeType.php';
+#require_once 'Zend/Gdata/Extension/AttendeeType.php';
 
 /**
  * Data model class to represent a participant

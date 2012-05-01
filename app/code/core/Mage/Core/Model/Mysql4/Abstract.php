@@ -25,6 +25,7 @@
  *
  * @category    Mage
  * @package     Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Core_Model_Mysql4_Abstract extends Mage_Core_Model_Resource_Abstract
 {
@@ -372,6 +373,11 @@ abstract class Mage_Core_Model_Mysql4_Abstract extends Mage_Core_Model_Resource_
         }
     }
 
+    public function resetUniqueField()
+    {
+         $this->_uniqueFields = array();
+    }
+
     /**
      * Prepare data for save
      *
@@ -384,11 +390,32 @@ abstract class Mage_Core_Model_Mysql4_Abstract extends Mage_Core_Model_Resource_
         $fields = $this->_getWriteAdapter()->describeTable($this->getMainTable());
         foreach (array_keys($fields) as $field) {
             $fieldValue = $object->getData($field);
-        	if (!is_null($fieldValue)) {
-        	    $data[$field] = $fieldValue;
+            if ($fieldValue instanceof Zend_Db_Expr) {
+                $data[$field] = $fieldValue;
+            }
+        	elseif (!is_null($fieldValue)) {
+        	    $data[$field] = $this->_prepareValueForSave($fieldValue, $fields[$field]['DATA_TYPE']);
+        	}
+        	else {
+//        	    $data[$field] = $fieldValue;
         	}
         }
         return $data;
+    }
+
+    /**
+     * Prepare value for save
+     *
+     * @param mixed $value
+     * @param string $type
+     * @return mixed
+     */
+    protected function _prepareValueForSave($value, $type)
+    {
+        if ($type == 'decimal') {
+            $value = Mage::app()->getLocale()->getNumber($value);
+        }
+        return $value;
     }
 
     /**

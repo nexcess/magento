@@ -20,7 +20,7 @@
  */
 
 /** Zend_Controller_Router_Route_Interface */
-require_once 'Zend/Controller/Router/Route/Interface.php';
+#require_once 'Zend/Controller/Router/Route/Interface.php';
 
 /**
  * Route
@@ -231,7 +231,7 @@ class Zend_Controller_Router_Route implements Zend_Controller_Router_Route_Inter
                 } elseif (isset($this->_defaults[$part['name']])) {
                     $url[$key] = $this->_defaults[$part['name']];
                 } else {
-                    require_once 'Zend/Controller/Router/Exception.php';
+                    #require_once 'Zend/Controller/Router/Exception.php';
                     throw new Zend_Controller_Router_Exception($part['name'] . ' is not specified');
                 }
 

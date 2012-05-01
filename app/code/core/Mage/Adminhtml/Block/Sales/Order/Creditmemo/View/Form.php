@@ -23,42 +23,40 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Creditmemo_View_Form extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
-    protected function _construct()
+    /**
+     * Retrieve invoice order
+     *
+     * @return Mage_Sales_Model_Order
+     */
+    public function getOrder()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/creditmemo/view/form.phtml');
-        $this->setOrder($this->getCreditmemo()->getOrder());
+        return $this->getCreditmemo()->getOrder();
     }
 
     /**
-     * Prepare child blocks
+     * Retrieve source
      *
-     * @return Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Items
+     * @return Mage_Sales_Model_Order_Creditmemo
      */
-    protected function _prepareLayout()
+    public function getSource()
     {
+        return $this->getCreditmemo();
+    }
 
-        $infoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_view_info')
-            ->setOrder($this->getCreditmemo()->getOrder());
-        $this->setChild('order_info', $infoBlock);
-
-        $totalsBlock = $this->getLayout()->createBlock('adminhtml/sales_order_totals')
-            ->setSource($this->getCreditmemo())
-            ->setOrder($this->getCreditmemo()->getOrder())
-            ->setGrandTotalTitle(Mage::helper('sales')->__('Total Refund'));
-        $this->setChild('totals', $totalsBlock);
-
-        $commentsBlock = $this->getLayout()->createBlock('adminhtml/sales_order_comments_view')
-            ->setEntity($this->getCreditmemo());
-        $this->setChild('comments', $commentsBlock);
-
-        $paymentInfoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_payment')
-            ->setPayment($this->getCreditmemo()->getOrder()->getPayment());
-        $this->setChild('payment_info', $paymentInfoBlock);
-        return parent::_prepareLayout();
+    /**
+     * Retrieve order totals block settings
+     *
+     * @return array
+     */
+    public function getOrderTotalData()
+    {
+        return array(
+            'grand_total_title' => Mage::helper('sales')->__('Total Refund'),
+        );
     }
 
     /**
@@ -73,6 +71,6 @@ class Mage_Adminhtml_Block_Sales_Order_Creditmemo_View_Form extends Mage_Adminht
 
     public function getOrderUrl()
     {
-        return $this->getUrl('*/sales_order/view', array('order_id'=>$this->getCreditmemo()->getOrderId()));
+        return $this->getUrl('*/sales_order/view', array('order_id' => $this->getCreditmemo()->getOrderId()));
     }
 }

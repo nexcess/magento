@@ -23,6 +23,7 @@
  *
  * @category    Mage
  * @package     Mage_Review
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Review_CustomerController extends Mage_Core_Controller_Front_Action
@@ -31,7 +32,10 @@ class Mage_Review_CustomerController extends Mage_Core_Controller_Front_Action
     {
         $this->loadLayout();
         if ($navigationBlock = $this->getLayout()->getBlock('customer_account_navigation')) {
-            $navigationBlock->setActive('customer/review');
+            $navigationBlock->setActive('review/customer');
+        }
+        if ($block = $this->getLayout()->getBlock('review_customer_list')) {
+            $block->setRefererUrl($this->_getRefererUrl());
         }
         $this->renderLayout();
     }
@@ -40,7 +44,7 @@ class Mage_Review_CustomerController extends Mage_Core_Controller_Front_Action
     {
         $this->loadLayout();
         if ($navigationBlock = $this->getLayout()->getBlock('customer_account_navigation')) {
-            $navigationBlock->setActive('customer/review');
+            $navigationBlock->setActive('review/customer');
         }
         $this->renderLayout();
     }

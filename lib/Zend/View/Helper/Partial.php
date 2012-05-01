@@ -75,7 +75,7 @@ class Zend_View_Helper_Partial
         if ((null !== $module) && is_string($module)) {
             $moduleDir = Zend_Controller_Front::getInstance()->getControllerDirectory($module);
             if (null === $moduleDir) {
-                require_once 'Zend/View/Helper/Partial/Exception.php';
+                #require_once 'Zend/View/Helper/Partial/Exception.php';
                 throw new Zend_View_Helper_Partial_Exception('Cannot render partial; module does not exist');
             }
             $viewsDir = dirname($moduleDir) . '/views';

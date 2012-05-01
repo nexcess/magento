@@ -19,19 +19,19 @@
  */
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 /** Zend_Pdf_Cmap_ByteEncoding */
-require_once 'Zend/Pdf/Cmap/ByteEncoding.php';
+#require_once 'Zend/Pdf/Cmap/ByteEncoding.php';
 
 /** Zend_Pdf_Cmap_ByteEncoding_Static */
-require_once 'Zend/Pdf/Cmap/ByteEncoding/Static.php';
+#require_once 'Zend/Pdf/Cmap/ByteEncoding/Static.php';
 
 /** Zend_Pdf_Cmap_SegmentToDelta */
-require_once 'Zend/Pdf/Cmap/SegmentToDelta.php';
+#require_once 'Zend/Pdf/Cmap/SegmentToDelta.php';
 
 /** Zend_Pdf_Cmap_TrimmedTable */
-require_once 'Zend/Pdf/Cmap/TrimmedTable.php';
+#require_once 'Zend/Pdf/Cmap/TrimmedTable.php';
 
 
 /**

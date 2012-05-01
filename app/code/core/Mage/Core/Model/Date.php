@@ -22,6 +22,7 @@
 /**
  * Date conversion model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Date
 {
@@ -188,6 +189,88 @@ class Mage_Core_Model_Date
                 $result = $result / 60 / 60;
                 break;
         }
+        return $result;
+    }
+
+    /**
+     * Check if specified $year, $month, $day, $hour, $minute, $second are valid.
+     *
+     * @param int $year
+     * @param int $month
+     * @param int $day
+     * @param int $hour
+     * @param int $minute
+     * @param int $second
+     * @return bool
+     */
+    public function checkDateTime($year, $month, $day, $hour = 0, $minute = 0, $second = 0)
+    {
+        if (!checkdate($month, $day, $year)) {
+            return false;
+        }
+        foreach (array('hour' => 23, 'minute' => 59, 'second' => 59) as $var => $maxValue) {
+            $value = (int)$$var;
+            if (($value < 0) || ($value > $maxValue)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Parse a string against predefined date format
+     *
+     * Date format must match at least substring (with offset 0) of predefined format.
+     *
+     * Array of integer values always will be returned:
+     * array($year, $month, $day, $hour, $minute, $second)
+     *
+     * @param string $dateTimeString
+     * @param string $dateTimeFormat
+     * @return array
+     */
+    public function parseDateTime($dateTimeString, $dateTimeFormat)
+    {
+        // look for supported format
+        $isSupportedFormatFound = false;
+        foreach (array(
+            // priority is important!
+            '%m/%d/%y %I:%M' => array('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2})/', array('y' => 3, 'm' => 1, 'd' => 2, 'h' => 4, 'i' => 5)),
+            'm/d/y h:i'      => array('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2})/', array('y' => 3, 'm' => 1, 'd' => 2, 'h' => 4, 'i' => 5)),
+            '%m/%d/%y'       => array('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{1,2})/', array('y' => 3, 'm' => 1, 'd' => 2)),
+            'm/d/y'          => array('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{1,2})/', array('y' => 3, 'm' => 1, 'd' => 2)),
+            ) as $supportedFormat => $regRule) {
+            if (false !== strpos($dateTimeFormat, $supportedFormat, 0)) {
+                $isSupportedFormatFound = true;
+                break;
+            }
+        }
+        if (!$isSupportedFormatFound) {
+            Mage::throwException(Mage::helper('core')->__('Date/time format "%s" is not supported.', $dateTimeFormat));
+        }
+
+        // apply reg rule to found format
+        $regex = array_shift($regRule);
+        $mask  = array_shift($regRule);
+        if (!preg_match($regex, $dateTimeString, $matches)) {
+            Mage::throwException(Mage::helper('core')->__('Specified date/time "%1$s" do not match format "%2$s".', $dateTimeString, $dateTimeFormat));
+        }
+
+        // make result
+        $result = array();
+        foreach (array('y', 'm', 'd', 'h', 'i', 's') as $key) {
+            $value = 0;
+            if (isset($mask[$key]) && isset($matches[$mask[$key]])) {
+                $value = (int)$matches[$mask[$key]];
+            }
+            $result[] = $value;
+        }
+
+        // make sure to return full year
+        if ($result[0] < 100) {
+            $result[0] = 2000 + $result[0];
+        }
+
         return $result;
     }
 }

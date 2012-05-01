@@ -70,6 +70,9 @@ class Mage_Admin_Model_Roles extends Mage_Core_Model_Abstract
                 if ($rawNodes) {
                     $resource->addAttribute("aclpath", $resourceName);
                 }
+                if (!(string)$resource->title) {
+                    return array();
+                }
 
                 if ( is_null($represent2Darray) ) {
                     $result[$resourceName]['name']  = Mage::helper('adminhtml')->__((string)$resource->title);

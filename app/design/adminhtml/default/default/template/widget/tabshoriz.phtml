@@ -26,13 +26,13 @@
 <?php foreach ($tabs as $_tab): ?>
     <li>
         <a href="<?php echo $_tab->getUrl() ?>" id="<?php echo $this->getTabId($_tab) ?>" title="<?php echo $_tab->getTitle() ?>" class="tab-item-link <?php echo $_tab->getClass() ?>">
-            <span><div class="changed" title="<?php echo $this->__('The information in this tab has been changed.') ?>"></div><div class="error" title="<?php echo $this->__('This tab contains invalid data. Please solve the problem before saving.') ?>"></div><?php echo $_tab->getLabel() ?></span>
+            <span><span class="changed" title="<?php echo $this->__('The information in this tab has been changed.') ?>"></span><span class="error" title="<?php echo $this->__('This tab contains invalid data. Please solve the problem before saving.') ?>"></span><?php echo $_tab->getLabel() ?></span>
         </a>
         <div id="<?php echo $this->getId() ?>_<?php echo $_tab->getId() ?>_content" style="display:none"><?php echo $_tab->getContent() ?></div>
     </li>
 <?php endforeach; ?>
 </ul>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
     <?php echo $this->getId() ?>JsTabs = new varienTabs('<?php echo $this->getId() ?>', '<?php echo $this->getDestElementId() ?>', '<?php echo $this->getActiveTabId() ?>');
 </script>
 <?php endif; ?>

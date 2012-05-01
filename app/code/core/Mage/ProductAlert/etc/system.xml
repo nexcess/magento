@@ -79,7 +79,7 @@
                         </email_identity>
                     </fields>
                 </productalert>
-                <productalert_cron translate="label">
+                <productalert_cron translate="label" module="productalert">
                     <label>Product Alerts Run Settings</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>260</sort_order>

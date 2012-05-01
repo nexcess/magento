@@ -23,12 +23,14 @@
  *
  * @category   Mage
  * @package    Mage_Admin
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Admin_Model_Observer
 {
     public function actionPreDispatchAdmin($event)
     {
         $session  = Mage::getSingleton('admin/session');
+        /* @var $session Mage_Admin_Model_Session */
         $request = Mage::app()->getRequest();
         $user = $session->getUser();
 
@@ -49,6 +51,7 @@ class Mage_Admin_Model_Observer
                         ->setDispatched(false);
                 } else {
                     $request->setParam('forwarded', true)
+                        ->setRouteName('adminhtml')
                         ->setControllerName('index')
                         ->setActionName('login')
                         ->setDispatched(false);

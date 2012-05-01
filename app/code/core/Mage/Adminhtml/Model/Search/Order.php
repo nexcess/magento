@@ -29,6 +29,7 @@ class Mage_Adminhtml_Model_Search_Order extends Varien_Object
             return $this;
         }
 
+        //TODO: add full name logic
         $collection = Mage::getResourceModel('sales/order_collection')
             ->addAttributeToSelect('*')
 

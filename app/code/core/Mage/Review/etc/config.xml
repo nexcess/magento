@@ -23,9 +23,6 @@
     <modules>
         <Mage_Review>
             <version>0.7.1</version>
-            <depends>
-                <Mage_Core />
-            </depends>
         </Mage_Review>
     </modules>
     <global>

@@ -22,37 +22,20 @@
 class Varien_Image_Adapter_Gd2 extends Varien_Image_Adapter_Abstract
 {
     protected $_requiredExtensions = Array("gd");
+    private static $_callbacks = array(
+        IMAGETYPE_GIF  => array('output' => 'imagegif',  'create' => 'imagecreatefromgif'),
+        IMAGETYPE_JPEG => array('output' => 'imagejpeg', 'create' => 'imagecreatefromjpeg'),
+        IMAGETYPE_PNG  => array('output' => 'imagepng',  'create' => 'imagecreatefrompng'),
+        IMAGETYPE_XBM  => array('output' => 'imagexbm',  'create' => 'imagecreatefromxbm'),
+        IMAGETYPE_WBMP => array('output' => 'imagewbmp', 'create' => 'imagecreatefromxbm'),
+    );
 
     public function open($filename)
     {
         $this->_fileName = $filename;
         $this->getMimeType();
         $this->_getFileAttributes();
-        switch( $this->_fileType ) {
-            case IMAGETYPE_GIF:
-                $this->_imageHandler = imagecreatefromgif($this->_fileName);
-                break;
-
-            case IMAGETYPE_JPEG:
-                $this->_imageHandler = imagecreatefromjpeg($this->_fileName);
-                break;
-
-            case IMAGETYPE_PNG:
-                $this->_imageHandler = imagecreatefrompng($this->_fileName);
-                break;
-
-            case IMAGETYPE_XBM:
-                $this->_imageHandler = imagecreatefromxbm($this->_fileName);
-                break;
-
-            case IMAGETYPE_WBMP:
-                $this->_imageHandler = imagecreatefromxbm($this->_fileName);
-                break;
-
-            default:
-                throw new Exception("Unsupported image format.");
-                break;
-        }
+        $this->_imageHandler = call_user_func($this->_getCallback('create'), $this->_fileName);
     }
 
     public function save($destination=null, $newName=null)
@@ -82,115 +65,209 @@ class Varien_Image_Adapter_Gd2 extends Varien_Image_Adapter_Abstract
             }
         }
 
-        switch( $this->_fileType ) {
-            case IMAGETYPE_GIF:
-                imagegif($this->_imageHandler, $fileName);
-                break;
-
-            case IMAGETYPE_JPEG:
-                imagejpeg($this->_imageHandler, $fileName);
-                break;
-
-            case IMAGETYPE_PNG:
-                $this->_saveAlpha($this->_imageHandler);
-                imagepng($this->_imageHandler, $fileName);
-                break;
-
-            case IMAGETYPE_XBM:
-                imagexbm($this->_imageHandler, $fileName);
-                break;
-
-            case IMAGETYPE_WBMP:
-                imagewbmp($this->_imageHandler, $fileName);
-                break;
-
-            default:
-                throw new Exception("Unsupported image format.");
-                break;
-        }
-
+        call_user_func($this->_getCallback('output'), $this->_imageHandler, $fileName);
     }
 
     public function display()
     {
         header("Content-type: ".$this->getMimeType());
-        switch( $this->_fileType ) {
-            case IMAGETYPE_GIF:
-                imagegif($this->_imageHandler);
-                break;
-
-            case IMAGETYPE_JPEG:
-                imagejpeg($this->_imageHandler);
-                break;
-
-            case IMAGETYPE_PNG:
-                imagepng($this->_imageHandler);
-                break;
-
-            case IMAGETYPE_XBM:
-                imagexbm($this->_imageHandler);
-                break;
-
-            case IMAGETYPE_WBMP:
-                imagewbmp($this->_imageHandler);
-                break;
-
-            default:
-                throw new Exception("Unsupported image format.");
-                break;
-        }
+        call_user_func($this->_getCallback('output'), $this->_imageHandler);
     }
 
-    public function resize($dstWidth=null, $dstHeight=null)
+    /**
+     * Obtain function name, basing on image type and callback type
+     *
+     * @param string $callbackType
+     * @param int $fileType
+     * @return string
+     * @throws Exception
+     */
+    private function _getCallback($callbackType, $fileType = null, $unsupportedText = 'Unsupported image format.')
     {
-        if( !isset($dstWidth) && !isset($dstHeight) ) {
-            throw new Exception("Invalid image dimensions.");
+        if (null === $fileType) {
+            $fileType = $this->_fileType;
         }
-
-        if( !isset($dstWidth) ) {
-            $width2height = $this->_imageSrcWidth / $this->_imageSrcHeight;
-            $dstWidth = round($dstHeight * $width2height);
-        } elseif( !isset($dstHeight) ) {
-            $height2width = $this->_imageSrcHeight / $this->_imageSrcWidth;
-            $dstHeight = round($dstWidth * $height2width);
+        if (empty(self::$_callbacks[$fileType])) {
+            throw new Exception($unsupportedText);
         }
+        if (empty(self::$_callbacks[$fileType][$callbackType])) {
+            throw new Exception('Callback not found.');
+        }
+        return self::$_callbacks[$fileType][$callbackType];
+    }
 
-        if( $this->keepProportion() ) {
-            if ($this->_imageSrcWidth / $this->_imageSrcHeight >= $dstWidth / $dstHeight) {
-                $width = $dstWidth;
-                $xOffset = 0;
-
-                $height = round(($width / $this->_imageSrcWidth) * $this->_imageSrcHeight);
-                $yOffset = round(($dstHeight - $height) / 2);
-            } else {
-                $height = $dstHeight;
-                $yOffset = 0;
-
-                $width = round(($height / $this->_imageSrcHeight) * $this->_imageSrcWidth);
-                $xOffset = round(($dstWidth - $width) / 2);
+    private function _fillBackgroundColor(&$imageResourceTo)
+    {
+        // try to keep transparency, if any
+        if ($this->_keepTransparency) {
+            $isAlpha = false;
+            $transparentIndex = $this->_getTransparency($this->_imageHandler, $this->_fileType, $isAlpha);
+            try {
+                // fill truecolor png with alpha transparency
+                if ($isAlpha) {
+                    if (!imagealphablending($imageResourceTo, false)) {
+                        throw new Exception('Failed to set alpha blending for PNG image.');
+                    }
+                    $transparentAlphaColor = imagecolorallocatealpha($imageResourceTo, 0, 0, 0, 127);
+                    if (false === $transparentAlphaColor) {
+                        throw new Exception('Failed to allocate alpha transparency for PNG image.');
+                    }
+                    if (!imagefill($imageResourceTo, 0, 0, $transparentAlphaColor)) {
+                        throw new Exception('Failed to fill PNG image with alpha transparency.');
+                    }
+                    if (!imagesavealpha($imageResourceTo, true)) {
+                        throw new Exception('Failed to save alpha transparency into PNG image.');
+                    }
+                    return $transparentAlphaColor;
+                }
+                // fill image with indexed non-alpha transparency
+                elseif (false !== $transparentIndex) {
+                    list($r, $g, $b)  = array_values(imagecolorsforindex($this->_imageHandler, $transparentIndex));
+                    $transparentColor = imagecolorallocate($imageResourceTo, $r, $g, $b);
+                    if (false === $transparentColor) {
+                        throw new Exception('Failed to allocate transparent color for image.');
+                    }
+                    if (!imagefill($imageResourceTo, 0, 0, $transparentColor)) {
+                        throw new Exception('Failed to fill image with transparency.');
+                    }
+                    imagecolortransparent($imageResourceTo, $transparentColor);
+                    return $transparentColor;
+                }
             }
-        } else {
-            $xOffset = 0;
-            $yOffset = 0;
-            $width = $dstWidth;
-            $height = $dstHeight;
+            catch (Exception $e) {
+                // fallback to default background color
+            }
+        }
+        list($r, $g, $b) = $this->_backgroundColor;
+        $color = imagecolorallocate($imageResourceTo, $r, $g, $b);
+        if (!imagefill($imageResourceTo, 0, 0, $color)) {
+            throw new Exception("Failed to fill image background with color {$r} {$g} {$b}.");
+        }
+        return $color;
+    }
+
+    private function _getTransparency($imageResource, $fileType, &$isAlpha = false, &$isTrueColor = false)
+    {
+        $isAlpha     = false;
+        $isTrueColor = false;
+        // assume that transparency is supported by gif/png only
+        if ((IMAGETYPE_GIF === $fileType) || (IMAGETYPE_PNG === $fileType)) {
+            // check for specific transparent color
+            $transparentIndex = imagecolortransparent($imageResource);
+            if ($transparentIndex >= 0) {
+                return $transparentIndex;
+            }
+            // assume that truecolor PNG has transparency
+            elseif (IMAGETYPE_PNG === $fileType) {
+                $isAlpha     = true;
+                $isTrueColor = true;
+                return $transparentIndex; // -1
+            }
+        }
+        if (IMAGETYPE_JPEG === $fileType) {
+            $isTrueColor = true;
+        }
+        return false;
+    }
+
+    /**
+     * Change the image size
+     *
+     * @param int $frameWidth
+     * @param int $frameHeight
+     */
+    public function resize($frameWidth = null, $frameHeight = null)
+    {
+        if (empty($frameWidth) && empty($frameHeight)) {
+            throw new Exception('Invalid image dimensions.');
         }
 
-        $imageNewHandler = imagecreatetruecolor($dstWidth, $dstHeight);
-
-        if ($this->_fileType == IMAGETYPE_PNG) {
-            $this->_saveAlpha($imageNewHandler);
+        // calculate lacking dimension
+        if (!$this->_keepFrame) {
+            if (null === $frameWidth) {
+                $frameWidth = round($frameHeight * ($this->_imageSrcWidth / $this->_imageSrcHeight));
+            }
+            elseif (null === $frameHeight) {
+                $frameHeight = round($frameWidth * ($this->_imageSrcHeight / $this->_imageSrcWidth));
+            }
+        }
+        else {
+            if (null === $frameWidth) {
+                $frameWidth = $frameHeight;
+            }
+            elseif (null === $frameHeight) {
+                $frameHeight = $frameWidth;
+            }
         }
 
-        imagecopyresampled($imageNewHandler, $this->_imageHandler, $xOffset, $yOffset, 0, 0, $width, $height, $this->_imageSrcWidth, $this->_imageSrcHeight);
+        // define coordinates of image inside new frame
+        $srcX = 0;
+        $srcY = 0;
+        $dstX = 0;
+        $dstY = 0;
+        $dstWidth  = $frameWidth;
+        $dstHeight = $frameHeight;
+        if ($this->_keepAspectRatio) {
+            // do not make picture bigger, than it is, if required
+            if ($this->_constrainOnly) {
+                if (($frameWidth >= $this->_imageSrcWidth) && ($frameHeight >= $this->_imageSrcHeight)) {
+                    $dstWidth  = $this->_imageSrcWidth;
+                    $dstHeight = $this->_imageSrcHeight;
+                }
+            }
+            // keep aspect ratio
+            if ($this->_imageSrcWidth / $this->_imageSrcHeight >= $frameWidth / $frameHeight) {
+                $dstHeight = round(($dstWidth / $this->_imageSrcWidth) * $this->_imageSrcHeight);
+            } else {
+                $dstWidth = round(($dstHeight / $this->_imageSrcHeight) * $this->_imageSrcWidth);
+            }
+        }
+        // define position in center (TODO: add positions option)
+        $dstY = round(($frameHeight - $dstHeight) / 2);
+        $dstX = round(($frameWidth - $dstWidth) / 2);
 
-        $this->_imageHandler = $imageNewHandler;
+        // get rid of frame (fallback to zero position coordinates)
+        if (!$this->_keepFrame) {
+            $frameWidth  = $dstWidth;
+            $frameHeight = $dstHeight;
+            $dstY = 0;
+            $dstX = 0;
+        }
 
+        // create new image
+        $isAlpha     = false;
+        $isTrueColor = false;
+        $this->_getTransparency($this->_imageHandler, $this->_fileType, $isAlpha, $isTrueColor);
+        if ($isTrueColor) {
+            $newImage = imagecreatetruecolor($frameWidth, $frameHeight);
+        }
+        else {
+            $newImage = imagecreate($frameWidth, $frameHeight);
+        }
+
+        // fill new image with required color
+        $this->_fillBackgroundColor($newImage);
+
+        // resample source image and copy it into new frame
+        imagecopyresampled($newImage, $this->_imageHandler, $dstX, $dstY, $srcX, $srcY, $dstWidth, $dstHeight, $this->_imageSrcWidth, $this->_imageSrcHeight);
+        $this->_imageHandler = $newImage;
         $this->refreshImageDimensions();
     }
 
     public function rotate($angle)
     {
+/*
+        $isAlpha = false;
+        $backgroundColor = $this->_getTransparency($this->_imageHandler, $this->_fileType, $isAlpha);
+        list($r, $g, $b) = $this->_backgroundColor;
+        if ($isAlpha) {
+            $backgroundColor = imagecolorallocatealpha($this->_imageHandler, 0, 0, 0, 127);
+        }
+        elseif (false === $backgroundColor) {
+            $backgroundColor = imagecolorallocate($this->_imageHandler, $r, $g, $b);
+        }
+        $this->_imageHandler = imagerotate($this->_imageHandler, $angle, $backgroundColor);
+//*/
         $this->_imageHandler = imagerotate($this->_imageHandler, $angle, $this->imageBackgroundColor);
         $this->refreshImageDimensions();
     }
@@ -199,31 +276,7 @@ class Varien_Image_Adapter_Gd2 extends Varien_Image_Adapter_Abstract
     {
         list($watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType, ) = getimagesize($watermarkImage);
         $this->_getFileAttributes();
-        switch( $watermarkFileType ) {
-            case IMAGETYPE_GIF:
-                $watermark = imagecreatefromgif($watermarkImage);
-                break;
-
-            case IMAGETYPE_JPEG:
-                $watermark = imagecreatefromjpeg($watermarkImage);
-                break;
-
-            case IMAGETYPE_PNG:
-                $watermark = imagecreatefrompng($watermarkImage);
-                break;
-
-            case IMAGETYPE_XBM:
-                $watermark = imagecreatefromxbm($watermarkImage);
-                break;
-
-            case IMAGETYPE_WBMP:
-                $watermark = imagecreatefromxbm($watermarkImage);
-                break;
-
-            default:
-                throw new Exception("Unsupported watermark image format.");
-                break;
-        }
+        $watermark = call_user_func($this->_getCallback('create', $watermarkFileType, 'Unsupported watermark image format.'), $watermarkImage);
 
         if( $this->getWatermarkWidth() && $this->getWatermarkHeigth() && ($this->getWatermarkPosition() != self::POSITION_STRETCH) ) {
             $newWatermark = imagecreatetruecolor($this->getWatermarkWidth(), $this->getWatermarkHeigth());
@@ -315,7 +368,7 @@ class Varien_Image_Adapter_Gd2 extends Varien_Image_Adapter_Abstract
 
     function __destruct()
     {
-        imagedestroy($this->_imageHandler);
+        @imagedestroy($this->_imageHandler);
     }
 
     /*

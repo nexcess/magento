@@ -19,13 +19,13 @@
  */
 
 /** Zend_Controller_Request_Exception */
-require_once 'Zend/Controller/Request/Exception.php';
+#require_once 'Zend/Controller/Request/Exception.php';
 
 /** Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
+#require_once 'Zend/Controller/Request/Abstract.php';
 
 /** Zend_Uri */
-require_once 'Zend/Uri.php';
+#require_once 'Zend/Uri.php';
 
 /**
  * Zend_Controller_Request_Http
@@ -105,7 +105,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
 
                 $this->setRequestUri($path);
             } else {
-                require_once 'Zend/Controller/Request/Exception.php';
+                #require_once 'Zend/Controller/Request/Exception.php';
                 throw new Zend_Controller_Request_Exception('Invalid URI provided to constructor');
             }
         } else {
@@ -170,7 +170,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
      */
     public function __set($key, $value)
     {
-        require_once 'Zend/Controller/Request/Exception.php';
+        #require_once 'Zend/Controller/Request/Exception.php';
         throw new Zend_Controller_Request_Exception('Setting values in superglobals not allowed; please use setParam()');
     }
 
@@ -839,7 +839,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
     public function getHeader($header)
     {
         if (empty($header)) {
-            require_once 'Zend/Controller/Request/Exception.php';
+            #require_once 'Zend/Controller/Request/Exception.php';
             throw new Zend_Controller_Request_Exception('An HTTP header name is required');
         }
 

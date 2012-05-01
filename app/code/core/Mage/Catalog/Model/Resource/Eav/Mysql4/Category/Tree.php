@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Tree extends Varien_Data_Tree_Dbp
 {
@@ -34,6 +35,15 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Tree extends Varien_Data_T
      * @var Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection
      */
     protected $_collection;
+
+    /**
+     * Id of 'is_active' category attribute
+     *
+     * @var int
+     */
+    protected $_isActiveAttributeId = null;
+
+    protected $_joinUrlRewriteIntoCollection = false;
 
     /**
      * Enter description here...
@@ -49,7 +59,8 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Tree extends Varien_Data_T
             array(
                 Varien_Data_Tree_Dbp::ID_FIELD       => 'entity_id',
                 Varien_Data_Tree_Dbp::PATH_FIELD     => 'path',
-                Varien_Data_Tree_Dbp::ORDER_FIELD    => 'position'
+                Varien_Data_Tree_Dbp::ORDER_FIELD    => 'position',
+                Varien_Data_Tree_Dbp::LEVEL_FIELD    => 'level',
             )
         );
     }
@@ -87,7 +98,16 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Tree extends Varien_Data_T
         }
         $collection->addIdFilter($nodeIds);
         if ($onlyActive) {
+            $disabledIds = $this->_getDisabledIds($collection);
+            if ($disabledIds) {
+                $collection->addFieldToFilter('entity_id', array('nin'=>$disabledIds));
+            }
             $collection->addAttributeToFilter('is_active', 1);
+        }
+
+        if ($this->_joinUrlRewriteIntoCollection) {
+            $collection->joinUrlRewrite();
+            $this->_joinUrlRewriteIntoCollection = false;
         }
 
         if($toLoad) {
@@ -100,6 +120,66 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Tree extends Varien_Data_T
 
         return $this;
     }
+
+    protected function _getDisabledIds($collection)
+    {
+        $storeId = Mage::app()->getStore()->getId();
+        $this->_inactiveItems = $this->_getInactiveItemIds($collection, $storeId);
+
+        $allIds = $collection->getAllIds();
+        $disabledIds = array();
+
+        foreach ($allIds as $id) {
+            $parents = $this->getNodeById($id)->getPath();
+            foreach ($parents as $parent) {
+                if (!$this->_getItemIsActive($parent->getId(), $storeId)){
+                    $disabledIds[] = $id;
+                    continue;
+                }
+            }
+        }
+        return $disabledIds;
+    }
+
+    protected function _getIsActiveAttributeId()
+    {
+        if (is_null($this->_isActiveAttributeId)) {
+            $select = $this->_conn->select()
+                ->from(array('a'=>Mage::getSingleton('core/resource')->getTableName('eav/attribute')), array('attribute_id'))
+                ->join(array('t'=>Mage::getSingleton('core/resource')->getTableName('eav/entity_type')), 'a.entity_type_id = t.entity_type_id')
+                ->where('entity_type_code = ?', 'catalog_category')
+                ->where('attribute_code = ?', 'is_active');
+
+            $this->_isActiveAttributeId = $this->_conn->fetchOne($select);
+        }
+        return $this->_isActiveAttributeId;
+    }
+
+    protected function _getInactiveItemIds($collection, $storeId)
+    {
+        $filter = $collection->getAllIdsSql();
+        $attributeId = $this->_getIsActiveAttributeId();
+
+        $table = Mage::getSingleton('core/resource')->getTableName('catalog/category') . '_int';
+        $select = $this->_conn->select()
+            ->from(array('d'=>$table), array('d.entity_id'))
+            ->where('d.attribute_id = ?', $attributeId)
+            ->where('d.store_id = ?', 0)
+            ->where('d.entity_id IN (?)', new Zend_Db_Expr($filter))
+            ->joinLeft(array('c'=>$table), "c.attribute_id = '{$attributeId}' AND c.store_id = '{$storeId}' AND c.entity_id = d.entity_id", array())
+            ->where('IFNULL(c.value, d.value) = ?', 0);
+
+        return $this->_conn->fetchCol($select);
+    }
+
+    protected function _getItemIsActive($id)
+    {
+        if (!in_array($id, $this->_inactiveItems)) {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Get categories collection
@@ -138,13 +218,13 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Tree extends Varien_Data_T
      */
     protected function _getDefaultCollection($sorted=false)
     {
+        $this->_joinUrlRewriteIntoCollection = true;
         $collection = Mage::getModel('catalog/category')->getCollection();
         /* @var $collection Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
 
         $collection->addAttributeToSelect('name')
             ->addAttributeToSelect('url_key')
-            ->addAttributeToSelect('is_active')
-            ->joinUrlRewrite();
+            ->addAttributeToSelect('is_active');
 
         if ($sorted) {
             if (is_string($sorted)) {

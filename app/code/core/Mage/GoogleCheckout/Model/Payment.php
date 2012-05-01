@@ -24,6 +24,7 @@ class Mage_GoogleCheckout_Model_Payment extends Mage_Payment_Model_Method_Abstra
     const ACTION_AUTHORIZE_CAPTURE = 1;
 
     protected $_code  = 'googlecheckout';
+    protected $_formBlockType = 'googlecheckout/form';
 
     /**
      * Availability options
@@ -35,8 +36,39 @@ class Mage_GoogleCheckout_Model_Payment extends Mage_Payment_Model_Method_Abstra
     protected $_canRefund               = true;
     protected $_canVoid                 = true;
     protected $_canUseInternal          = false;
-    protected $_canUseCheckout          = false;
+    protected $_canUseCheckout          = true;
     protected $_canUseForMultishipping  = false;
+
+    /**
+     * Can be edit order (renew order)
+     *
+     * @return bool
+     */
+    public function canEdit()
+    {
+        return false;
+    }
+
+    /**
+     * Return true if the method can be used at this time
+     * Use google/checkout/active flag of admin module config
+     *
+     * @return bool
+     */
+    public function isAvailable($quote=null)
+    {
+        return Mage::getStoreConfig('google/checkout/active') > 0;
+    }
+
+    /**
+     *  Return Order Place Redirect URL
+     *
+     *  @return	  string Order Redirect URL
+     */
+    public function getOrderPlaceRedirectUrl()
+    {
+        return Mage::getUrl('googlecheckout/redirect/redirect');
+    }
 
     /**
      * Authorize

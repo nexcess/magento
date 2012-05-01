@@ -23,10 +23,13 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Tax_Rate_Form extends Mage_Adminhtml_Block_Widget_Form
 {
+    protected $_titles = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -38,9 +41,8 @@ class Mage_Adminhtml_Block_Tax_Rate_Form extends Mage_Adminhtml_Block_Widget_For
     {
         $rateId = (int)$this->getRequest()->getParam('rate');
         $rateObject = new Varien_Object();
-        $rateModel  = Mage::getSingleton('tax/rate');
+        $rateModel  = Mage::getSingleton('tax/calculation_rate');
         $rateObject->setData($rateModel->getData());
-
         $form = new Varien_Data_Form();
 
         $countries = Mage::getModel('adminhtml/system_config_source_country')
@@ -61,11 +63,11 @@ class Mage_Adminhtml_Block_Tax_Rate_Form extends Mage_Adminhtml_Block_Widget_For
 
         $fieldset = $form->addFieldset('base_fieldset', array('legend'=>Mage::helper('tax')->__('Tax Rate Information')));
 
-        if( $rateObject->getTaxRateId() > 0 ) {
-            $fieldset->addField('tax_rate_id', 'hidden',
+        if( $rateObject->getTaxCalculationRateId() > 0 ) {
+            $fieldset->addField('tax_calculation_rate_id', 'hidden',
                 array(
-                    'name' => "tax_rate_id",
-                    'value' => $rateObject->getTaxRateId()
+                    'name' => "tax_calculation_rate_id",
+                    'value' => $rateObject->getTaxCalculationRateId()
                 )
             );
         }
@@ -74,6 +76,17 @@ class Mage_Adminhtml_Block_Tax_Rate_Form extends Mage_Adminhtml_Block_Widget_For
         if (!$countryId) {
             $countryId = Mage::getStoreConfig('general/country/default');
         }
+
+        $fieldset->addField('code', 'text',
+            array(
+                'name' => 'code',
+                'label' => Mage::helper('tax')->__('Tax Identifier'),
+                'title' => Mage::helper('tax')->__('Tax Identifier'),
+                'class' => 'required-entry',
+                'value' => $rateModel->getCode(),
+                'required' => true,
+            )
+        );
 
         $fieldset->addField('tax_country_id', 'select',
             array(
@@ -116,7 +129,7 @@ class Mage_Adminhtml_Block_Tax_Rate_Form extends Mage_Adminhtml_Block_Widget_For
         );
         } */
 
-        $postcode = $rateObject->getPostcode();
+        $postcode = $rateObject->getTaxPostcode();
         if (!$postcode) {
             $postcode = '*';
         }
@@ -129,32 +142,31 @@ class Mage_Adminhtml_Block_Tax_Rate_Form extends Mage_Adminhtml_Block_Widget_For
             )
         );
 
-        $rateTypeCollection = Mage::getModel('tax/rate_type')->getCollection()
-            ->load();
-
-        foreach ($rateTypeCollection as $rateType) {
-            if ($rateModel->getId()) {
-                $value = 1*$rateModel->getRateDataCollection()->getItemByRateAndType($rateModel->getId(), $rateType->getTypeId())->getRateValue();
-            }
-            else {
-                $value = '0.0000';
-            }
-            $value = number_format($value, 4);
-            $fieldset->addField('rate_data_'.$rateType->getTypeId(), 'text',
-                array(
-                    'name' => "rate_data[{$rateType->getTypeId()}]",
-                    'label' => $rateType->getTypeName(),
-                    'title' => $rateType->getTypeName(),
-                    'value' => $value,
-                    'class' => 'validate-not-negative-number'
-                )
-            );
+        if ($rateObject->getRate()) {
+            $value = 1*$rateObject->getRate();
+        } else {
+            $value = 0;
         }
+        $fieldset->addField('rate', 'text',
+            array(
+                'name' => "rate",
+                'label' => Mage::helper('tax')->__('Rate'),
+                'title' => Mage::helper('tax')->__('Rate'),
+                'value' => number_format($value, 4),
+                'required' => true,
+                'class' => 'validate-not-negative-number required-entry'
+            )
+        );
 
         $form->setAction($this->getUrl('*/tax_rate/save'));
         $form->setUseContainer(true);
         $form->setId('rate_form');
         $form->setMethod('post');
+
+
+        if (!Mage::app()->isSingleStoreMode()) {
+            $form->addElement(Mage::getBlockSingleton('adminhtml/tax_rate_title_fieldset')->setLegend(Mage::helper('tax')->__('Tax Titles')));
+        }
 
         $this->setForm($form);
 

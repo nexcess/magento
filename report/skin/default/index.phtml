@@ -287,8 +287,19 @@
         background-image:url(skin/<?php echo $store ?>/images/error_msg_icon.gif);
         border-color:#F16048;
         color:#DF280A;
+    } .success-msg {
+        border-color:#446423;
+        color:#3d6611;
+        background-color:#eff5ea;
+        background-image:url(skin/<?php echo $store ?>/images/success_msg_icon.gif);
+    } .note-msg {
+        border-color:#fcd344;
+        color:#3d6611;
+        background-color:#fafaec;
+        background-image:url(skin/<?php echo $store ?>/images/note_msg_icon.gif);
     }
-    .error-msg, .success-msg, .notice-msg, .note-msg {
+
+    .error-msg, .success-msg, .note-msg, .note-msg {
         background-position:10px 10px !important;
         background-repeat:no-repeat !important;
         border-style:solid !important;
@@ -324,11 +335,24 @@
                 <div class="page-head">
                     <h3>There has been an error processing your request.</h3>
                 </div>
-                <?php if($showSendForm): ?>
-                <p>
-                We are currently experiencing some technical issues. We apologize for the inconvenience and will contact you shortly to resolve the issue. To help us serve you please fill in the form below.
-                </p>
-                <?php if($showErrorMsg): ?>
+                <?php if ($showSentMsg): ?>
+                <ul class="messages">
+                    <li class="success-msg">
+                        <ul>
+                            <li>Your message was submitted and will be responded as soon as possible. Thank you for reporting.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <?php endif; ?>
+                <?php if ($showSendForm): ?>
+                <ul class="messages">
+                    <li class="note-msg">
+                        <ul>
+                            <li>We are currently experiencing some technical issues. We apologize for the inconvenience and will contact you shortly to resolve the issue. To help us serve you please fill in the form below.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <?php if ($showErrorMsg): ?>
                 <ul class="messages">
                     <li class="error-msg">
                         <ul>
@@ -337,7 +361,7 @@
                     </li>
                 </ul>
                 <?php endif; ?>
-                <form action="<?php echo dirname($_SERVER['SCRIPT_NAME']) ?>/" method="post" id="form-validate">
+                <form action="<?php echo "?id={$reportId}&amp;s={$store}" ?>" method="post" id="form-validate">
                     <fieldset class="group-select wide">
                         <input type="hidden" name="error_hash" value="<?php echo $errorHash ?>"/>
                         <h4 class="legend">Personal Information</h4>
@@ -375,14 +399,18 @@
                         <button name="submit" class="form-button" type="submit"><span>Submit</span></button>
                     </div>
                 </form>
-                <?php elseif ($action == 'print'): ?>
-                <div style="overflow:auto;padding:10px;border:1px solid #666;background:#EFEFEF">
+                <?php endif; ?>
+                <?php if ($action == 'print'): ?>
+                <div style="padding:10px; border:1px solid #666; background:#EFEFEF;">
+                <div style="width:100%; overflow:auto;">
                 <pre>
-<?php echo $trace ?>
+<?php echo $reportData[0] ?>
+
+<b>Trace:</b>
+<?php echo $reportData[1] ?>
                 </pre>
                 </div>
-                <?php else: ?>
-                Thank you for reporting this error.
+                </div>
                 <?php endif; ?>
             <!-- [end] content -->
             </div>

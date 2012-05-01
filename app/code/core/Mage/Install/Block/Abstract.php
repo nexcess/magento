@@ -21,6 +21,7 @@
 /**
  * Abstract installation block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Install_Block_Abstract extends Mage_Core_Block_Template
 {

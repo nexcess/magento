@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
  class Mage_Catalog_Product_CompareController extends Mage_Core_Controller_Front_Action
  {
@@ -96,6 +97,7 @@
                     Mage::getSingleton('catalog/session')->addSuccess(
                         $this->__('Product %s successfully removed from compare list', $product->getName())
                     );
+                    Mage::dispatchEvent('catalog_product_compare_remove_product', array('product'=>$item));
                 }
             }
         }
@@ -114,7 +116,12 @@
         }
 
         $items->load();
-        $items->walk('delete');
+        //$items->walk('delete');
+        $compareItem = Mage::getModel('catalog/product_compare_item');
+        foreach ($items as $item) {
+            $compareItem->setId($item->getCatalogCompareItemId())
+                ->delete();
+        }
         Mage::getSingleton('catalog/session')->addSuccess($this->__('Compare list successfully cleared'));
 
         $this->_redirectReferer();

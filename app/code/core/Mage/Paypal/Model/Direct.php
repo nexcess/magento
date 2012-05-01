@@ -22,6 +22,7 @@
  *
  * PayPal Direct Module
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Paypal_Model_Direct extends Mage_Payment_Model_Method_Cc
 {
@@ -220,9 +221,9 @@ class Mage_Paypal_Model_Direct extends Mage_Payment_Model_Method_Cc
     public function void(Varien_Object $payment)
     {
         $error = false;
-        if($payment->getCcTransId()){
+        if($payment->getVoidTransactionId()){
             $api = $this->getApi();
-            $api->setAuthorizationId($payment->getCcTransId());
+            $api->setAuthorizationId($payment->getVoidTransactionId());
             if ($api->callDoVoid()!==false){
                  $payment->setStatus('SUCCESS')
                     ->setCcTransId($api->getTransactionId());

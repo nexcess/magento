@@ -19,7 +19,7 @@
 
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 
 /**

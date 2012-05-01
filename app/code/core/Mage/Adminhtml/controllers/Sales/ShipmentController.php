@@ -21,88 +21,9 @@
 /**
  * Adminhtml sales orders controller
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Sales_ShipmentController extends Mage_Adminhtml_Controller_Action
+class Mage_Adminhtml_Sales_ShipmentController extends Mage_Adminhtml_Controller_Sales_Shipment
 {
-    /**
-     * Additional initialization
-     *
-     */
-    protected function _construct()
-    {
-        $this->setUsedModuleName('Mage_Sales');
-    }
 
-    /**
-     * Init layout, menu and breadcrumb
-     *
-     * @return Mage_Adminhtml_Sales_ShipmentController
-     */
-    protected function _initAction()
-    {
-        $this->loadLayout()
-            ->_setActiveMenu('sales/order')
-            ->_addBreadcrumb($this->__('Sales'), $this->__('Sales'))
-            ->_addBreadcrumb($this->__('Shipments'),$this->__('Shipments'));
-        return $this;
-    }
-
-    /**
-     * Shipments grid
-     */
-    public function indexAction()
-    {
-        $this->_initAction()
-            ->_addContent($this->getLayout()->createBlock('adminhtml/sales_shipment'))
-            ->renderLayout();
-    }
-
-    /**
-     * Shipment information page
-     */
-    public function viewAction()
-    {
-        if ($shipmentId = $this->getRequest()->getParam('shipment_id')) {
-            $this->_forward('view', 'sales_order_shipment');
-        } else {
-            $this->_forward('noRoute');
-        }
-    }
-
-    public function pdfshipmentsAction(){
-        $shipmentIds = $this->getRequest()->getPost('shipment_ids');
-        if (!empty($shipmentIds)) {
-            $shipments = Mage::getResourceModel('sales/order_shipment_collection')
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter('entity_id', array('in' => $shipmentIds))
-                ->load();
-            if (!isset($pdf)){
-                $pdf = Mage::getModel('sales/order_pdf_shipment')->getPdf($shipments);
-            } else {
-                $pages = Mage::getModel('sales/order_pdf_shipment')->getPdf($shipments);
-                $pdf->pages = array_merge ($pdf->pages, $pages->pages);
-            }
-
-            return $this->_prepareDownloadResponse('packingslip'.Mage::getSingleton('core/date')->date('Y-m-d_H-i-s').'.pdf', $pdf->render(), 'application/pdf');
-        }
-        $this->_redirect('*/*/');
-    }
-
-    public function printAction()
-    {
-        if ($invoiceId = $this->getRequest()->getParam('invoice_id')) {
-            if ($invoice = Mage::getModel('sales/order_shipment')->load($invoiceId)) {
-                $pdf = Mage::getModel('sales/order_pdf_shipment')->getPdf(array($invoice));
-                $this->_prepareDownloadResponse('packingslip'.Mage::getSingleton('core/date')->date('Y-m-d_H-i-s').'.pdf', $pdf->render(), 'application/pdf');
-            }
-        }
-        else {
-            $this->_forward('noRoute');
-        }
-    }
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('sales/shipment');
-    }
 }

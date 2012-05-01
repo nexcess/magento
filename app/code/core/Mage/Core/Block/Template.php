@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Block_Template extends Mage_Core_Block_Abstract
 {
@@ -47,6 +48,17 @@ class Mage_Core_Block_Template extends Mage_Core_Block_Abstract
     protected $_jsUrl;
 
     protected static $_showTemplateHints;
+    protected static $_showTemplateHintsBlocks;
+
+    public function getTemplate()
+    {
+        return $this->_getData('template');
+    }
+
+    public function getArea()
+    {
+        return $this->_getData('area');
+    }
 
     /**
      * Assign variable
@@ -93,6 +105,8 @@ class Mage_Core_Block_Template extends Mage_Core_Block_Abstract
         if (is_null(self::$_showTemplateHints)) {
             self::$_showTemplateHints = Mage::getStoreConfig('dev/debug/template_hints')
                 && Mage::helper('core')->isDevAllowed();
+            self::$_showTemplateHintsBlocks = Mage::getStoreConfig('dev/debug/template_hints_blocks')
+                && Mage::helper('core')->isDevAllowed();
         }
         return self::$_showTemplateHints;
     }
@@ -114,7 +128,11 @@ class Mage_Core_Block_Template extends Mage_Core_Block_Abstract
             ob_start();
         }
         if ($this->getShowTemplateHints()) {
-            echo '<div style="position:relative; border:1px dotted red; margin:6px 2px; padding:18px 2px 2px 2px;"><div style="position:absolute; left:0; top:0; padding:2px 5px; background:red; color:white; font:normal 11px Arial; text-align:left !important; z-index:999;">'.$fileName.'</div>';
+            echo '<div style="position:relative; border:1px dotted red; margin:6px 2px; padding:18px 2px 2px 2px; zoom:1;"><div style="position:absolute; left:0; top:0; padding:2px 5px; background:red; color:white; font:normal 11px Arial; text-align:left !important; z-index:998;" onmouseover="this.style.zIndex=\'999\'" onmouseout="this.style.zIndex=\'998\'" title="'.$fileName.'">'.$fileName.'</div>';
+            if (self::$_showTemplateHintsBlocks) {
+                $thisClass = get_class($this);
+                echo '<div style="position:absolute; right:0; top:0; padding:2px 5px; background:red; color:blue; font:normal 11px Arial; text-align:left !important; z-index:998;" onmouseover="this.style.zIndex=\'999\'" onmouseout="this.style.zIndex=\'998\'" title="'.$thisClass.'">'.$thisClass.'</div>';
+            }
         }
 
         include $this->_viewDir.DS.$fileName;

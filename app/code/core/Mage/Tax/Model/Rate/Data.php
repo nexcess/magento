@@ -57,7 +57,12 @@ class Mage_Tax_Model_Rate_Data extends Mage_Core_Model_Abstract
             .'|'.$this->getPostcode();
 
         if (!isset($this->_cache[$cacheKey])) {
-            $this->_cache[$cacheKey] = $this->_getResource()->fetchRate($this);
+            $this->unsRateValue();
+            Mage::dispatchEvent('tax_rate_data_fetch', array('request'=>$this));
+            if (!$this->hasRateValue()) {
+                $this->setRateValue($this->_getResource()->fetchRate($this));
+            }
+            $this->_cache[$cacheKey] = $this->getRateValue();
         }
 
         return $this->_cache[$cacheKey];

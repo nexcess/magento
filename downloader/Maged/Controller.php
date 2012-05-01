@@ -122,6 +122,23 @@ final class Maged_Controller
         $this->model('pear', true)->installPackage($_POST['install_package_id']);
     }
 
+    public function distUpgradeAction()
+    {
+        $pear = $this->model('pear', true);
+        $this->view()->set('pear', $pear);
+        $this->view()->set('state', $pear->getPreferredState());
+        echo $this->view()->template('pear/dist.phtml');
+    }
+    
+    public function distUpgradePostAction()
+    {
+        if (!$_POST) {
+            echo "INVALID POST DATA";
+            return;
+        }
+        $result = $this->model('pear', true)->distUpgrade($_POST['version']);
+    }
+
     public function settingsAction()
     {
         $pearConfig = $this->model('pear', true)->pear()->getConfig();
@@ -146,8 +163,7 @@ final class Maged_Controller
         try {
             self::singleton()->dispatch();
         } catch (Exception $e) {
-            $this->session()->addMessage('error', $e->getMessage());
-
+            echo self::singleton()->view()->set('exception', $e)->template("exception.phtml");
         }
     }
 

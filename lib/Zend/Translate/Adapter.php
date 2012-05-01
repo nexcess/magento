@@ -23,7 +23,7 @@
 /**
  * @see Zend_Locale
  */
-require_once 'Zend/Locale.php';
+#require_once 'Zend/Locale.php';
 
 /**
  * Basic adapter class for each translation source adapter
@@ -251,7 +251,7 @@ abstract class Zend_Translate_Adapter {
             /**
              * @see Zend_Translate_Exception
              */
-            require_once 'Zend/Translate/Exception.php';
+            #require_once 'Zend/Translate/Exception.php';
             throw new Zend_Translate_Exception("The given Language ({$locale}) does not exist");
         }
 
@@ -261,7 +261,7 @@ abstract class Zend_Translate_Adapter {
                 /**
                  * @see Zend_Translate_Exception
                  */
-                require_once 'Zend/Translate/Exception.php';
+                #require_once 'Zend/Translate/Exception.php';
                 throw new Zend_Translate_Exception("Language ({$locale}) has to be added before it can be used.");
             }
             $locale = $temp[0];
@@ -375,7 +375,7 @@ abstract class Zend_Translate_Adapter {
             /**
              * @see Zend_Translate_Exception
              */
-            require_once 'Zend/Translate/Exception.php';
+            #require_once 'Zend/Translate/Exception.php';
             throw new Zend_Translate_Exception("The given Language ({$locale}) does not exist");
         }
 

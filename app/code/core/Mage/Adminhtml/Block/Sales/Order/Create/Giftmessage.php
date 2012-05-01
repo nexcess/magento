@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhmtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Create_Giftmessage extends Mage_Adminhtml_Block_Sales_Order_Create_Abstract
 {

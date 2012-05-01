@@ -20,10 +20,10 @@
  */
 
 /** Zend_Loader_PluginLoader_Interface */
-require_once 'Zend/Loader/PluginLoader/Interface.php';
+#require_once 'Zend/Loader/PluginLoader/Interface.php';
 
 /** Zend_Loader */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 /**
  * Generic plugin class loader
@@ -111,7 +111,7 @@ class Zend_Loader_PluginLoader implements Zend_Loader_PluginLoader_Interface
     public function addPrefixPath($prefix, $path)
     {
         if (!is_string($prefix) || !is_string($path)) {
-            require_once 'Zend/Loader/PluginLoader/Exception.php';
+            #require_once 'Zend/Loader/PluginLoader/Exception.php';
             throw new Zend_Loader_PluginLoader_Exception('Zend_Loader_PluginLoader::addPrefixPath() method only takes strings for prefix and path.');
         }
 
@@ -211,14 +211,14 @@ class Zend_Loader_PluginLoader implements Zend_Loader_PluginLoader_Interface
         }
 
         if (!isset($registry[$prefix])) {
-            require_once 'Zend/Loader/PluginLoader/Exception.php';
+            #require_once 'Zend/Loader/PluginLoader/Exception.php';
             throw new Zend_Loader_PluginLoader_Exception('Prefix ' . $prefix . ' was not found in the PluginLoader.');
         }
 
         if ($path != null) {
             $pos = array_search($path, $registry[$prefix]);
             if ($pos === null) {
-                require_once 'Zend/Loader/PluginLoader/Exception.php';
+                #require_once 'Zend/Loader/PluginLoader/Exception.php';
                 throw new Zend_Loader_PluginLoader_Exception('Prefix ' . $prefix . ' / Path ' . $path . ' was not found in the PluginLoader.');
             }
             unset($registry[$prefix][$pos]);
@@ -314,7 +314,7 @@ class Zend_Loader_PluginLoader implements Zend_Loader_PluginLoader_Interface
                     include_once $path . $classFile;
 
                     if (!class_exists($className, false)) {
-                        require_once 'Zend/Loader/PluginLoader/Exception.php';
+                        #require_once 'Zend/Loader/PluginLoader/Exception.php';
                         throw new Zend_Loader_PluginLoader_Exception('File ' . $classFile . ' was loaded but class named ' . $className . ' was not found within it.');
                     }
 
@@ -333,7 +333,7 @@ class Zend_Loader_PluginLoader implements Zend_Loader_PluginLoader_Interface
             return $className;
         }
 
-        require_once 'Zend/Loader/PluginLoader/Exception.php';
+        #require_once 'Zend/Loader/PluginLoader/Exception.php';
         throw new Zend_Loader_PluginLoader_Exception('Plugin by name ' . $name . ' was not found in the registry.');
     }
 }

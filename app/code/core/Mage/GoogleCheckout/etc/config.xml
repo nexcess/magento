@@ -23,9 +23,6 @@
     <modules>
         <Mage_GoogleCheckout>
             <version>0.7.0</version>
-            <depends>
-                <Mage_Sales />
-            </depends>
         </Mage_GoogleCheckout>
     </modules>
     <global>
@@ -71,7 +68,18 @@
             <googlecheckout><class>Mage_GoogleCheckout_Block</class></googlecheckout>
         </blocks>
     </global>
-
+<!--
+Something like this is to be added to resolve bug #4890
+<global>
+        <rewrite>
+            <googlecheckout>
+                <core>
+                <from>/^.*?googlecheckout\/api/</from>
+                <to>googlecheckout/api</to>
+            </googlecheckout>
+        </rewrite>
+</global>
+-->
     <frontend>
         <secure_url>
             <googlecheckout_redirect>/googlecheckout/redirect/</googlecheckout_redirect>

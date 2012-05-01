@@ -23,6 +23,7 @@
  *
  * @category   Varien
  * @package    Varien_Filter
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Varien_Filter_Template implements Zend_Filter_Interface

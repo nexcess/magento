@@ -21,8 +21,8 @@
 <?php echo $this->getGridParentHtml() ?>
 <?php if($this->canDisplayContainer()): ?>
 <script type="text/javascript">
-<!--
-var wishlistControl = {
+//<!--
+wishlistControl = {
 	removeItem: function (itemId) {
 		if(!confirm('<?php echo Mage::helper('customer')->__('Are you sure that you want to remove this item?') ?>')) {
 			return false;

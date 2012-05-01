@@ -20,7 +20,7 @@
  */
 
 /** Zend_Form_Decorator_Abstract */
-require_once 'Zend/Form/Decorator/Abstract.php';
+#require_once 'Zend/Form/Decorator/Abstract.php';
 
 /**
  * Zend_Form_Decorator_Callback
@@ -66,13 +66,13 @@ class Zend_Form_Decorator_Callback extends Zend_Form_Decorator_Abstract
     public function setCallback($callback)
     {
         if (!is_string($callback) && !is_array($callback)) {
-            require_once 'Zend/Form/Exception.php';
+            #require_once 'Zend/Form/Exception.php';
             throw new Zend_Form_Exception('Invalid callback provided to callback decorator');
         }
 
         if (is_array($callback)) {
             if (2 !== count($callback)) {
-                require_once 'Zend/Form/Exception.php';
+                #require_once 'Zend/Form/Exception.php';
                 throw new Zend_Form_Exception('Invalid method callback provided to callback decorator');
             }
         }

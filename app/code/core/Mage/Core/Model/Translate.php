@@ -21,6 +21,7 @@
 /**
  * Translate model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Translate
 {
@@ -77,7 +78,19 @@ class Mage_Core_Model_Translate
      */
     protected $_dataScope;
 
+    /**
+     * Configuration flag to enable inline translations
+     *
+     * @var boolean
+     */
     protected $_translateInline;
+
+    /**
+     * Configuration flag to local enable inline translations
+     *
+     * @var boolean
+     */
+    protected $_canUseInline = true;
 
     public function __construct()
     {
@@ -356,24 +369,16 @@ class Mage_Core_Model_Translate
             $code = $text->getCode(self::SCOPE_SEPARATOR);
             $module = $text->getModule();
             $text = $text->getText();
-            if (array_key_exists($code, $this->getData())) {
-                $translated = $this->_data[$code];
-            }
-            elseif (array_key_exists($text, $this->getData())) {
-            	$translated = $this->_data[$text];
-            }
-            else {
-                $translated = $text;
-            }
+            $translated = $this->_getTranslatedString($text, $code);
         }
         else {
-            $module = '';
-            if (array_key_exists($text, $this->getData())) {
-            	$translated = $this->_data[$text];
+            if (!empty($_REQUEST['theme'])) {
+                $module = 'frontend/default/'.$_REQUEST['theme'];
+            } else {
+                $module = 'frontend/default/default';
             }
-            else {
-                $translated = $text;
-            }
+            $code = $module.self::SCOPE_SEPARATOR.$text;
+            $translated = $this->_getTranslatedString($text, $code);
         }
 
         //array_unshift($args, $translated);
@@ -388,13 +393,35 @@ class Mage_Core_Model_Translate
             $result = $translated;
         }
 
-        if ($this->_translateInline) {
+        if ($this->_translateInline && $this->getTranslateInline()) {
             if (strpos($result, '{{{')===false || strpos($result, '}}}')===false || strpos($result, '}}{{')===false) {
                 $result = '{{{'.$result.'}}{{'.$translated.'}}{{'.$text.'}}{{'.$module.'}}}';
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Set Translate inline mode
+     *
+     * @param bool $flag
+     * @return Mage_Core_Model_Translate
+     */
+    public function setTranslateInline($flag=null)
+    {
+        $this->_canUseInline = (bool) $flag;
+        return $this;
+    }
+
+    /**
+     * Retrieve active translate mode
+     *
+     * @return bool
+     */
+    public function getTranslateInline()
+    {
+        return $this->_canUseInline;
     }
 
     /**
@@ -414,9 +441,15 @@ class Mage_Core_Model_Translate
         $filePath = Mage::getBaseDir('locale')  . DS
                   . $localeCode . DS . 'template' . DS . $type . DS . $file;
 
-        if (!file_exists($filePath)) { // If no template specified for this locale, use default
+        if (!file_exists($filePath)) { // If no template specified for this locale, use store default
             $filePath = Mage::getBaseDir('locale') . DS
                       . Mage::app()->getLocale()->getDefaultLocale()
+                      . DS . 'template' . DS . $type . DS . $file;
+        }
+
+        if (!file_exists($filePath)) {  // If no template specified as  store default locale, use en_US
+            $filePath = Mage::getBaseDir('locale') . DS
+                      . Mage_Core_Model_Locale::DEFAULT_LOCALE
                       . DS . 'template' . DS . $type . DS . $file;
         }
 
@@ -489,5 +522,27 @@ class Mage_Core_Model_Translate
     {
         //return $this->_useCache;
         return Mage::app()->useCache('translate');
+    }
+
+    /**
+     * Return translated string from text.
+     *
+     * @param string $text
+     * @param string $code
+     * @return string
+     */
+    protected function _getTranslatedString($text, $code)
+    {
+        $translated = '';
+        if (array_key_exists($code, $this->getData())) {
+            $translated = $this->_data[$code];
+        }
+        elseif (array_key_exists($text, $this->getData())) {
+        	$translated = $this->_data[$text];
+        }
+        else {
+            $translated = $text;
+        }
+        return $translated;
     }
 }

@@ -18,26 +18,28 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-
+<div class="a-right"><a href="#" onclick="window.close(); return false;"><?php echo $this->__('Close Window') ?></a></div>
 <?php $_width=$this->getImageWidth() ?>
-<div class="a-center"><?php if($_prevUrl = $this->getPreviusImageUrl()): ?>
-<a href="<?php echo $_prevUrl ?>" class="product-gallery-nav"><strong>&laquo; <?php echo $this->__('Prev') ?></strong></a>
-<?php endif; ?>
-<?php if($_nextUrl = $this->getNextImageUrl()): ?>
-<a href="<?php echo $_nextUrl ?>" class="product-gallery-nav"><strong><?php echo $this->__('Next') ?> &raquo;</strong></a>
-<?php endif; ?>
+<div class="a-center">
+  <?php if($_prevUrl = $this->getPreviusImageUrl()): ?>
+  <a href="<?php echo $_prevUrl ?>" class="product-gallery-nav"><strong>&laquo; <?php echo $this->__('Prev') ?></strong></a>
+  <?php endif; ?>
+  <?php if($_nextUrl = $this->getNextImageUrl()): ?>
+  <a href="<?php echo $_nextUrl ?>" class="product-gallery-nav"><strong><?php echo $this->__('Next') ?> &raquo;</strong></a>
+  <?php endif; ?>
 </div>
 <div class="a-left"><?php echo $this->htmlEscape($this->getCurrentImage()->getLabel()) ?></div>
 <div class="clear"></div>
-<p><img <?php if($_width): ?>width="<?php echo $_width ?>"<?php endif; ?> src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $this->getImageFile()); ?>" alt="<?php echo $this->htmlEscape($this->getCurrentImage()->getLabel()) ?>" title="<?php echo $this->htmlEscape($this->getCurrentImage()->getLabel()) ?>" id="product-gallery-image"/></p>
-<div class="a-center"><?php if($_prevUrl = $this->getPreviusImageUrl()): ?>
-<a href="<?php echo $_prevUrl ?>" class="product-gallery-nav"><strong>&laquo; <?php echo $this->__('Prev') ?></strong></a>
-<?php endif; ?>
-<?php if($_nextUrl = $this->getNextImageUrl()): ?>
-<a href="<?php echo $_nextUrl ?>" class="product-gallery-nav"><strong><?php echo $this->__('Next') ?> &raquo;</strong></a>
-<?php endif; ?>
+<div><img<?php if($_width): ?> width="<?php echo $_width ?>"<?php endif; ?> src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $this->getImageFile()); ?>" alt="<?php echo $this->htmlEscape($this->getCurrentImage()->getLabel()) ?>" title="<?php echo $this->htmlEscape($this->getCurrentImage()->getLabel()) ?>" id="product-gallery-image" /></div>
+<div class="a-center">
+  <?php if($_prevUrl = $this->getPreviusImageUrl()): ?>
+  <a href="<?php echo $_prevUrl ?>" class="product-gallery-nav"><strong>&laquo; <?php echo $this->__('Prev') ?></strong></a>
+  <?php endif; ?>
+  <?php if($_nextUrl = $this->getNextImageUrl()): ?>
+  <a href="<?php echo $_nextUrl ?>" class="product-gallery-nav"><strong><?php echo $this->__('Next') ?> &raquo;</strong></a>
+  <?php endif; ?>
 </div>
-
+<div class="a-right"><a href="@" onclick="window.close(); return false;"><?php echo $this->__('Close Window') ?></a></div>
 <script type="text/javascript">
 Event.observe(window, 'load', function(){
     var demensions = $('product-gallery-image').getDimensions();

@@ -150,6 +150,9 @@ class Mage_Core_Model_Layout extends Varien_Simplexml_Config
         $removeInstructions = $xml->xpath("//remove");
         foreach ($removeInstructions as $infoNode) {
         	$attributes = $infoNode->attributes();
+        	if ($acl = (string)$attributes->acl && !Mage::getSingleton('admin/session')->isAllowed($acl)) {
+        	    $block->addAttribute('ignore', true);
+        	}
         	if ($blockName = (string)$attributes->name) {
                 $ignoreNodes = $xml->xpath("//block[@name='".$blockName."']");
                 foreach ($ignoreNodes as $block) {
@@ -495,7 +498,7 @@ class Mage_Core_Model_Layout extends Varien_Simplexml_Config
     /**
      * Get all blocks marked for output
      *
-     * @return array
+     * @return string
      */
     public function getOutput()
     {

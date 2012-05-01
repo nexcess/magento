@@ -42,18 +42,65 @@
         <tr>
             <td><?php echo $this->htmlEscape($_item->getName()) ?></td>
             <td class="a-right">
-                <?php $_price = $_item->getPrice() ?>
-                <?php $_finalPrice = $_item->getFinalPrice() ?>
+                <?php $simplePricesTax = ($this->helper('tax')->displayPriceIncludingTax() || $this->helper('tax')->displayBothPrices()); ?>
+                <?php $_price = $this->helper('tax')->getPrice($_item, $_item->getPrice(), $simplePricesTax) ?>
+                <?php $_regularPrice = $this->helper('tax')->getPrice($_item, $_item->getPrice(), $simplePricesTax) ?>
+                <?php $_finalPrice = $this->helper('tax')->getPrice($_item, $_item->getFinalPrice()) ?>
+                <?php $_finalPriceInclTax = $this->helper('tax')->getPrice($_item, $_item->getFinalPrice(), true) ?>
                 <?php if ($_finalPrice == $_price): ?>
-                    <span class="nobr"><?php echo Mage::helper('core')->currency($_price) ?></span><br />
+                    <?php if ($this->helper('tax')->displayBothPrices() && $_finalPriceInclTax != $_finalPrice): ?>
+                        <span class="price-excluding-tax">
+                            <span class="label"><?php echo $this->__('Excl. Tax:') ?></span>
+                            <span class="price" id="price-excluding-tax-<?php echo $_id ?>">
+                                <?php echo Mage::helper('core')->currency($_price) ?>
+                            </span>
+                        </span>
+                        <span class="price-including-tax">
+                            <span class="label"><?php echo $this->__('Incl. Tax:') ?></span>
+                            <span class="price" id="price-including-tax-<?php echo $_id ?>">
+                                <?php echo Mage::helper('core')->currency($_finalPriceInclTax) ?>
+                            </span>
+                        </span>
+                    <?php else: ?>
+                    <span class="regular-price"><?php echo Mage::helper('core')->currency($_price) ?></span>
+            		<?php endif; ?>
                 <?php else: ?>
-                    <span class="nobr old-price"><?php echo $this->__('Price') ?>&nbsp;<?php echo Mage::helper('core')->currency($_price) ?></span><br />
-                    <span class="nobr special-price" style="font-size:12px;"><?php echo $this->__('Special Price') ?>&nbsp;<?php echo Mage::helper('core')->currency($_finalPrice) ?></span>
+                    <span class="old-price">
+                        <span class="label"><?php echo $this->__('Price:') ?></span>
+                        <span class="price">
+                            <?php echo Mage::helper('core')->currency($_regularPrice) ?>
+                        </span>
+                    </span>
+
+                    <?php if ($this->helper('tax')->displayBothPrices() && $_finalPriceInclTax != $_finalPrice): ?>
+            	        <div class="special-price">
+            	            <span class="label"><?php echo $this->__('Special Price:') ?></span>
+
+            	            <span class="price-excluding-tax">
+            	                <span class="label"><?php echo $this->__('Excl. Tax:') ?></span>
+            	                <span class="price"><?php echo Mage::helper('core')->currency($_finalPrice) ?></span>
+            	            </span>
+                        <span class="price-including-tax">
+                            <span class="label"><?php echo $this->__('Incl. Tax:') ?></span>
+                            <span class="price"><?php echo Mage::helper('core')->currency($_finalPriceInclTax) ?></span>
+                        </span>
+            			</div>
+                    <?php else: ?>
+                    <span class="special-price">
+                        <span class="label"><?php echo $this->__('Special Price:') ?></span>
+                        <span class="price"><?php echo Mage::helper('core')->currency($_finalPrice) ?></span>
+                    </span>
+            		<?php endif; ?>
                 <?php endif; ?>
                 <?php if($_item->getTierPriceCount()): ?>
-                    <?php foreach ($_item->getFormatedTierPrice() as $_tierPrice): ?>
-                        <?php if($_tierPrice['price'] <= $_finalPrice): ?>
-                            <span class="nobr"><?php echo $this->__('Buy %s for %s', $_tierPrice['price_qty']*1, $_tierPrice['formated_price']) ?></span>
+                    <?php foreach ($this->getTierPrices($_item) as $_tierPrice): ?>
+                        <?php if($_tierPrice['price'] <= $_finalPriceInclTax): ?>
+                            <?php if ($this->helper('tax')->displayBothPrices() && $_tierPrice['formated_price'] != $_tierPrice['formated_price_incl_tax']): ?>
+                                <?php echo $this->__('Buy %s for %s each', $_tierPrice['price_qty'], '<span class="regular-price">'.$_tierPrice['formated_price'].'</span>') ?>
+                                <span class="price-including-tax">(<?php echo $_tierPrice['formated_price_incl_tax'] ?> <span class="label"><?php echo $this->__('Incl. Tax') ?></span>)</span>
+                            <?php else: ?>
+                                <?php echo $this->__('Buy %s for %s', $_tierPrice['price_qty']*1, '<span class="regular-price">'.$_tierPrice['formated_price'].'</span>') ?>
+                            <?php endif; ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -61,7 +108,7 @@
             <?php if ($_product->isSaleable()): ?>
             <td class="a-center">
             <?php if ($_item->isSaleable()) : ?>
-                <input name="super_group[<?php echo $_item->getId() ?>]" value="<?php echo $_item->getQty()*1 ?>" type="text" class="input-text qty"/>
+                <input name="super_group[<?php echo $_item->getId() ?>]" value="<?php echo $_item->getQty()*1 ?>" type="text" class="input-text qty" />
             <?php else: ?>
                 <?php echo $this->__('Out of stock.') ?>
             <?php endif; ?>
@@ -81,22 +128,6 @@
 
 <?php if($_product->isSaleable() && count($_associatedProducts)): ?>
     <p><small><?php echo $this->__('Availability: In stock.') ?></small></p>
-    <?php if($_product->isSaleable()): ?>
-        <button class="form-button" onclick="productAddToCartForm.submit()"><span><?php echo $this->__('Add to Cart') ?></span></button>
-        <?php if( $this->helper('wishlist')->isAllow() || $_compareUrl=$this->helper('catalog/product_compare')->getAddUrl($_product)): ?>
-            <strong><?php echo $this->__('OR') ?></strong>
-        <?php endif; ?>
-        &nbsp;&nbsp;
-    <?php endif; ?>
 <?php else: ?>
     <p><small><?php echo $this->__('Availability: Out of stock.') ?></small></p>
-<?php endif; ?>
-
-<?php if ($this->helper('wishlist')->isAllow()) : ?>
-    <a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>"><?php echo $this->__('Add to Wishlist') ?></a>
-<?php endif; ?>
-
-<?php if($_compareUrl=$this->helper('catalog/product_compare')->getAddUrl($_product)): ?>
-    <span class="pipe">|</span>
-    <a href="<?php echo $_compareUrl ?>"><?php echo $this->__('Add to Compare') ?></a>
 <?php endif; ?>

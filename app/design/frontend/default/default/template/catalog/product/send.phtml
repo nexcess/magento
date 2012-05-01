@@ -25,6 +25,7 @@
  */
 ?>
 <script type="text/javascript">
+/*<![CDATA[*/
     i=0;
     var recipCount  = 1;
     var maxRecip    = <?php echo $this->getMaxRecipients() ?>;
@@ -42,9 +43,9 @@
         ul = $('recipients_options');
         var li_mail = Element.extend(document.createElement("LI"));
         li_mail.addClassName('addElement');
-        li_mail.innerHTML = '<div align="right"><a href="delete_email" onclick="remove_recipient('+i+');return false"><img src="<?php echo $this->getSkinUrl('images/list_remove_btn.gif') ?>" alt="<?php echo $this->__('Remove Email') ?>"/></a></div>'
-        li_mail.innerHTML += '<div class="left"><label for="recipients_name"><?php echo $this->__('Name:') ?> <span class="required">*</span></label><br/><div style="width:250px"><input name="recipients[name][]" type="text" class="input-text required-entry" id="recipients_name'+i+'" style="width:250px;"/></div><br /><br /></div>';
-        li_mail.innerHTML += '<div class="right"><label for="recipients_email"><?php echo $this->__('Email Address:') ?><span class="required">*</span></label><br/><div style="width:250px"><input name="recipients[email][]" value="" title="<?php echo $this->__('Email Address') ?>" id="recipients_email'+i+'" type="text" class="input-text required-entry validate-email" style="width:250px;"/></div></div>';
+        li_mail.innerHTML = '<div align="right"><a href="delete_email" onclick="remove_recipient('+i+');return false"><img src="<?php echo $this->getSkinUrl('images/list_remove_btn.gif') ?>" alt="<?php echo $this->__('Remove Email') ?>" /><\/a><\/div>'
+        li_mail.innerHTML += '<div class="left"><label for="recipients_name"><?php echo $this->__('Name:') ?> <span class="required">*<\/span><\/label><br /><div style="width:250px"><input name="recipients[name][]" type="text" class="input-text required-entry" id="recipients_name'+i+'" style="width:250px;" /><\/div><br /><br /><\/div>';
+        li_mail.innerHTML += '<div class="right"><label for="recipients_email"><?php echo $this->__('Email Address:') ?><span class="required">*<\/span><\/label><br /><div style="width:250px"><input name="recipients[email][]" value="" title="<?php echo $this->__('Email Address') ?>" id="recipients_email'+i+'" type="text" class="input-text required-entry validate-email" style="width:250px;" /><\/div><\/div>';
         i++;
         recipCount++;
         if(recipCount>=maxRecip && maxRecip != 0) {
@@ -54,6 +55,7 @@
 
         ul.appendChild(li_mail);
     }
+/*]]>*/
 </script>
 
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
@@ -69,17 +71,17 @@
                  <ul class="form-list" id="sender_options">
                        <li>
                             <div class="left">
-                                <label for="sender_name"><?php echo $this->__('Name:') ?> <span class="required">*</span></label><br/>
-                                <div style="width:250px"><input name="sender[name]" value="<?php echo $this->htmlEscape($this->getUserName()) ?>" title="<?php echo $this->__('Name') ?>" id="sender_name" type="text" class="input-text required-entry" style="width:250px;"/></div>
+                                <label for="sender_name"><?php echo $this->__('Name:') ?> <span class="required">*</span></label><br />
+                                <div style="width:250px"><input name="sender[name]" value="<?php echo $this->htmlEscape($this->getUserName()) ?>" title="<?php echo $this->__('Name') ?>" id="sender_name" type="text" class="input-text required-entry" style="width:250px;" /></div>
                             </div>
                             <div class="right">
                                <label for="sender_email"><?php echo $this->__('Email:') ?> <span class="required">*</span></label><br/>
-                               <div style="width:250px"><input name="sender[email]" value="<?php echo $this->htmlEscape($this->getEmail()) ?>" title="<?php echo $this->__('Email Address') ?>" id="sender_email" type="text" class="input-text required-entry validate-email" style="width:250px;"/></div>
+                               <div style="width:250px"><input name="sender[email]" value="<?php echo $this->htmlEscape($this->getEmail()) ?>" title="<?php echo $this->__('Email Address') ?>" id="sender_email" type="text" class="input-text required-entry validate-email" style="width:250px;" /></div>
                             </div>
                         </li>
                         <li>
                             <label for="sender_message"><?php echo $this->__('Message:') ?></label><br/>
-                            <textarea name="sender[message]" class="input-text" id="sender_message" style="width:100%;height:100px"></textarea>
+                            <textarea name="sender[message]" cols="3" rows="3" class="input-text" id="sender_message" style="width:100%; height:100px"></textarea>
                         </li>
 
                  </ul>
@@ -93,11 +95,11 @@
                             <li>
                                 <div class="left">
                                     <label for="recipients_name"><?php echo $this->__('Name:') ?> <span class="required">*</span></label><br/>
-                                    <div style="width:250px"><input name="recipients[name][]" type="text" class="input-text required-entry" id="recipients_name" style="width:250px;"/></div><br /><br />
+                                    <div style="width:250px"><input name="recipients[name][]" type="text" class="input-text required-entry" id="recipients_name" style="width:250px;" /></div><br /><br />
                                 </div>
                                 <div class="right">
-                                    <label for="recipients_email"><?php echo $this->__('Email Address:') ?> <span class="required">*</span></label><br/>
-                                    <div style="width:250px"><input name="recipients[email][]" value="" title="<?php echo $this->__('Email Address') ?>" id="recipients_email" type="text" class="input-text required-entry validate-email" style="width:250px;"/></div>
+                                    <label for="recipients_email"><?php echo $this->__('Email Address:') ?> <span class="required">*</span></label><br />
+                                    <div style="width:250px"><input name="recipients[email][]" value="" title="<?php echo $this->__('Email Address') ?>" id="recipients_email" type="text" class="input-text required-entry validate-email" style="width:250px;" /></div>
                                 </div>
                             </li>
                     </ul>

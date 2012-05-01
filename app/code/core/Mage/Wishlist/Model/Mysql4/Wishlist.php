@@ -24,9 +24,12 @@
  *
  * @category   Mage
  * @package    Mage_Wishlist
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Wishlist_Model_Mysql4_Wishlist extends Mage_Core_Model_Mysql4_Abstract
 {
+
+    protected $_itemsCount = null;
 
     protected $_customerIdFieldName = 'customer_id';
 
@@ -48,11 +51,17 @@ class Mage_Wishlist_Model_Mysql4_Wishlist extends Mage_Core_Model_Mysql4_Abstrac
 
     public function fetchItemsCount(Mage_Wishlist_Model_Wishlist $wishlist)
     {
-        $read = $this->_getReadAdapter();
-        $select = $read->select()->from($this->getTable('wishlist/item'), 'count(*)')
-           ->where('wishlist_id=?', $wishlist->getId())
-           ->where('store_id in (?)', $wishlist->getSharedStoreIds());
-        return $read->fetchOne($select);
+        if (is_null($this->_itemsCount)) {
+            $collection = $wishlist->getProductCollection()
+                ->addAttributeToFilter('store_id', array('in'=>$wishlist->getSharedStoreIds()));
+
+            Mage::getSingleton('catalog/product_status')->addVisibleFilterToCollection($collection);
+            Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($collection);
+
+            $this->_itemsCount = $collection->getSize();
+        }
+
+        return $this->_itemsCount;
     }
 
 }

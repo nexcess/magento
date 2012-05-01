@@ -5,7 +5,15 @@
 
 #    Action php5-cgi /cgi-bin/php5-cgi
 #    AddHandler php5-cgi .php
-#    php_flag cgi.fix_pathinfo on
+
+############################################
+## GoDaddy specific options
+
+#   Options -MultiViews
+
+## you might also need to add this line to php.ini
+##     cgi.fix_pathinfo = 1
+## if it still doesn't work, rename php.ini to php5.ini
 
 ############################################
 ## this line is specific for 1and1 hosting
@@ -32,10 +40,34 @@
     php_flag magic_quotes_gpc off
 
 ############################################
+## disable automatic session start
+## before autoload was initialized
+
+    php_flag session.auto_start off
+
+############################################
 ## enable resulting html compression
 
     #php_flag zlib.output_compression on
 
+###########################################
+# disable user agent verification to not break multiple image upload
+
+    php_flag suhosin.session.cryptua off
+    
+###########################################
+# turn off compatibility with PHP4 when dealing with objects
+    
+    php_flag zend.ze1_compatibility_mode Off
+    
+</IfModule>
+
+<IfModule mod_security.c>
+###########################################
+# disable POST processing to not break multiple image upload
+
+    SecFilterEngine Off
+    SecFilterScanPOST Off
 </IfModule>
 
 <IfModule mod_deflate.c>
@@ -140,4 +172,4 @@
 ## http://developer.yahoo.com/performance/rules.html#etags
 
     #FileETag none
-    
+

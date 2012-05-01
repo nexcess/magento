@@ -21,7 +21,7 @@
 /**
  * Zend_Server_Reflection_Exception
  */
-require_once 'Zend/Server/Reflection/Exception.php';
+#require_once 'Zend/Server/Reflection/Exception.php';
 
 /**
  * Parameter Reflection

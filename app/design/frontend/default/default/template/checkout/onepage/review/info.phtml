@@ -19,34 +19,31 @@
  */
 ?>
 <table cellspacing="0" class="data-table" id="checkout-review-table">
+    <?php if ($this->helper('tax')->displayCartBothPrices()): $colspan = $rowspan = 2; else: $colspan = $rowspan = 1; endif; ?>
     <thead>
         <tr>
-            <th><?php echo $this->__('Product Name') ?></th>
-            <th class="a-right"><?php echo $this->__('Price') ?></th>
-            <th class="a-center"><?php echo $this->__('Qty') ?></th>
-            <th class="a-right"><?php echo $this->__('Subtotal') ?></th>
+            <th rowspan="<?php echo $rowspan ?>"><?php echo $this->__('Product Name') ?></th>
+            <th class="a-center" colspan="<?php echo $colspan ?>" width="10%"><?php echo $this->__('Price') ?></th>
+            <th class="a-center" rowspan="<?php echo $rowspan ?>" width="5%"><?php echo $this->__('Qty') ?></th>
+            <th class="a-center" colspan="<?php echo $colspan ?>" width="10%"><?php echo $this->__('Subtotal') ?></th>
         </tr>
+        <?php if ($this->helper('tax')->displayCartBothPrices()):?>
+        <tr>
+            <th class="a-center"><?php echo $this->__('Excl. Tax'); ?></th>
+            <th class="a-center"><?php echo $this->__('Incl. Tax'); ?></th>
+            <th class="a-center"><?php echo $this->__('Excl. Tax'); ?></th>
+            <th class="a-center"><?php echo $this->__('Incl. Tax'); ?></th>
+        </tr>
+        <?php endif; ?>
     </thead>
-    <tfoot>
-<?php $l=sizeof($this->getTotals()); $i=0; foreach($this->getTotals() as $total): $i++ ?>
-        <tr>
-            <td style="<?php echo $total->getStyle() ?>" class="a-right" colspan="3"><?php echo $total->getTitle() ?></td>
-            <td style="<?php echo $total->getStyle() ?>" class="a-right"><?php echo $this->helper('checkout')->formatPrice($total->getValue()) ?></td>
-        </tr>
-<?php endforeach ?>
-    </tfoot>
+    <?php echo $this->getChildHtml('totals'); ?>
     <tbody>
-<?php $l=sizeof($this->getItems()); $i=0; foreach($this->getItems() as $item): $i++ ?>
-        <tr>
-            <td>
-                <?php echo $this->htmlEscape($item->getName()) ?>
-                <?php echo $this->helper('checkout')->getQuoteItemProductDescription($item) ?>
-            </td>
-            <td class="a-right"><?php echo $this->helper('checkout')->formatPrice($item->getCalculationPrice()) ?></td>
-            <td class="a-center"><?php echo $item->getQty()*1 ?></td>
-            <td class="a-right"><?php echo $this->helper('checkout')->formatPrice($item->getRowTotal()) ?></td>
-        </tr>
-<?php endforeach ?>
+    <?php foreach($this->getItems() as $_item): ?>
+        <?php echo $this->getItemHtml($_item)?>
+    <?php endforeach ?>
     </tbody>
 </table>
-<script type="text/javascript">decorateTable('checkout-review-table')</script>
+<script type="text/javascript">
+    decorateTable('checkout-review-table');
+    truncateOptions();
+</script>

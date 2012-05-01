@@ -56,7 +56,7 @@
                     </td><td style="margin-bottom:5px;">
                         <input class="input-text" style="width:100px;" name="depends[package][recommended][]" value="<?php echo $self->getValue('depends/package/recommended/'.$_i) ?>"/>
                     </td><td style="margin-bottom:5px;">
-                        <input class="input-text" style="width:100px;" name="depends[package][exclude][]" <?php echo $self->getChecked('depends/package/exclude/'.$_i) ?>/>
+                        <input class="input-text" style="width:100px;" name="depends[package][exclude][]" value="<?php echo $self->getValue('depends/package/exclude/'.$_i) ?>"/>
                     </td><td style="margin-bottom:5px;">
                         <select name="depends[package][type][]" style="width:70px">
                             <?php foreach ($self->getDependTypes() as $_value=>$_label): ?>
@@ -118,7 +118,7 @@
                     </td><td style="margin-bottom:5px;">
                         <input class="input-text" style="width:100px;" name="depends[subpackage][recommended][]" value="<?php echo $self->getValue('depends/subpackage/recommended/'.$_i) ?>"/>
                     </td><td style="margin-bottom:5px;">
-                        <input class="input-text" style="width:100px;" name="depends[subpackage][exclude][]" <?php echo $self->getChecked('depends/subpackage/exclude/'.$_i) ?>/>
+                        <input class="input-text" style="width:100px;" name="depends[subpackage][exclude][]" value="<?php echo $self->getValue('depends/subpackage/exclude/'.$_i) ?>"/>
                     </td><td style="margin-bottom:5px;">
                         <select name="depends[subpackage][type][]" style="width:70px">
                         <?php foreach ($self->getDependTypes() as $_value=>$_label): ?>
@@ -181,7 +181,7 @@
                     </td><td style="margin-bottom:5px;">
                         <input class="input-text" style="width:100px;" name="depends[extension][recommended][]" value="<?php echo $self->getValue('depends/extension/recommended/'.$_i) ?>"/>
                     </td><td style="margin-bottom:5px;">
-                        <input class="input-text" style="width:100px;" name="depends[extension][exclude][]" <?php echo $self->getChecked('depends/extension/exclude/'.$_i) ?>/>
+                        <input class="input-text" style="width:100px;" name="depends[extension][exclude][]" value="<?php echo $self->getValue('depends/extension/exclude/'.$_i) ?>"/>
                     </td><td style="margin-bottom:5px;">
                         <select name="depends[extension][type][]" style="width:70px">
                             <?php foreach ($self->getDependTypes() as $_value=>$_label): ?>

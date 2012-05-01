@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Dataflow
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Dataflow_Model_Convert_Parser_Xml_Excel extends Mage_Dataflow_Model_Convert_Parser_Abstract
 {
@@ -44,7 +45,7 @@ class Mage_Dataflow_Model_Convert_Parser_Xml_Excel extends Mage_Dataflow_Model_C
     public function parse()
     {
         $adapterName   = $this->getVar('adapter', null);
-        $adapterMethod = $this->getVar('method', null);
+        $adapterMethod = $this->getVar('method', 'saveRow');
 
         if (!$adapterName || !$adapterMethod) {
             $message = Mage::helper('dataflow')->__('Please declare "adapter" and "method" node first');
@@ -72,7 +73,7 @@ class Mage_Dataflow_Model_Convert_Parser_Xml_Excel extends Mage_Dataflow_Model_C
 
         if (Mage::app()->getRequest()->getParam('files')) {
             $file = Mage::app()->getConfig()->getTempVarDir().'/import/'
-                . Mage::app()->getRequest()->getParam('files');
+                . urldecode(Mage::app()->getRequest()->getParam('files'));
             $this->_copy($file);
         }
 
@@ -150,7 +151,8 @@ class Mage_Dataflow_Model_Convert_Parser_Xml_Excel extends Mage_Dataflow_Model_C
         $this->addException(Mage::helper('dataflow')->__('Found %d rows', $this->_countRows));
         $this->addException(Mage::helper('dataflow')->__('Starting %s :: %s', $adapterName, $adapterMethod));
 
-        $batchModel->setAdapter($adapterName)
+        $batchModel->setParams($this->getVars())
+            ->setAdapter($adapterName)
             ->save();
 
 //        $adapter->$adapterMethod();
@@ -161,7 +163,7 @@ class Mage_Dataflow_Model_Convert_Parser_Xml_Excel extends Mage_Dataflow_Model_C
 //        $dom->loadXML($this->getData());
         if (Mage::app()->getRequest()->getParam('files')) {
             $path = Mage::app()->getConfig()->getTempVarDir().'/import/';
-            $file = $path.Mage::app()->getRequest()->getParam('files');
+            $file = $path.urldecode(Mage::app()->getRequest()->getParam('files'));
             if (file_exists($file)) {
                 $dom->load($file);
             }
@@ -465,11 +467,15 @@ class Mage_Dataflow_Model_Convert_Parser_Xml_Excel extends Mage_Dataflow_Model_C
         $xmlData = array();
         $xmlData[] = '<Row>';
         foreach ($fields as $value) {
-            $this->_xmlElement->row = $value;
+            $this->_xmlElement->row = htmlspecialchars($value);
             $value = str_replace($xmlHeader, '', $this->_xmlElement->asXML());
             $value = preg_replace($xmlRegexp, '\\1', $value);
+            $dataType = "String";
+            if (is_numeric($value)) {
+                $dataType = "Number";
+            }
 
-            $xmlData[] = '<Cell><Data ss:Type="String">'.$value.'</Data></Cell>';
+            $xmlData[] = '<Cell><Data ss:Type="'.$dataType.'">'.$value.'</Data></Cell>';
         }
         $xmlData[] = '</Row>';
 

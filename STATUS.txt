@@ -1,0 +1,21 @@
+This file tracks the status of Magento in the 1.1.x branch.
+
+FIXED BUGS:
+
+
+
+RESOLVED BUGS:
+
+
+
+IMPORTANT CHANGES:
+
+
+
+KNOWN ISSUES:
+
+
+
+NOTES:
+
+    Please check the SVN log if you are looking for the changes that are not listed here.

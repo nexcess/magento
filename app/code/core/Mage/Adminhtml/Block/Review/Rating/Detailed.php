@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Review_Rating_Detailed extends Mage_Adminhtml_Block_Template
@@ -52,8 +53,6 @@ class Mage_Adminhtml_Block_Review_Rating_Detailed extends Mage_Adminhtml_Block_T
                     ->setPositionOrder()
                     ->load()
                     ->addOptionToItems();
-
-
 
                 $this->_voteCollection = Mage::getModel('rating/rating_option_vote')
                     ->getResourceCollection()

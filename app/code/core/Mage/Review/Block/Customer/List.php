@@ -24,8 +24,9 @@
  *
  * @category   Mage
  * @package    Mage_Review
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Review_Block_Customer_List extends Mage_Core_Block_Template
+class Mage_Review_Block_Customer_List extends Mage_Customer_Block_Account_Dashboard
 {
 
     protected $_collection;
@@ -70,7 +71,7 @@ class Mage_Review_Block_Customer_List extends Mage_Core_Block_Template
 
     public function getReviewLink()
     {
-        return Mage::getUrl('customer/review/view/');
+        return Mage::getUrl('review/customer/view/');
     }
 
     public function getProductLink()

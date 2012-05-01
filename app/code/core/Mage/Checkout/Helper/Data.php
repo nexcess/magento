@@ -21,12 +21,12 @@
 /**
  * Checkout default helper
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    const GROUPED_PRODUCT_IMAGE     = 'checkout/cart/grouped_product_image';
-    const CONFIGURABLE_PRODUCT_IMAGE= 'checkout/cart/configurable_product_image';
-    const USE_PARENT_IMAGE = 'parent';
+    protected $_agreements = null;
+
     /**
      * Retrieve checkout session model
      *
@@ -47,127 +47,6 @@ class Mage_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getCheckout()->getQuote();
     }
 
-    public function getQuoteItemProduct(Mage_Sales_Model_Quote_Item_Abstract $item)
-    {
-        $superProduct = $item->getSuperProduct();
-        if ($superProduct) {
-            $product = $superProduct;
-        } else {
-            $product = $item->getProduct();
-        }
-
-        return $product;
-    }
-
-    public function getQuoteItemProductThumbnail($item)
-    {
-        $superProduct   = $item->getSuperProduct();
-        $product        = $item->getProduct();
-        if ($superProduct) {
-            if ($product->getData('thumbnail') == 'no_selection') {
-                $product = $superProduct;
-            }
-            elseif ($superProduct->isConfigurable()
-                    && Mage::getStoreConfig(self::CONFIGURABLE_PRODUCT_IMAGE) == self::USE_PARENT_IMAGE) {
-                $product = $superProduct;
-            }
-            elseif ($superProduct->isGrouped()
-                    && Mage::getStoreConfig(self::GROUPED_PRODUCT_IMAGE) == self::USE_PARENT_IMAGE) {
-                $product = $superProduct;
-            }
-        }
-
-        return $product;
-    }
-
-    /**
-     * Retrieve quote item product url
-     *
-     * @param   Mage_Sales_Model_Quote_Item $item
-     * @return  string
-     */
-    public function getQuoteItemProductUrl($item)
-    {
-        return $this->getQuoteItemProduct($item)->getProductUrl();
-    }
-
-    /**
-     * Retrieve quote item product name
-     *
-     * @param   Mage_Sales_Model_Quote_Item $item
-     * @return  string
-     */
-    public function getQuoteItemProductName($item)
-    {
-        $product = $this->getQuoteItemProduct($item);
-        if ($product && !$product->isGrouped()) {
-            return $product->getName();
-        }
-        return $item->getName();
-    }
-
-    /**
-     * Retrieve quote item product description
-     *
-     * @param   Mage_Sales_Model_Quote_Item $item
-     * @return  string
-     */
-    public function getQuoteItemProductDescription($item)
-    {
-        if ($superProduct = $item->getSuperProduct()) {
-            if ($superProduct->isConfigurable()) {
-                return $this->_getConfigurableProductDescription($item->getProduct());
-            }
-        }
-        return '';
-    }
-
-    /**
-     * Retrieve quote item qty
-     *
-     * @param   Mage_Sales_Model_Quote_Item $item
-     * @return  int || float
-     */
-    public function getQuoteItemQty($item)
-    {
-        return $item->getQty()*1;
-    }
-
-    /**
-     * Retrieve quote item product in stock flag
-     *
-     * @param   Mage_Sales_Model_Quote_Item $item
-     * @return  bool
-     */
-    public function getQuoteItemProductIsInStock($item)
-    {
-        if ($item->getProduct()->isSaleable()) {
-            if ($item->getProduct()->getQty()>=$item->getQty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected function _getConfigurableProductDescription($product)
-    {
-         $html = '<ul class="super-product-attributes">';
-         $attributes = $product->getSuperProduct()->getTypeInstance()->getUsedProductAttributes();
-         foreach ($attributes as $attribute) {
-             $html.= '<li><strong>' . $attribute->getFrontend()->getLabel() . ':</strong> ';
-             if($attribute->getSourceModel()) {
-                 $html.= $this->htmlEscape(
-                    $attribute->getSource()->getOptionText($product->getData($attribute->getAttributeCode()))
-                );
-             } else {
-                 $html.= $this->htmlEscape($product->getData($attribute->getAttributeCode()));
-             }
-             $html.='</li>';
-         }
-         $html.='</ul>';
-         return $html;
-    }
-
     public function formatPrice($price)
     {
         return $this->getQuote()->getStore()->formatPrice($price);
@@ -176,5 +55,47 @@ class Mage_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
     public function convertPrice($price, $format=true)
     {
         return $this->getQuote()->getStore()->convertPrice($price, $format);
+    }
+
+    public function getRequiredAgreementIds()
+    {
+        if (is_null($this->_agreements)) {
+            if (!Mage::getStoreConfigFlag('checkout/options/enable_agreements')) {
+                $this->_agreements = array();
+            } else {
+                $this->_agreements = Mage::getModel('checkout/agreement')->getCollection()
+                    ->addStoreFilter(Mage::app()->getStore()->getId())
+                    ->addFieldToFilter('is_active', 1)
+                    ->getAllIds();
+            }
+        }
+        return $this->_agreements;
+    }
+
+    /**
+     * Get onepage checkout availability
+     *
+     * @return bool
+     */
+    public function canOnepageCheckout()
+    {
+        if (Mage::getStoreConfig('checkout/options/onepage_checkout_disabled')) {
+            return false;
+        }
+        return true;
+    }
+
+    public function getPriceInclTax($item)
+    {
+        $price = ($item->getCalculationPrice() ? $item->getCalculationPrice() : $item->getPrice());
+        $qty = ($item->getQty() ? $item->getQty() : ($item->getQtyOrdered() ? $item->getQtyOrdered() : 1));
+        $tax = ($item->getTaxBeforeDiscount() ? $item->getTaxBeforeDiscount() : $item->getTaxAmount());
+        return $price+($tax/$qty);
+    }
+
+    public function getSubtotalInclTax($item)
+    {
+        $tax = ($item->getTaxBeforeDiscount() ? $item->getTaxBeforeDiscount() : $item->getTaxAmount());
+        return $item->getRowTotal()+$tax;
     }
 }

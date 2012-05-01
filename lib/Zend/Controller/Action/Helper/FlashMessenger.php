@@ -22,7 +22,7 @@
 /**
  * @see Zend_Session
  */
-require_once 'Zend/Session.php';
+#require_once 'Zend/Session.php';
 
 /**
  * Flash Messenger - implement session-based messages

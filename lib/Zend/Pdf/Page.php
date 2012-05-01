@@ -19,34 +19,34 @@
 
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 /** Zend_Pdf_Resource_Font */
-require_once 'Zend/Pdf/Resource/Font.php';
+#require_once 'Zend/Pdf/Resource/Font.php';
 
 /** Zend_Pdf_Style */
-require_once 'Zend/Pdf/Style.php';
+#require_once 'Zend/Pdf/Style.php';
 
 /** Zend_Pdf_Element_Dictionary */
-require_once 'Zend/Pdf/Element/Dictionary.php';
+#require_once 'Zend/Pdf/Element/Dictionary.php';
 
 /** Zend_Pdf_Element_Reference */
-require_once 'Zend/Pdf/Element/Reference.php';
+#require_once 'Zend/Pdf/Element/Reference.php';
 
 /** Zend_Pdf_ElementFactory */
-require_once 'Zend/Pdf/ElementFactory.php';
+#require_once 'Zend/Pdf/ElementFactory.php';
 
 /** Zend_Pdf_Color */
-require_once 'Zend/Pdf/Color.php';
+#require_once 'Zend/Pdf/Color.php';
 
 /** Zend_Pdf_Color_GrayScale */
-require_once 'Zend/Pdf/Color/GrayScale.php';
+#require_once 'Zend/Pdf/Color/GrayScale.php';
 
 /** Zend_Pdf_Color_Rgb */
-require_once 'Zend/Pdf/Color/Rgb.php';
+#require_once 'Zend/Pdf/Color/Rgb.php';
 
 /** Zend_Pdf_Color_Cmyk */
-require_once 'Zend/Pdf/Color/Cmyk.php';
+#require_once 'Zend/Pdf/Color/Cmyk.php';
 
 /**
  * PDF Page

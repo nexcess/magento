@@ -38,7 +38,7 @@ class Mage_Adminhtml_SitemapController extends  Mage_Adminhtml_Controller_Action
         $this->loadLayout()
             ->_setActiveMenu('catalog/system_sitemap')
             ->_addBreadcrumb(Mage::helper('catalog')->__('Catalog'), Mage::helper('catalog')->__('Catalog'))
-            ->_addBreadcrumb(Mage::helper('sitemap')->__('Google Sitemaps'), Mage::helper('sitemap')->__('Google Sitemaps'))
+            ->_addBreadcrumb(Mage::helper('sitemap')->__('Google Sitemap'), Mage::helper('sitemap')->__('Google Sitemap'))
         ;
         return $this;
     }

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Review
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Review_Block_List_Detailed extends Mage_Catalog_Block_Product_View

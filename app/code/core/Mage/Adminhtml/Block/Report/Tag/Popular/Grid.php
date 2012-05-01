@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Report_Tag_Popular_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -90,6 +91,25 @@ class Mage_Adminhtml_Block_Report_Tag_Popular_Grid extends Mage_Adminhtml_Block_
             'index'     =>'historical_uses'
         ));
 
+        $this->addColumn('action',
+            array(
+                'header'    => Mage::helper('catalog')->__('Action'),
+                'width'     => '100%',
+                'type'      => 'action',
+                'getter'    => 'getId',
+                'actions'   => array(
+                    array(
+                        'caption' => Mage::helper('catalog')->__('Show Details'),
+                        'url'     => array(
+                            'base'=>'*/*/tagDetail'
+                        ),
+                        'field'   => 'id'
+                    )
+                ),
+                'filter'    => false,
+                'sortable'  => false,
+                'index'     => 'stores',
+        ));
         $this->setFilterVisibility(false);
 
         $this->addExportType('*/*/exportPopularCsv', Mage::helper('reports')->__('CSV'));

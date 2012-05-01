@@ -28,16 +28,11 @@ class Mage_Sales_Model_Quote_Address_Rate extends Mage_Shipping_Model_Rate_Abstr
         $this->_init('sales/quote_address_rate');
     }
 
-    public function __destruct()
-    {
-        unset($this->_address);
-    }
-
     protected function _beforeSave()
     {
         parent::_beforeSave();
         if ($this->getAddress()) {
-            $this->setParentId($this->getAddress()->getId());
+            $this->setAddressId($this->getAddress()->getId());
         }
         return $this;
     }

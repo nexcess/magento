@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_Action
 {
@@ -31,10 +32,10 @@ class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_A
      */
     public function indexAction()
     {
-    	if($this->getRequest()->getParam('ajax')) {
-    		$this->_forward('grid');
-    		return;
-    	}
+        if($this->getRequest()->getParam('ajax')) {
+            $this->_forward('grid');
+            return;
+        }
 
         $this->loadLayout();
         $this->_setActiveMenu('system');
@@ -60,18 +61,18 @@ class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_A
      */
     public function createAction()
     {
-        $backup = Mage::getModel('backup/backup')
+        try {
+            $backupDb = Mage::getModel('backup/db');
+            $backup   = Mage::getModel('backup/backup')
                 ->setTime(time())
                 ->setType('db')
                 ->setPath(Mage::getBaseDir("var") . DS . "backups");
 
-        try {
-    	    $dbDump = Mage::getModel('backup/db')->renderSql();
-    	    $backup->setFile($dbDump);
+            $backupDb->createBackup($backup);
             $this->_getSession()->addSuccess(Mage::helper('adminhtml')->__('Backup successfully created'));
         }
         catch (Exception  $e) {
-        	 // Nothing
+            $this->_getSession()->addException($e, Mage::helper('adminhtml')->__('Error while create backup. Please try again later'));
         }
         $this->_redirect('*/*');
     }
@@ -82,23 +83,29 @@ class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_A
     public function downloadAction()
     {
         $backup = Mage::getModel('backup/backup')
-                ->setTime((int)$this->getRequest()->getParam('time'))
-                ->setType($this->getRequest()->getParam('type'))
-                ->setPath(Mage::getBaseDir("var") . DS . "backups");
+            ->setTime((int)$this->getRequest()->getParam('time'))
+            ->setType($this->getRequest()->getParam('type'))
+            ->setPath(Mage::getBaseDir("var") . DS . "backups");
 
         if (!$backup->exists()) {
             $this->_redirect('*/*');
         }
 
-        if ($this->getRequest()->getParam('file') == 'gz') {
-            $fileName = 'backup-' . date('YmdHis', $backup->getTime()) . '.sql.gz';
-            $fileContent = gzencode($backup->getFile(),7);
-        } else {
-            $fileName = 'backup-' . date('YmdHis', $backup->getTime()) . '.sql';
-            $fileContent = $backup->getFile();
-        }
-        
-        $this->_prepareDownloadResponse($fileName, $fileContent);
+        $fileName = 'backup-' . date('YmdHis', $backup->getTime()) . '.sql.gz';
+
+        $this->getResponse()
+            ->setHttpResponseCode(200)
+            ->setHeader('Pragma', 'public', true)
+            ->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true)
+            ->setHeader('Content-type', 'application/octet-stream', true)
+            ->setHeader('Content-Length', $backup->getSize())
+            ->setHeader('Content-Disposition', 'attachment; filename='.$fileName)
+            ->clearBody();
+        $this->getResponse()
+            ->sendHeaders();
+
+        $backup->output();
+        exit();
     }
 
     /**
@@ -107,16 +114,16 @@ class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_A
     public function deleteAction()
     {
         try {
-	    	$backup = Mage::getModel('backup/backup')
-	                ->setTime((int)$this->getRequest()->getParam('time'))
-	                ->setType($this->getRequest()->getParam('type'))
-	                ->setPath(Mage::getBaseDir("var") . DS . "backups")
-	                ->deleteFile();
+            $backup = Mage::getModel('backup/backup')
+                ->setTime((int)$this->getRequest()->getParam('time'))
+                ->setType($this->getRequest()->getParam('type'))
+                ->setPath(Mage::getBaseDir("var") . DS . "backups")
+                ->deleteFile();
 
-	        $this->_getSession()->addSuccess(Mage::helper('adminhtml')->__('Backup record was deleted'));
+            $this->_getSession()->addSuccess(Mage::helper('adminhtml')->__('Backup record was deleted'));
         }
         catch (Exception $e) {
-        		// Nothing
+                // Nothing
         }
 
         $this->_redirect('*/*/');
@@ -125,7 +132,7 @@ class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_A
 
     protected function _isAllowed()
     {
-	    return Mage::getSingleton('admin/session')->isAllowed('system/tools/backup');
+        return Mage::getSingleton('admin/session')->isAllowed('system/tools/backup');
     }
 
     /**
@@ -137,5 +144,4 @@ class Mage_Adminhtml_System_BackupController extends Mage_Adminhtml_Controller_A
     {
         return Mage::getSingleton('adminhtml/session');
     }
-
 }

@@ -17,7 +17,6 @@
 
 #nav { padding:0 20px; font-size:1.1em; z-index:999; }
 
-
 /************** ALL LEVELS  *************/ /* Style consistent throughout all nav levels */
 #nav li {
 	list-style:none;
@@ -78,26 +77,5 @@
 #nav ul span, #nav ul li.last li span { padding:3px 15px 4px 15px;}
 
 
-
 /************ 3RD+ LEVEL ************/
-
 #nav ul ul { top:5px; }
-
-/*
-#nav ul ul ul { left:-10000px; }
-#nav li.over ul li.over ul ul { left:-10000px; }
-#nav li.over ul li.over ul li.over ul { left:100px; }
-*/
-
-/* Fix for the IE bug */
-
-#nav iframe {
-position: absolute;
-left: -1px;
-top: 0;
-z-index: -1;
-background:transparent;
-filter: progid:DXImageTransform.Microsoft.Alpha(style=0,opacity=0);
-}
-.debug {border:1px solid red!important;}
-

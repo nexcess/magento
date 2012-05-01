@@ -22,12 +22,57 @@
 <config>
     <modules>
         <Mage_Catalog>
-            <version>0.7.32</version>
-            <depends>
-                <Mage_Customer />
-            </depends>
+            <version>0.7.46</version>
         </Mage_Catalog>
     </modules>
+
+    <admin>
+        <fieldsets>
+            <catalog_product_dataflow>
+                <qty><inventory>1</inventory><to_number>1</to_number></qty>
+                <min_qty><inventory>1</inventory><to_number>1</to_number><use_config>1</use_config></min_qty>
+                <is_qty_decimal><inventory>1</inventory></is_qty_decimal>
+                <backorders><inventory>1</inventory><use_config>1</use_config></backorders>
+                <min_sale_qty><inventory>1</inventory><to_number>1</to_number><use_config>1</use_config></min_sale_qty>
+                <max_sale_qty><inventory>1</inventory><to_number>1</to_number><use_config>1</use_config></max_sale_qty>
+                <is_in_stock><inventory>1</inventory><inventory_other>1</inventory_other></is_in_stock>
+                <notify_stock_qty><inventory>1</inventory><use_config>1</use_config></notify_stock_qty>
+
+                <image><img>1</img></image>
+                <small_image><img>1</img></small_image>
+                <thumbnail><img>1</img></thumbnail>
+
+                <store><external>1</external></store>
+                <websites><external>1</external></websites>
+                <sku><external>1</external></sku>
+                <attribute_set><external>1</external><ignore>1</ignore></attribute_set>
+                <type><external>1</external><ignore>1</ignore></type>
+                <name><external>1</external><required>1</required></name>
+                <description><external>1</external><required>1</required></description>
+                <short_description><external>1</external><required>1</required></short_description>
+                <weight><external>1</external><required>1</required></weight>
+                <price><external>1</external><required>1</required></price>
+
+                <tax_class_id><required>1</required></tax_class_id>
+                <category_ids><ignore>1</ignore></category_ids>
+
+                <entity_id><system>1</system><internal>1</internal><ignore>1</ignore></entity_id>
+                <old_id><internal>1</internal></old_id>
+                <tier_price><internal>1</internal></tier_price>
+                <media_gallery><internal>1</internal></media_gallery>
+
+                <entity_type_id><system>1</system></entity_type_id>
+                <attribute_set_id><system>1</system><ignore>1</ignore></attribute_set_id>
+                <type_id><system>1</system><ignore>1</ignore></type_id>
+                <created_at><system>1</system></created_at>
+                <updated_at><system>1</system></updated_at>
+                <item_id><system>1</system></item_id>
+                <product_id><system>1</system></product_id>
+                <stock_id><system>1</system></stock_id>
+            </catalog_product_dataflow>
+        </fieldsets>
+    </admin>
+
     <global>
         <models>
             <catalog>
@@ -102,12 +147,27 @@
                     <product_attribute_media_gallery_image>
                         <table>catalog_product_entity_media_gallery_image</table>
                     </product_attribute_media_gallery_image>
+
+                    <product_option>
+                        <table>catalog_product_option</table>
+                    </product_option>
+                    <product_option_price>
+                        <table>catalog_product_option_price</table>
+                    </product_option_price>
+                    <product_option_title>
+                        <table>catalog_product_option_title</table>
+                    </product_option_title>
+                    <product_option_type_value>
+                        <table>catalog_product_option_type_value</table>
+                    </product_option_type_value>
+                    <product_option_type_price>
+                        <table>catalog_product_option_type_price</table>
+                    </product_option_type_price>
+                    <product_option_type_title>
+                        <table>catalog_product_option_type_title</table>
+                    </product_option_type_title>
                 </entities>
             </catalog_resource_eav_mysql4>
-
-            <catalog_mysql4>
-                <class>Mage_Catalog_Model_Mysql4</class>
-            </catalog_mysql4>
         </models>
         <resources>
             <catalog_setup>
@@ -127,7 +187,7 @@
             <catalog_read>
                 <connection>
                     <use>core_read</use>
-                </connection>
+                    </connection>
             </catalog_read>
         </resources>
 
@@ -149,8 +209,28 @@
                     <configurable translate="label" module="catalog">
                         <label>Configurable Product</label>
                         <model>catalog/product_type_configurable</model>
+                        <price_model>catalog/product_type_configurable_price</price_model>
+                        <allow_product_types>
+                            <simple/>
+                            <virtual/>
+                        </allow_product_types>
                     </configurable>
+                    <virtual translate="label" module="catalog">
+                        <label>Virtual Product</label>
+                        <model>catalog/product_type_virtual</model>
+                    </virtual>
                 </type>
+                <design>
+                    <options_container>
+                        <option1 translate="label">
+                            <value>container1</value>
+                            <label>Product Info Column</label></option1>
+                        <option2 translate="label">
+                            <value>container2</value>
+                            <label>Block after Info Column</label>
+                        </option2>
+                    </options_container>
+                </design>
             </product>
         </catalog>
     </global>
@@ -307,6 +387,15 @@
                     </catalog>
                 </observers>
             </category_move>
+            <catalog_product_import_after>
+                <observers>
+                    <catalogindex>
+                        <type>singleton</type>
+                        <class>catalog/observer</class>
+                        <method>catalogProductImportAfter</method>
+                    </catalogindex>
+                </observers>
+            </catalog_product_import_after>
         </events>
         <translate>
             <modules>
@@ -365,12 +454,37 @@
                 <list>5,10,15,20,25</list>
             </per_page_values>
         </catalog>
+        <product>
+            <collection>
+                <attributes>
+                    <name />
+                    <url_key />
+                    <price />
+                    <special_price />
+                    <special_from_date />
+                    <special_to_date />
+                    <description />
+                    <short_description />
+                    <image />
+                    <thumbnail />
+                    <small_image />
+                    <tax_class_id />
+                    <status />
+                </attributes>
+            </collection>
+        </product>
     </frontend>
 
     <default>
         <catalog>
+            <navigation>
+                <max_depth>0</max_depth>
+            </navigation>
+
             <frontend>
                 <list_mode>grid-list</list_mode>
+                <grid_per_page_values>9,15,30</grid_per_page_values>
+                <list_per_page_values>5,10,15,20,25</list_per_page_values>
                 <grid_per_page>9</grid_per_page>
                 <list_per_page>10</list_per_page>
             </frontend>
@@ -381,9 +495,15 @@
 
             <seo>
                 <product_url_suffix>.html</product_url_suffix>
+                <category_url_suffix>/index.html</category_url_suffix>
                 <product_use_categories>1</product_use_categories>
                 <title_separator>-</title_separator>
             </seo>
+<!--
+            <layer>
+                <configurable_children>1</configurable_children>
+            </layer>
+-->
         </catalog>
     </default>
 </config>

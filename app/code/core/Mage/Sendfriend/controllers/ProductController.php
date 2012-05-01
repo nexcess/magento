@@ -98,6 +98,11 @@ class Mage_Sendfriend_ProductController extends Mage_Core_Controller_Front_Actio
             return;
         }
 
+        $categoryId = $this->getRequest()->getParam('cat_id', null);
+        if ($categoryId && $category = Mage::getModel('catalog/category')->load($categoryId)) {
+            Mage::register('current_category', $category);
+        }
+
         $sendToFriendModel->setSender($this->getRequest()->getPost('sender'));
         $sendToFriendModel->setRecipients($this->getRequest()->getPost('recipients'));
         $sendToFriendModel->setIp(Mage::getSingleton('log/visitor')->getRemoteAddr());

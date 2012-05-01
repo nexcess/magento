@@ -26,7 +26,7 @@
  * @package    Mage_Paypal
  *
  */
-class Mage_Paypal_Model_Mysql4_Setup extends Mage_Eav_Model_Entity_Setup
+class Mage_Paypal_Model_Mysql4_Setup extends Mage_Sales_Model_Mysql4_Setup
 {
 
 }

@@ -21,12 +21,12 @@
 /**
  * Zend_Server_Reflection_Method
  */
-require_once 'Zend/Server/Reflection/Method.php';
+#require_once 'Zend/Server/Reflection/Method.php';
 
 /**
  * Zend_Server_Reflection_Exception
  */
-require_once 'Zend/Server/Reflection/Exception.php';
+#require_once 'Zend/Server/Reflection/Exception.php';
 
 /**
  * Class/Object reflection

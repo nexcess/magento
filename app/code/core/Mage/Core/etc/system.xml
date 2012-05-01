@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <!--
 /**
  * Magento
@@ -261,6 +261,16 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </name>
+                        <ua_regexp translate="comment">
+                            <label></label>
+                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Match expresions in the same order as displayed in the configuration.</comment>
+                        </ua_regexp>
                     </fields>
                 </package>
                 <theme translate="label">
@@ -271,46 +281,83 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <default translate="label">
-                            <label>Default</label>
+                        <locale translate="label">
+                            <label>Translations</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </default>
-                        <layout translate="label">
-                            <label>Layout</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </layout>
-                        <skin translate="label">
-                            <label>Skin (Images / CSS)</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </skin>
+                        </locale>
                         <template translate="label">
                             <label>Templates</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </template>
-                        <translate translate="label">
-                            <label>Translations</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                        <template_ua_regexp translate="comment">
+                            <label></label>
+                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>25</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </translate>
+                            <comment>Match expresions in the same order as displayed in the configuration.</comment>
+                        </template_ua_regexp>
+                        <skin translate="label">
+                            <label>Skin (Images / CSS)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </skin>
+                        <skin_ua_regexp translate="comment">
+                            <label></label>
+                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>35</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </skin_ua_regexp>
+                        <default translate="label">
+                            <label>Default</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </default>
+                        <default_ua_regexp translate="comment">
+                            <label></label>
+                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </default_ua_regexp>
+                        <layout translate="label">
+                            <label>Layout</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </layout>
+                        <layout_ua_regexp translate="comment">
+                            <label></label>
+                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>55</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </layout_ua_regexp>
                     </fields>
                 </theme>
             </groups>
@@ -369,6 +416,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </template_hints>
+                        <template_hints_blocks translate="label">
+                            <label>Add Block Names to Hints</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>21</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </template_hints_blocks>
                     </fields>
                 </debug>
                 <translate_inline>
@@ -525,64 +581,6 @@
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
             <groups>
-                <filesystem translate="label">
-                    <label>Filesystem</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>10</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <base translate="label">
-                            <label>Base directory</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </base>
-                        <code translate="label">
-                            <label>Code pools root directory</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </code>
-                        <media translate="label">
-                            <label>Media files directory</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </media>
-                        <skin translate="label">
-                            <label>Skin directory</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </skin>
-                        <var translate="label">
-                            <label>Var (temporary files) directory</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>70</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </var>
-                        <session translate="label">
-                            <label>Session files directory</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>80</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </session>
-                    </fields>
-                </filesystem>
                 <smtp translate="label">
                     <label>SMTP settings (Windows server only)</label>
                     <frontend_type>text</frontend_type>
@@ -645,13 +643,24 @@
                         -->
                     </fields>
                 </smtp>
+            </groups>
+        </system>
+        <admin translate="label" module="core">
+            <label>Admin</label>
+            <tab>advanced</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>20</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>0</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
                 <emails translate="label">
-                    <label>Admin User</label>
+                    <label>Admin User Emails</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>30</sort_order>
+                    <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
                     <fields>
                         <forgot_email_template translate="label">
                             <label>Forgot Password Email Template</label>
@@ -673,8 +682,57 @@
                         </forgot_email_identity>
                     </fields>
                 </emails>
+                <startup translate="label">
+                    <label>Startup page</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <page translate="label">
+                            <label>Startup page</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_admin_page</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </page>
+                    </fields>
+                </startup>
+                <url translate="label">
+                    <label>Admin Base URL</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <use_custom translate="label">
+                            <label>Use custom admin URL</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <backend_model>adminhtml/system_config_backend_admin_usecustom</backend_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </use_custom>
+                        <custom translate="label">
+                            <label>Custom admin URL</label>
+                            <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_admin_custom</backend_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Please make sure that Base URL ends with '/' (slash), e.g. http://yourdomain/magento/</comment>
+                        </custom>
+                    </fields>
+                </url>
             </groups>
-        </system>
+        </admin>
         <web translate="label" module="core">
             <label>Web</label>
             <tab>general</tab>
@@ -684,6 +742,26 @@
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
             <groups>
+                <url translate="label">
+                    <label>Url Options</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <use_store translate="label">
+                            <label>Add Store Code to Urls</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <backend_model>adminhtml/system_config_backend_store</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </use_store>
+                    </fields>
+                </url>
                 <seo translate="label">
                     <label>Search Engines Optimization</label>
                     <frontend_type>text</frontend_type>
@@ -828,8 +906,8 @@
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>65</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
                         </use_in_adminhtml>
                     </fields>
                 </secure>
@@ -859,6 +937,14 @@
                         </no_route>
                     </fields>
                 </default>
+                <polls translate="label">
+                    <label>Polls</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                </polls>
                 <cookie translate="label">
                     <label>Session Cookie management</label>
                     <frontend_type>text</frontend_type>

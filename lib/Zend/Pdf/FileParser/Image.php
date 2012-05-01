@@ -19,10 +19,10 @@
  */
 
 /** Zend_Pdf_FileParser */
-require_once 'Zend/Pdf/FileParser.php';
+#require_once 'Zend/Pdf/FileParser.php';
 
 /** Zend_Log */
-require_once 'Zend/Log.php';
+#require_once 'Zend/Log.php';
 
 
 /**

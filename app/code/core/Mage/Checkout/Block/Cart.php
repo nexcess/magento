@@ -20,9 +20,6 @@
 
 class Mage_Checkout_Block_Cart extends Mage_Checkout_Block_Cart_Abstract
 {
-
-    protected $_totals;
-
     public function chooseTemplate()
     {
         if ($this->getQuote()->hasItems()) {
@@ -37,81 +34,24 @@ class Mage_Checkout_Block_Cart extends Mage_Checkout_Block_Cart_Abstract
         return $this->getQuote()->getHasError();
     }
 
-    public function getItems()
-    {
-        return $this->getQuote()->getAllItems();
-    }
-
     public function getItemsSummaryQty()
     {
         return $this->getQuote()->getItemsSummaryQty();
     }
 
-    public function getTotals()
-    {
-        return $this->getTotalsCache();
-    }
-
-    public function getTotalsCache()
-    {
-        if (empty($this->_totals)) {
-            $this->_totals = $this->getQuote()->getTotals();
-        }
-        return $this->_totals;
-    }
-
-    public function getGiftcertCode()
-    {
-        return $this->getQuote()->getGiftcertCode();
-    }
-
     public function isWishlistActive()
     {
-        return $this->_isWishlistActive;
+        $isActive = $this->_getData('is_wishlist_active');
+        if ($isActive === null) {
+            $isActive = Mage::getStoreConfig('wishlist/general/active') && Mage::getSingleton('customer/session')->isLoggedIn();
+            $this->setIsWishlistActive($isActive);
+        }
+        return $isActive;
     }
 
     public function getCheckoutUrl()
     {
         return $this->getUrl('checkout/onepage', array('_secure'=>true));
-    }
-
-    public function getItemProduct(Mage_Sales_Model_Quote_Item $item)
-    {
-        return $this->helper('checkout')->getQuoteItemProduct($item);
-    }
-    public function getItemProductForThumbnail(Mage_Sales_Model_Quote_Item $item)
-    {
-        return $this->helper('checkout')->getQuoteItemProductThumbnail($item);
-    }
-
-    public function getItemDeleteUrl(Mage_Sales_Model_Quote_Item $item)
-    {
-        return $this->getUrl('checkout/cart/delete', array('id'=>$item->getId()));
-    }
-
-    public function getItemUrl($item)
-    {
-        return $this->helper('checkout')->getQuoteItemProductUrl($item);
-    }
-
-    public function getItemName($item)
-    {
-        return $this->helper('checkout')->getQuoteItemProductName($item);
-    }
-
-    public function getItemDescription($item)
-    {
-        return $this->helper('checkout')->getQuoteItemProductDescription($item);
-    }
-
-    public function getItemQty($item)
-    {
-        return $this->helper('checkout')->getQuoteItemQty($item);
-    }
-
-    public function getItemIsInStock($item)
-    {
-        return $this->helper('checkout')->getQuoteItemProductIsInStock($item);
     }
 
     public function getContinueShoppingUrl()
@@ -127,9 +67,9 @@ class Mage_Checkout_Block_Cart extends Mage_Checkout_Block_Cart_Abstract
         return $url;
     }
 
-    public function getIncExcTax($flag)
+    public function getIsVirtual()
     {
-        $text = Mage::helper('tax')->getIncExcText($flag);
-        return $text ? ' ('.$text.')' : '';
+        return $this->helper('checkout/cart')->getIsVirtualQuote();
     }
+
 }

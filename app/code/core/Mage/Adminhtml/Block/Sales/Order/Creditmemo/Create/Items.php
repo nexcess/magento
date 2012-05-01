@@ -23,20 +23,11 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
-class Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Items extends Mage_Adminhtml_Block_Sales_Order_Abstract
+class Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Items extends Mage_Adminhtml_Block_Sales_Items_Abstract
 {
-    /**
-     * Initialize template
-     */
-    protected function _construct()
-    {
-        parent::_construct();
-        $this->setTemplate('sales/order/creditmemo/create/items.phtml');
-        $this->setOrder($this->getCreditmemo()->getOrder());
-    }
-
     /**
      * Prepare child blocks
      *
@@ -89,27 +80,55 @@ class Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Items extends Mage_Admi
             );
         }
 
-
-        $totalsBlock = $this->getLayout()->createBlock('adminhtml/sales_order_totals')
-            ->setTemplate('sales/order/creditmemo/create/totals.phtml')
-            ->setSource($this->getCreditmemo())
-            ->setOrder($this->getCreditmemo()->getOrder());
-        $this->setChild('totals', $totalsBlock);
-
-        $orderPayment = $this->getCreditmemo()->getOrder()->getPayment();
-        $this->setPriceDataObject($orderPayment);
-        $totalsBarBlock = $this->getLayout()->createBlock('adminhtml/sales_order_totalbar')
-            ->setOrder($this->getCreditmemo()->getOrder())
-            ->addTotal(Mage::helper('sales')->__('Paid Amount'), $this->displayPriceAttribute('amount_paid'))
-            ->addTotal(Mage::helper('sales')->__('Refund Amount'), $this->displayPriceAttribute('amount_refunded'))
-            ->addTotal(Mage::helper('sales')->__('Shipping Amount'), $this->displayPriceAttribute('shipping_captured'))
-            ->addTotal(Mage::helper('sales')->__('Shipping Refund'), $this->displayPriceAttribute('shipping_refunded'));
-        $this->setPriceDataObject($this->getCreditmemo()->getOrder());
-        $totalsBarBlock->addTotal(Mage::helper('sales')->__('Order Grand Total'), $this->displayPriceAttribute('grand_total'), true);
-
-        $this->setChild('totals_bar', $totalsBarBlock);
-
         return parent::_prepareLayout();
+    }
+
+    /**
+     * Retrieve invoice order
+     *
+     * @return Mage_Sales_Model_Order
+     */
+    public function getOrder()
+    {
+        return $this->getCreditmemo()->getOrder();
+    }
+
+    /**
+     * Retrieve source
+     *
+     * @return Mage_Sales_Model_Order_Creditmemo
+     */
+    public function getSource()
+    {
+        return $this->getCreditmemo();
+    }
+
+    /**
+     * Retrieve order totals block settings
+     *
+     * @return array
+     */
+    public function getOrderTotalData()
+    {
+        return array();
+    }
+
+    /**
+     * Retrieve order totalbar block data
+     *
+     * @return array
+     */
+    public function getOrderTotalbarData()
+    {
+        $totalbarData = array();
+        $this->setPriceDataObject($this->getCreditmemo());
+        $totalbarData[] = array(Mage::helper('sales')->__('Paid Amount'), $this->displayPriceAttribute('amount_paid'), false);
+        $totalbarData[] = array(Mage::helper('sales')->__('Refund Amount'), $this->displayPriceAttribute('amount_refunded'), false);
+        $totalbarData[] = array(Mage::helper('sales')->__('Shipping Amount'), $this->displayPriceAttribute('shipping_captured'), false);
+        $totalbarData[] = array(Mage::helper('sales')->__('Shipping Refund'), $this->displayPriceAttribute('shipping_refunded'), false);
+        $totalbarData[] = array(Mage::helper('sales')->__('Order Grand Total'), $this->displayPriceAttribute('grand_total'), true);
+
+        return $totalbarData;
     }
 
     /**
@@ -143,21 +162,13 @@ class Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Items extends Mage_Admi
         ));
     }
 
-    protected function _getQtyBlock()
-    {
-        $block = $this->getData('_qty_block');
-        if (is_null($block)) {
-            $block = $this->getLayout()->createBlock('adminhtml/sales_order_item_qty');
-            $this->setData('_qty_block', $block);
-        }
-        return $block;
-    }
+    public function canReturnToStock() {
 
-    public function getQtyHtml($item)
-    {
-        $html = $this->_getQtyBlock()
-            ->setItem($item)
-            ->toHtml();
-        return $html;
+        $canReturnToStock = Mage::getStoreConfig('cataloginventory/options/can_subtract');
+        if (Mage::getStoreConfig('cataloginventory/options/can_subtract')) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -29,6 +29,9 @@ class Mage_Sales_Model_Order_Creditmemo_Total_Discount extends Mage_Sales_Model_
         $totalDiscountAmount = 0;
         $baseTotalDiscountAmount = 0;
         foreach ($creditmemo->getAllItems() as $item) {
+            if ($item->getOrderItem()->isDummy()) {
+                continue;
+            }
             $orderItemDiscount      = (float) $item->getOrderItem()->getDiscountAmount();
             $baseOrderItemDiscount  = (float) $item->getOrderItem()->getBaseDiscountAmount();
             $orderItemQty       = $item->getOrderItem()->getQtyOrdered();

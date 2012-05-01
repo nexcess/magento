@@ -21,6 +21,7 @@
 /**
  * Log visitor aggregator
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Log_Model_Visitor_Aggregator extends Varien_Object

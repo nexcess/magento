@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Rating
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Rating_Model_Mysql4_Rating_Entity extends Mage_Core_Model_Mysql4_Abstract

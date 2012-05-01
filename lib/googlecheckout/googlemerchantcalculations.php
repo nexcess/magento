@@ -77,9 +77,13 @@
         } else
           $xml_data->Push('result', array('address-id' => $result->address_id));
 
-        if($result->tax_amount != "")
+        if($result->tax_amount != "") {
           $xml_data->Element('total-tax', $result->tax_amount,
               array('currency' => $this->currency));
+        } else {
+          $xml_data->Element('total-tax', 0,
+              array('currency' => $this->currency));
+        }
 
         if((count($result->coupon_arr) != 0) ||
             (count($result->giftcert_arr) != 0) )  {

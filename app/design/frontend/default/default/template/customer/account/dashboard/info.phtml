@@ -22,12 +22,11 @@
     <div class="col-1">
         <div class="inner-head">
             <h5><?php echo $this->__('Contact Information') ?></h5>
-            <a href="<?php echo $this->getUrl('customer/account/edit') ?>">Edit</a>
+            <a href="<?php echo $this->getUrl('customer/account/edit') ?>"><?php echo $this->__('Edit') ?></a>
         </div>
         <p>
-            <?php echo $this->htmlEscape($this->getCustomer()->getFirstname()) ?> 
-            <?php echo $this->htmlEscape($this->getCustomer()->getLastname()) ?><br/>
-            <?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?><br/>
+            <?php echo $this->htmlEscape($this->getCustomer()->getName()) ?><br />
+            <?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?><br />
             <a href="<?php echo $this->getChangePasswordUrl() ?>"><?php echo $this->__('Change Password') ?></a>
         </p>
     </div>
@@ -35,7 +34,7 @@
     <div class="col-2">
         <div class="inner-head">
             <h5><?php echo $this->__('Newsletters') ?></h5>
-            <a href="<?php echo $this->getUrl('newsletter/manage') ?>">Edit</a>
+            <a href="<?php echo $this->getUrl('newsletter/manage') ?>"><?php echo $this->__('Edit') ?></a>
         </div>
         <p>
             <?php if( $this->getIsSubscribed() ): ?>
@@ -46,4 +45,4 @@
         </p>
     </div>
 </div>
-<br/>
+<br />

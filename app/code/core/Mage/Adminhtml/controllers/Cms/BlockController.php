@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Cms_BlockController extends Mage_Adminhtml_Controller_Action
 {
@@ -38,7 +39,7 @@ class Mage_Adminhtml_Cms_BlockController extends Mage_Adminhtml_Controller_Actio
         $this->loadLayout()
             ->_setActiveMenu('cms/block')
             ->_addBreadcrumb(Mage::helper('cms')->__('CMS'), Mage::helper('cms')->__('CMS'))
-            ->_addBreadcrumb(Mage::helper('cms')->__('Manage Blocks'), Mage::helper('cms')->__('Manage Blocks'))
+            ->_addBreadcrumb(Mage::helper('cms')->__('Static Blocks'), Mage::helper('cms')->__('Static Blocks'))
         ;
         return $this;
     }
@@ -107,6 +108,26 @@ class Mage_Adminhtml_Cms_BlockController extends Mage_Adminhtml_Controller_Actio
             // init model and set data
             $model = Mage::getModel('cms/block');
             $model->setData($data);
+
+            $format = Mage::app()->getLocale()->getDateTimeFormat(
+                Mage_Core_Model_Locale::FORMAT_TYPE_MEDIUM
+            );
+
+            if (!empty($data['custom_theme_from'])) {
+                $date = Mage::app()->getLocale()->date($data['custom_theme_from'], $format);
+                $time = $date->getTimestamp();
+	    		$model->setCustomThemeFrom(
+                    Mage::getSingleton('core/date')->gmtDate(null, $time)
+                );
+            }
+
+            if (!empty($data['custom_theme_to'])) {
+                $date = Mage::app()->getLocale()->date($data['custom_theme_to'], $format);
+                $time = $date->getTimestamp();
+	    		$model->setCustomThemeTo(
+                    Mage::getSingleton('core/date')->gmtDate(null, $time)
+                );
+            }
 
             // try to save it
             try {

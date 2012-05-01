@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Reports
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Reports_Model_Event_Observer
@@ -30,8 +31,8 @@ class Mage_Reports_Model_Event_Observer
     protected function _event($eventTypeId, $objectId, $subjectId = null, $subtype = 0)
     {
         if (is_null($subjectId)) {
-            $customer = Mage::getSingleton('customer/session')->getCustomer();
-            if ($customer->getId()) {
+            if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+                $customer = Mage::getSingleton('customer/session')->getCustomer();
                 $subjectId = $customer->getId();
             }
             else {
@@ -54,10 +55,10 @@ class Mage_Reports_Model_Event_Observer
     }
 
     public function customerLogin(Varien_Event_Observer $observer) {
-        $customer = Mage::getSingleton('customer/session')->getCustomer();
-        if (!$customer->getId()) {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
             return $this;
         }
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
         $visitorId = Mage::getSingleton('log/visitor')->getId();
         $customerId = $customer->getId();
         $eventModel = Mage::getModel('reports/event');
@@ -66,6 +67,7 @@ class Mage_Reports_Model_Event_Observer
 
     public function catalogProductView(Varien_Event_Observer $observer)
     {
+        Mage::getSingleton('reports/session')->setData('viewed_products', true);
         return $this->_event(
             Mage_Reports_Model_Event::EVENT_PRODUCT_VIEW,
             $observer->getEvent()->getProduct()->getId()
@@ -80,8 +82,14 @@ class Mage_Reports_Model_Event_Observer
         );
     }
 
+    public function catalogProductCompareRemoveProduct(Varien_Event_Observer $observer)
+    {
+        Mage::getSingleton('reports/session')->setData('compared_products', null);
+    }
+
     public function catalogProductCompareAddProduct(Varien_Event_Observer $observer)
     {
+        Mage::getSingleton('reports/session')->setData('compared_products', true);
         return $this->_event(
             Mage_Reports_Model_Event::EVENT_PRODUCT_COMPARE,
             $observer->getEvent()->getProduct()->getId()
@@ -90,10 +98,12 @@ class Mage_Reports_Model_Event_Observer
 
     public function checkoutCartAddProduct(Varien_Event_Observer $observer)
     {
-        return $this->_event(
-            Mage_Reports_Model_Event::EVENT_PRODUCT_TO_CART,
-            $observer->getEvent()->getProduct()->getId()
-        );
+        $quoteItem = $observer->getEvent()->getItem();
+        if (!$quoteItem->getId() && !$quoteItem->getParentItem()) {
+            $productId = $quoteItem->getProductId();
+            $this->_event(Mage_Reports_Model_Event::EVENT_PRODUCT_TO_CART, $productId);
+        }
+        return $this;
     }
 
     public function wishlistAddProduct(Varien_Event_Observer $observer)

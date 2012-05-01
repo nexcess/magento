@@ -28,8 +28,8 @@
 <head>
     <?php echo $this->getChildHtml('head') ?>
 </head>
-
 <body <?php echo $this->getBodyClass()?'class="'.$this->getBodyClass().'"':'' ?>>
+<div class="wrapper">
     <!--<p class="demo-notice"><span><?php echo $this->__('This is a demo store. Any orders placed through this store will not be honored or fulfilled.') ?></span></p>-->
         <!-- [start] header -->
         <div class="header">
@@ -40,7 +40,7 @@
             <!-- [start] left -->
             <div class="col-left side-col">
                 <?php echo $this->getChildHtml('left') ?>
-                                &nbsp;
+                &nbsp;
             </div>
             <!-- [end] left -->
 
@@ -53,14 +53,14 @@
                 <!-- [start] content -->
                     <?php echo $this->getChildHtml('content') ?>
                 <!-- [end] content -->
-                                &nbsp;
+                &nbsp;
             </div>
             <!-- [end] center -->
 
             <!-- [start] right -->
             <div class="col-right side-col">
                 <?php echo $this->getChildHtml('right') ?>
-                                &nbsp;
+                &nbsp;
             </div>
             <!-- [end] right -->
 
@@ -77,5 +77,6 @@
         <!-- [end] footer -->
 
 <?php echo $this->getChildHtml('before_body_end') ?>
-    </body>
+</div>
+</body>
 </html>

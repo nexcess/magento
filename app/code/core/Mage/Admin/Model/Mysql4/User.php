@@ -23,15 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Admin
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Admin_Model_Mysql4_User extends Mage_Core_Model_Mysql4_Abstract
 {
-    /**
-     * Zend auth adapter
-     *
-     * @var Zend_Auth_Adapter_Interface
-     */
-    protected $_authAdapter = null;
 
     protected function _construct()
     {
@@ -40,10 +35,6 @@ class Mage_Admin_Model_Mysql4_User extends Mage_Core_Model_Mysql4_Abstract
                  array('field' => 'email', 'title' => Mage::helper('adminhtml')->__('Email')),
                  array('field' => 'username', 'title' => Mage::helper('adminhtml')->__('User Name')),
             );
-    }
-    public function getAuthAdapter()
-    {
-        return new Mage_Admin_Model_Auth_Adapter($this->_getReadAdapter(), $this->getTable('admin/user'), 'username', 'password', 'md5(?)');
     }
 
     /**
@@ -140,7 +131,7 @@ class Mage_Admin_Model_Mysql4_User extends Mage_Core_Model_Mysql4_Abstract
             throw $e;
             return false;
         } catch (Exception $e){
-            $$dbh->rollBack();
+            $dbh->rollBack();
             return false;
         }
         $dbh->commit();

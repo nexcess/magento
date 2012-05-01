@@ -120,7 +120,7 @@
                 </table>
 
                 <?php if (is_object($track) && sizeof($track->getProgressdetail())>0): ?>
-                <br/>
+                <br />
                 <table cellspacing="0" class="data-table" id="track-history-table-<?php echo $track->getTracking(); ?>">
                     <thead>
                         <tr>
@@ -139,7 +139,7 @@
                     </tr>
                    <?php endforeach; ?>
                 </table>
-                <script>
+                <script type="text/javascript">
                  decorateTable('track-history-table-<?php echo $track->getTracking(); ?>');
                 </script>
                 <?php endif; ?>

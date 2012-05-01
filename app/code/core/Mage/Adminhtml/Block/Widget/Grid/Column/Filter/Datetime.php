@@ -23,15 +23,18 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  * @todo        date format
  */
 class Mage_Adminhtml_Block_Widget_Grid_Column_Filter_Datetime extends Mage_Adminhtml_Block_Widget_Grid_Column_Filter_Date
 {
+    //full day is 86400, we need 23 hours:59 minutes:59 seconds = 86399
+    const END_OF_DAY_IN_SECONDS = 86399;
 
     public function getValue($index=null)
     {
         if ($index) {
-            if ($data = $this->getData('value', $index)) {
+            if ($data = $this->getData('value', 'orig_'.$index)) {
                 return $data;//date('Y-m-d', strtotime($data));
             }
             return null;
@@ -41,7 +44,9 @@ class Mage_Adminhtml_Block_Widget_Grid_Column_Filter_Datetime extends Mage_Admin
             $value['datetime'] = true;
         }
         if (!empty($value['to'])) {
-            $value['to'].= ' 23:59:59';
+            $datetimeTo = $value['to'];
+            //set end of the day
+            $datetimeTo->addSecond(self::END_OF_DAY_IN_SECONDS);
         }
         return $value;
     }

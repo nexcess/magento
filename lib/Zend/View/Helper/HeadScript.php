@@ -20,7 +20,7 @@
  */
 
 /** Zend_View_Helper_Placeholder_Container_Standalone */
-require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
+#require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
 
 /**
  * Helper for setting and retrieving script elements for HTML head section
@@ -141,7 +141,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
     public function captureStart($captureType = Zend_View_Helper_Placeholder_Container_Abstract::APPEND, $type = 'text/javascript', $attrs = array())
     {
         if ($this->_captureLock) {
-            require_once 'Zend/View/Helper/Placeholder/Container/Exception.php';
+            #require_once 'Zend/View/Helper/Placeholder/Container/Exception.php';
             throw new Zend_View_Helper_Placeholder_Container_Exception('Cannot nest headScript captures');
         }
 
@@ -201,7 +201,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
     {
         if (preg_match('/^(?P<action>set|(ap|pre)pend|offsetSet)(?P<mode>File|Script)$/', $method, $matches)) {
             if (1 > count($args)) {
-                require_once 'Zend/View/Exception.php';
+                #require_once 'Zend/View/Exception.php';
                 throw new Zend_View_Exception(sprintf('Method "%s" requires at least one argument', $method));
             }
 
@@ -213,7 +213,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
             if ('offsetSet' == $action) {
                 $index = array_shift($args);
                 if (1 > count($args)) {
-                    require_once 'Zend/View/Exception.php';
+                    #require_once 'Zend/View/Exception.php';
                     throw new Zend_View_Exception(sprintf('Method "%s" requires at least two arguments, an index and source', $method));
                 }
             }
@@ -303,7 +303,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
     public function append($value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid argument passed to append(); please use one of the helper methods, appendScript() or appendFile()');
         }
 
@@ -319,7 +319,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
     public function prepend($value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid argument passed to prepend(); please use one of the helper methods, prependScript() or prependFile()');
         }
 
@@ -335,7 +335,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
     public function set($value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid argument passed to set(); please use one of the helper methods, setScript() or setFile()');
         }
 
@@ -352,7 +352,7 @@ class Zend_View_Helper_HeadScript extends Zend_View_Helper_Placeholder_Container
     public function offsetSet($index, $value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid argument passed to offsetSet(); please use one of the helper methods, offsetSetScript() or offsetSetFile()');
         }
 

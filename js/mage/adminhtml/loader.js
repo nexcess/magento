@@ -40,11 +40,21 @@ Ajax.Request.prototype = Object.extend(Ajax.Request.prototype, {
     if (state == 'Complete') {
       try {
         this._complete = true;
+        if (transport.responseText.isJSON()) {
+           var _checkData  = transport.responseText.evalJSON();
+           if(typeof _checkData == 'object' && _checkData.ajaxExpired && _checkData.ajaxRedirect) {
+               window.location.replace(_checkData.ajaxRedirect);
+               throw new SessionError('session expired');
+           }
+        }
         (this.options['on' + this.transport.status]
          || this.options['on' + (this.success() ? 'Success' : 'Failure')]
          || Prototype.emptyFunction)(transport, json);
       } catch (e) {
         this.dispatchException(e);
+        if (e instanceof SessionError) {
+            return;
+        }
       }
 
       var contentType = this.getHeader('Content-type');
@@ -54,14 +64,6 @@ Ajax.Request.prototype = Object.extend(Ajax.Request.prototype, {
     }
 
     try {
-      if (state=='Complete' && transport.responseText.isJSON()) {
-           var _checkData  = transport.responseText.evalJSON();
-           if(typeof _checkData == 'object' && _checkData.ajaxExpired && _checkData.ajaxRedirect) {
-               window.location.href = _checkData.ajaxRedirect;
-               throw new SessionError('session expired');
-           }
-      }
-
       (this.options['on' + state] || Prototype.emptyFunction)(transport, json);
       Ajax.Responders.dispatch('on' + state, this, transport, json);
     } catch (e) {
@@ -74,6 +76,8 @@ Ajax.Request.prototype = Object.extend(Ajax.Request.prototype, {
     }
   }
 });
+
+Ajax.Updater.prototype.respondToReadyState = Ajax.Request.prototype.respondToReadyState;
 
 Ajax.Updater.prototype = Object.extend(Ajax.Updater.prototype, {
     initialize: function(container, url, options) {
@@ -124,12 +128,21 @@ varienLoader.prototype = {
             }
         }
 
-        new Ajax.Request(url,{
-            method: 'post',
-            parameters: params || {},
-            onComplete: this.processResult.bind(this),
-            onFailure: this._processFailure.bind(this)
-        });
+        if (typeof(params.updaterId) != 'undefined') {
+            new Ajax.Updater(params.updaterId, url, {
+                evalScripts : true,
+                onComplete: this.processResult.bind(this),
+                onFailure: this._processFailure.bind(this)
+            });
+        }
+        else {
+            new Ajax.Request(url,{
+                method: 'post',
+                parameters: params || {},
+                onComplete: this.processResult.bind(this),
+                onFailure: this._processFailure.bind(this)
+            });
+        }
     },
 
     _processFailure : function(transport){

@@ -22,354 +22,307 @@
 /**
  * Reindexer resource model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogIndex_Model_Mysql4_Indexer extends Mage_Core_Model_Mysql4_Abstract
 {
+    protected $_insertData = array();
+    protected $_tableFields = array();
     protected $_attributeCache = array();
-    protected $_tierCache = array();
-    protected $_customerGroups = null;
-//    protected $_ruleCache = array();
-
-    const REINDEX_CHILDREN_NONE = 0;
-    const REINDEX_CHILDREN_ALL = 1;
-    const REINDEX_CHILDREN_CONFIGURABLE = 2;
-    const REINDEX_CHILDREN_GROUPED = 3;
-
 
     protected function _construct()
     {
         $this->_init('catalog/product', 'entity_id');
     }
 
-    public function clear()
+    protected function _loadAttribute($id)
     {
-        $this->_getWriteAdapter()->query("TRUNCATE TABLE {$this->getTable('catalogindex/eav')}");
-        $this->_getWriteAdapter()->query("TRUNCATE TABLE {$this->getTable('catalogindex/price')}");
-        $this->_getWriteAdapter()->query("TRUNCATE TABLE {$this->getTable('catalogindex/minimal_price')}");
+        if (!isset($this->_attributeCache[$id])) {
+            $this->_attributeCache[$id] = Mage::getModel('eav/entity_attribute')->load($id);
+        }
+
+        return $this->_attributeCache[$id];
     }
 
-    protected function _where($select, $field, $condition)
+    public function clear($eav = true, $price = true, $minimal = true, $finalPrice = true, $tierPrice = true, $products = null, $store = null)
     {
-        if (is_array($condition) && isset($condition['or'])) {
-            $select->where("{$field} in (?)", $condition['or']);
-        } elseif (is_array($condition)) {
-            foreach ($condition as $where)
-                $select->where("{$field} = ?", $where);
-        } else {
-            $select->where("{$field} = ?", $condition);
+        $suffix = '';
+        $tables = array('eav'=>'catalogindex/eav', 'price'=>'catalogindex/price');
+        if (!is_null($products)) {
+            if ($products instanceof Mage_Catalog_Model_Product) {
+                $products = $products->getId();
+            } else if (!is_numeric($products) && !is_array($products)) {
+                Mage::throwException('Invalid products supplied for indexing');
+            }
+            $suffix = $this->_getWriteAdapter()->quoteInto('entity_id in (?)', $products);
+        }
+        if (!is_null($store)) {
+            if ($store instanceof Mage_Core_Model_Store) {
+                $store = $store->getId();
+            } else if ($store instanceof Mage_Core_Model_Mysql4_Store_Collection) {
+                $store = $store->getAllIds();
+            } else if (is_array($store)) {
+                $resultStores = array();
+                foreach ($store as $s) {
+                    if ($s instanceof Mage_Core_Model_Store) {
+                        $resultStores[] = $s->getId();
+                    } elseif (is_numeric($s)) {
+                        $resultStores[] = $s;
+                    }
+                }
+                $store = $resultStores;
+            }
+
+
+            if ($suffix) {
+                $suffix .= ' AND ';
+            }
+            $suffix .= $this->_getWriteAdapter()->quoteInto('store_id in (?)', $store);
+
+        }
+
+        if ($tierPrice) {
+            $tables['tierPrice'] = 'catalogindex/price';
+            $tierPrice = array(Mage::getSingleton('eav/entity_attribute')->getIdByCode('catalog_product', 'tier_price'));
+        }
+        if ($finalPrice) {
+            $tables['finalPrice'] = 'catalogindex/price';
+            $tierPrice = array(Mage::getSingleton('eav/entity_attribute')->getIdByCode('catalog_product', 'price'));
+        }
+        if ($minimal) {
+            $tables['minimal'] = 'catalogindex/minimal_price';
+        }
+
+
+        foreach ($tables as $variable=>$table) {
+            $variable = $$variable;
+
+            if ($variable === true) {
+                $query = "DELETE FROM {$this->getTable($table)} ";
+                if ($suffix) {
+                    $query .= "WHERE {$suffix}";
+                }
+
+                $this->_getWriteAdapter()->query($query);
+            } else if (is_array($variable) && count($variable)) {
+                $query  = "DELETE FROM {$this->getTable($table)} WHERE ";
+                $query .= $this->_getWriteAdapter()->quoteInto("attribute_id in (?)", $variable);
+                if ($suffix) {
+                    $query .= " AND {$suffix}";
+                }
+
+                $this->_getWriteAdapter()->query($query);
+            }
         }
     }
 
-    public function getProductData($products, $attributeIds, $store){
-        $suffixes = array('decimal', 'varchar', 'int', 'text', 'datetime');
-        if (!is_array($products)) {
-            $products = new Zend_Db_Expr($products);
+    public function reindexTiers($products, $store, $forcedId = null)
+    {
+        $attribute = Mage::getSingleton('eav/entity_attribute')->getIdByCode('catalog_product', 'tier_price');
+        $this->_beginInsert('catalogindex/price', array('entity_id', 'attribute_id', 'value', 'store_id', 'customer_group_id', 'qty'));
+
+        $products = Mage::getSingleton('catalogindex/retreiver')->assignProductTypes($products);
+        if (is_null($forcedId)) {
+            foreach ($products as $type=>$typeIds) {
+                $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+                if ($retreiver->areChildrenIndexable(Mage_CatalogIndex_Model_Retreiver::CHILDREN_FOR_TIERS)) {
+                    foreach ($typeIds as $id) {
+                        $children = $retreiver->getChildProductIds($store, $id);
+                        if ($children) {
+                            $this->reindexTiers($children, $store, $id);
+                        }
+                    }
+                }
+            }
         }
-        $result = array();
-        foreach ($suffixes as $suffix) {
-            $tableName = "{$this->getTable('catalog/product')}_{$suffix}";
-            $condition = "product.entity_id = c.entity_id AND c.store_id = {$store->getId()} AND c.attribute_id = d.attribute_id";
-            $defaultCondition = "product.entity_id = d.entity_id AND d.store_id = 0";
-            $fields = array('entity_id', 'type_id', 'attribute_id'=>'IFNULL(c.attribute_id, d.attribute_id)', 'value'=>'IFNULL(c.value, d.value)');
+        $attributeIndex = $this->getTierData($products, $store);
+        foreach ($attributeIndex as $index) {
+            $type = $index['type_id'];
+            $id = (is_null($forcedId) ? $index['entity_id'] : $forcedId);
+            if ($id && $index['value']) {
+                if ($index['all_groups'] == 1) {
+                    foreach (Mage::getModel('catalogindex/retreiver')->getCustomerGroups() as $group) {
+                        $this->_insert('catalogindex/price', array($id, $attribute, $index['value'], $store->getId(), (int) $group->getId(), (int) $index['qty']));
+                    }
+                } else {
+                    $this->_insert('catalogindex/price', array($id, $attribute, $index['value'], $store->getId(), (int) $index['customer_group_id'], (int) $index['qty']));
+                }
+            }
+        }
+        $this->_commitInsert('catalogindex/price');
+    }
 
-            $select = $this->_getReadAdapter()->select()
-                ->from(array('product'=>$this->getTable('catalog/product')), $fields)
-                ->where('product.entity_id in (?)', $products)
-                ->joinRight(array('d'=>$tableName), $defaultCondition, array())
-                ->joinLeft(array('c'=>$tableName), $condition, array())
-                ->where('c.attribute_id IN (?) OR d.attribute_id IN (?)', $attributeIds);
+    public function reindexPrices($products, $attributeIds, $store)
+    {
+        $this->reindexAttributes($products, $attributeIds, $store, null, 'catalogindex/price');
+    }
 
-            $part = $this->_getReadAdapter()->fetchAll($select);
+    public function reindexFinalPrices($products, $store, $forcedId = null)
+    {
+        $priceAttribute = Mage::getSingleton('eav/entity_attribute')->getIdByCode('catalog_product', 'price');
+        $this->_beginInsert('catalogindex/price', array('entity_id', 'store_id', 'customer_group_id', 'value', 'attribute_id'));
 
-            if (is_array($part)) {
-                $result = array_merge($result, $part);
+        $productTypes = Mage::getSingleton('catalogindex/retreiver')->assignProductTypes($products);
+        foreach ($productTypes as $type=>$products) {
+            $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+            foreach ($products as $product) {
+                if (is_null($forcedId)) {
+                    if ($retreiver->areChildrenIndexable(Mage_CatalogIndex_Model_Retreiver::CHILDREN_FOR_PRICES)) {
+                        $children = $retreiver->getChildProductIds($store, $product);
+                        if ($children) {
+                            $this->reindexFinalPrices($children, $store, $product);
+                        }
+                    }
+                }
+                foreach (Mage::getModel('catalogindex/retreiver')->getCustomerGroups() as $group) {
+                    $finalPrice = $retreiver->getFinalPrice($product, $store, $group);
+
+                    $id = $product;
+                    if (!is_null($forcedId))
+                        $id = $forcedId;
+
+                    if (false !== $finalPrice && false !== $id && false !== $store->getId() && false !== $group->getId() && false !== $priceAttribute) {
+                        $this->_insert('catalogindex/price', array($id, $store->getId(), $group->getId(), $finalPrice, $priceAttribute));
+                    }
+                }
+            }
+        }
+        $this->_commitInsert('catalogindex/price');
+    }
+
+    public function reindexMinimalPrices($products, $store)
+    {
+        $this->_beginInsert('catalogindex/minimal_price', array('store_id', 'entity_id', 'customer_group_id', 'value'));
+        $this->clear(false, false, true, false, false, $products, $store);
+        $products = Mage::getSingleton('catalogindex/retreiver')->assignProductTypes($products);
+
+        foreach ($products as $type=>$typeIds) {
+            $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+
+            foreach ($typeIds as $id) {
+                $minimal = array();
+                if ($retreiver->areChildrenIndexable(Mage_CatalogIndex_Model_Retreiver::CHILDREN_FOR_PRICES)) {
+                    $children = $retreiver->getChildProductIds($store, $id);
+                    if ($children) {
+                        $minimal = $this->getMinimalPrice(array($type=>$children), $store);
+                    }
+                } else {
+                    $minimal = $this->getMinimalPrice(array($type=>array($id)), $store);
+                }
+
+                if (is_array($minimal)) {
+                    foreach ($minimal as $price) {
+                        $this->_insert('catalogindex/minimal_price', array($store->getId(), $id, $price['customer_group_id'], $price['minimal_value']));
+                    }
+                }
             }
         }
 
-        return $result;
+        $this->_commitInsert('catalogindex/minimal_price');
     }
 
-    public function getTierData($products, $store){
-        if (isset($this->_tierCache[$store->getWebsiteId()])) {
-            return $this->_tierCache[$store->getWebsiteId()];
-        }
+    public function reindexAttributes($products, $attributeIds, $store, $forcedId = null, $table = 'catalogindex/eav')
+    {
+        $this->_beginInsert($table, array('entity_id', 'attribute_id', 'value', 'store_id'));
 
-        $suffixes = array('tier_price');
-        if (!is_array($products)) {
-            $products = new Zend_Db_Expr($products);
-        }
+        $products = Mage::getSingleton('catalogindex/retreiver')->assignProductTypes($products);
 
-        $result = array();
-        foreach ($suffixes as $suffix) {
-            $tableName = "{$this->getTable('catalog/product')}_{$suffix}";
-            $fields = array(
-                'entity_id',
-                'type_id',
-                'c.customer_group_id',
-                'c.qty',
-                'c.value',
-                'c.all_groups',
-            );
-            $condition = "product.entity_id = c.entity_id";
-
-            $select = $this->_getReadAdapter()->select()
-                ->from(array('product'=>$this->getTable('catalog/product')), $fields)
-                ->joinLeft(array('c'=>$tableName), $condition, array())
-                ->where('product.entity_id in (?)', $products)
-                ->where('(c.website_id = ?', $store->getWebsiteId())
-                ->orWhere('c.website_id = 0)');
-
-            $part = $this->_getReadAdapter()->fetchAll($select);
-            if (is_array($part)) {
-                $result = array_merge($result, $part);
+        if (is_null($forcedId)) {
+            foreach ($products as $type=>$typeIds) {
+                $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+                if ($retreiver->areChildrenIndexable(Mage_CatalogIndex_Model_Retreiver::CHILDREN_FOR_ATTRIBUTES)) {
+                    foreach ($typeIds as $id) {
+                        $children = $retreiver->getChildProductIds($store, $id);
+                        if ($children) {
+                            $this->reindexAttributes($children, $attributeIds, $store, $id, $table);
+                        }
+                    }
+                }
             }
         }
 
-        $this->_tierCache[$store->getWebsiteId()] = $result;
-
-        return $result;
-    }
-
-    public function reindexAttributes($products, $attributeIds, $store, $forcedId = null, $table = 'catalogindex/eav', $children = self::REINDEX_CHILDREN_ALL)
-    {
-        $query = "INSERT INTO {$this->getTable($table)} (entity_id, attribute_id, value, store_id) VALUES ";
         $attributeIndex = $this->getProductData($products, $attributeIds, $store);
-        $rows = array();
-        $total = count($attributeIndex);
-        for ($i=0; $i<$total; $i++) {
-            $index = $attributeIndex[$i];
-
+        foreach ($attributeIndex as $index) {
             $type = $index['type_id'];
             $id = (is_null($forcedId) ? $index['entity_id'] : $forcedId);
 
-            if ($type != Mage_Catalog_Model_Product_Type::TYPE_SIMPLE && $children != self::REINDEX_CHILDREN_NONE) {
-                if ($children != self::REINDEX_CHILDREN_ALL && $children != self::REINDEX_CHILDREN_CONFIGURABLE && $type == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE) {
-                } elseif ($children != self::REINDEX_CHILDREN_ALL && $children != self::REINDEX_CHILDREN_GROUPED && $type == Mage_Catalog_Model_Product_Type::TYPE_GROUPED) {
-                } else {
-                    $childrenIds = $this->getProductChildrenFilter($index['entity_id'], $type);
-                    $this->reindexAttributes($childrenIds, $attributeIds, $store, $id, $table);
-                }
-
-
-            }
-
             if ($id && $index['attribute_id'] && $index['value']) {
-                if ($this->_getAttribute($index['attribute_id'])->getFrontendInput() == 'multiselect') {
+                $attribute = $this->_loadAttribute($index['attribute_id']);
+                if ($attribute->getFrontendInput() == 'multiselect') {
                     $index['value'] = explode(',', $index['value']);
                 }
 
                 if (is_array($index['value'])) {
                     foreach ($index['value'] as $value) {
-                        $rows[] = '(' . implode(',',array($id, $index['attribute_id'], $value, $store->getId())) . ')';
+                        $this->_insert($table, array($id, $index['attribute_id'], $value, $store->getId()));
                     }
                 } else {
-                    $rows[] = '(' . implode(',',array($id, $index['attribute_id'], $index['value'], $store->getId())) . ')';
-                }
-            }
-
-            if ($i+1 == $total || count($rows) >= 100) {
-                if ($rows) {
-                    $this->_getWriteAdapter()->query($query . implode(',', $rows));
-                    $rows = array();
+                    $this->_insert($table, array($id, $index['attribute_id'], $index['value'], $store->getId()));
                 }
             }
         }
+
+        $this->_commitInsert($table);
     }
 
-    protected function _getAttribute($attributeId, $idIsCode = false)
-    {
-        $key = $attributeId . '|' . intval($idIsCode);
-        if (!isset($this->_attributeCache[$key])) {
-            $attribute = Mage::getModel('eav/entity_attribute');
-            if ($idIsCode) {
-                $attribute->loadByCode('catalog_product', $attributeId);
-            } else {
-                $attribute->load($attributeId);
+    public function getTierData($products, $store){
+        $result = array();
+        foreach ($products as $type=>$typeIds) {
+            $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+            $byType = $retreiver->getTierPrices($typeIds, $store);
+            if ($byType) {
+                $result = array_merge($result, $byType);
             }
-            $this->_attributeCache[$key] = $attribute;
         }
-
-        return $this->_attributeCache[$key];
+        return $result;
     }
 
-    protected function _getGroups()
+    public function getMinimalPrice($products, $store)
     {
-        if (is_null($this->_customerGroups)) {
-            $this->_customerGroups = Mage::getModel('customer/group')->getCollection();
+        $result = array();
+        foreach ($products as $type=>$typeIds) {
+            $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+            $byType = $retreiver->getMinimalPrice($typeIds, $store);
+            if ($byType) {
+                $result = array_merge($result, $byType);
+            }
         }
-        return $this->_customerGroups;
+        return $result;
     }
 
-    public function reindexTiers($products, $store, $forcedId = null)
-    {
-        $attribute = $this->_getAttribute('tier_price', true);
-
-        $query = "INSERT INTO {$this->getTable('catalogindex/price')} (entity_id, attribute_id, value, store_id, customer_group_id, qty) VALUES ";
-        $attributeIndex = $this->getTierData($products, $store);
-        $rows = array();
-        $total = count($attributeIndex);
-        for ($i=0; $i<$total; $i++) {
-            $index = $attributeIndex[$i];
-
-            $type = $index['type_id'];
-            $id = (is_null($forcedId) ? $index['entity_id'] : $forcedId);
-/*
-            if ($type == Mage_Catalog_Model_Product_Type::TYPE_GROUPED) {
-                $childrenIds = $this->getProductChildrenFilter($id, $type);
-
-                $this->reindexTiers($childrenIds, $store, $id);
+    public function getProductData($products, $attributeIds, $store){
+        $result = array();
+        foreach ($products as $type=>$typeIds) {
+            $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
+            $byType = $retreiver->getAttributeData($typeIds, $attributeIds, $store);
+            if ($byType) {
+                $result = array_merge($result, $byType);
             }
-*/
-            if ($id && $index['value']) {
-                if ($index['all_groups'] == 1) {
-                    foreach ($this->_getGroups() as $group) {
-                        $rows[] = '(' . implode(',',array($id, $attribute->getId(), $index['value'], $store->getId(), (int) $group->getId(), (int) $index['qty'])) . ')';
-                    }
-                } else {
-                    $rows[] = '(' . implode(',',array($id, $attribute->getId(), $index['value'], $store->getId(), (int) $index['customer_group_id'], (int) $index['qty'])) . ')';
-                }
+        }
+        return $result;
+    }
+
+    protected function _beginInsert($table, $fields){
+        $this->_tableFields[$table] = $fields;
+    }
+
+    protected function _commitInsert($table, $forced = true){
+        if (isset($this->_insertData[$table]) && count($this->_insertData[$table]) && ($forced || count($this->_insertData[$table]) >= 100)) {
+            $query = 'INSERT INTO ' . $this->getTable($table) . ' (' . implode(', ', $this->_tableFields[$table]) . ') VALUES ';
+            $separator = '';
+            foreach ($this->_insertData[$table] as $row) {
+                $rowString = $this->_getWriteAdapter()->quoteInto('(?)', $row);
+                $query .= $separator . $rowString;
+                $separator = ', ';
             }
-            if ($i+1 == $total || count($rows) >= 100) {
-                if ($rows)
-                    $this->_getWriteAdapter()->query($query . implode(',', $rows));
-                $rows = array();
-            }
+
+            $this->_getWriteAdapter()->query($query);
+            $this->_insertData[$table] = array();
         }
     }
 
-    public function reindexMinimalPrices($products, $store)
-    {
-        $tierAttribute = $this->_getAttribute('tier_price', true);
-        $priceAttribute = $this->_getAttribute('price', true);
-    }
-
-    public function reindexPrices($products, $attributeIds, $store)
-    {
-        $this->reindexAttributes($products, $attributeIds, $store, null, 'catalogindex/price', self::REINDEX_CHILDREN_ALL);
-    }
-
-    public function reindexFinalPrices($products, $store, $forcedId = null)
-    {
-        $priceAttribute = $this->_getAttribute('price', true);
-        $insert = array();
-        $total = count($products);
-        $query = "INSERT INTO {$this->getTable('catalogindex/price')} (entity_id, store_id, customer_group_id, value, attribute_id) VALUES ";
-        for ($i=0; $i<$total; $i++) {
-            $product = $products[$i];
-            foreach ($this->_getGroups() as $group) {
-                $finalPrice = $this->_processFinalPrice($product, $store, $group);
-
-                if (!is_null($forcedId))
-                    $product = $forcedId;
-                if (false !== $finalPrice && false !== $product && false !== $store->getId() && false !== $group->getId() && false !== $priceAttribute->getId()) {
-                    $insert[] = '(' . implode(',', array($product, $store->getId(), $group->getId(), $finalPrice, $priceAttribute->getId())) . ')';
-                }
-            }
-            if ($i+1 == $total || count($insert) >= 100) {
-                if ($insert) {
-                    $sql = $query . implode(',', $insert);
-                    $this->_getWriteAdapter()->query($sql);
-                }
-                $insert = array();
-            }
-        }
-
-        if (is_null($forcedId)) {
-            $select = $this->_getReadAdapter()
-                ->select()
-                ->from($this->getTable('catalog/product'), array('entity_id'))
-                ->where('entity_id in (?)', $products)
-                ->where('type_id = ?', Mage_Catalog_Model_Product_Type::TYPE_GROUPED);
-            $groupedProducts = $this->_getReadAdapter()->fetchCol($select);
-            foreach ($groupedProducts as $product) {
-                $children = $this->_getReadAdapter()->fetchCol($this->getProductChildrenFilter($product, Mage_Catalog_Model_Product_Type::TYPE_GROUPED));
-                $this->reindexFinalPrices(
-                    $children,
-                    $store,
-                    $product
-                );
-            }
-        }
-    }
-
-    protected function _processFinalPrice($productId, $store, $group)
-    {
-        $priceAttribute = $this->_getAttribute('price', true);
-        $specialPriceAttribute = $this->_getAttribute('special_price', true);
-        $specialPriceFromAttribute = $this->_getAttribute('special_from_date', true);
-        $specialPriceToAttribute = $this->_getAttribute('special_to_date', true);
-
-        $basePrice = $this->_getAttributeValue($productId, $store, $priceAttribute);
-        $specialPrice = $this->_getAttributeValue($productId, $store, $specialPriceAttribute);
-        $specialPriceFrom = $this->_getAttributeValue($productId, $store, $specialPriceFromAttribute);
-        $specialPriceTo = $this->_getAttributeValue($productId, $store, $specialPriceToAttribute);
-
-        $finalPrice = $basePrice;
-
-        $today = floor(time()/86400)*86400;
-        $from = floor(strtotime($specialPriceFrom)/86400)*86400;
-        $to = floor(strtotime($specialPriceTo)/86400)*86400;
-
-        if ($specialPrice !== false) {
-            if ($specialPriceFrom && $today < $from) {
-            } elseif ($specialPriceTo && $today > $to) {
-            } else {
-               $finalPrice = min($finalPrice, $specialPrice);
-            }
-        }
-
-        $date = mktime(0,0,0);
-        $wId = $store->getWebsiteId();
-        $gId = $group->getId();
-
-        $rulePrice = Mage::getResourceModel('catalogrule/rule')->getRulePrice($date, $wId, $gId, $productId);
-        if ($rulePrice !== false) {
-            $finalPrice = min($finalPrice, $rulePrice);
-        }
-        return $finalPrice;
-    }
-
-    protected function _getAttributeValue($productId, $store, $attribute)
-    {
-        $tableName = "{$this->getTable('catalog/product')}_{$attribute->getBackendType()}";
-
-        $condition = "product.entity_id = c.entity_id AND c.store_id = {$store->getId()}";
-        $defaultCondition = "product.entity_id = d.entity_id AND d.store_id = 0";
-
-        $select = $this->_getReadAdapter()->select()
-            ->from(array('product'=>$this->getTable('catalog/product')), 'IFNULL(c.value, d.value)')
-            ->where('product.entity_id = ?', $productId)
-            ->joinLeft(array('c'=>$tableName), $condition, array())
-            ->joinLeft(array('d'=>$tableName), $defaultCondition, array())
-            ->where('IFNULL(c.attribute_id, d.attribute_id) = ?', $attribute->getId());
-
-
-        return $this->_getReadAdapter()->fetchOne($select);
-    }
-
-    public function getProductChildrenFilter($id, $type)
-    {
-        $select = $this->_getReadAdapter()->select();
-        switch ($type){
-            case Mage_Catalog_Model_Product_Type::TYPE_GROUPED:
-                $table = $this->getTable('catalog/product_link');
-                $field = 'linked_product_id';
-                $searchField = 'product_id';
-                $select->where("link_type_id = ?", Mage_Catalog_Model_Product_Link::LINK_TYPE_GROUPED);
-                break;
-
-            case Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE:
-                $table = $this->getTable('catalog/product_super_link');
-                $field = 'product_id';
-                $searchField = 'parent_id';
-                break;
-
-            default:
-                return false;
-        }
-        $select->from($table, $field)
-            ->where("$searchField = ?", $id);
-
-        return $select;
+    protected function _insert($table, $data) {
+        $this->_insertData[$table][] = $data;
+        $this->_commitInsert($table, false);
     }
 }

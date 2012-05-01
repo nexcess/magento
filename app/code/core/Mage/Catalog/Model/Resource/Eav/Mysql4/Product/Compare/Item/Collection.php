@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Compare_Item_Collection extends Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
 {
@@ -31,9 +32,14 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Compare_Item_Collection ext
     protected $_customerId = 0;
     protected $_visitorId  = 0;
 
+    /**
+     * Initialize resources
+     */
     protected function _construct()
     {
         $this->_init('catalog/product_compare_item', 'catalog/product');
+        $this->_productWebsiteTable = $this->getResource()->getTable('catalog/product_website');
+        $this->_productCategoryTable= $this->getResource()->getTable('catalog/category_product');
     }
 
     public function setCustomerId($customerId)
@@ -92,15 +98,13 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Compare_Item_Collection ext
 
     public function loadComaparableAttributes()
     {
-        $compareTable = Mage::getSingleton('core/resource')->getTableName('catalog/compare_item');
+
+        $compareTable = $this->getTable('catalog/compare_item');
         if($this->getCustomerId()) {
             $compareCondition = 'customer_id='.$this->getCustomerId();
         } else {
             $compareCondition = 'visitor_id='.$this->getVisitorId();
         }
-
-
-        $attributesCollection = $this->getEntity()->getEntityType()->getAttributeCollection();
 
         $websiteId = Mage::app($this->getStoreId())->getStore()->getWebsiteId();
 
@@ -121,14 +125,18 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Compare_Item_Collection ext
             return $this;
         }
 
-        $attributesCollection->setAttributeSetsFilter($setIds)
+        /*$attributesCollection->setAttributeSetsFilter($setIds)
             ->addVisibleFilter()
             ->addFieldToFilter('is_comparable', 1)
-            ->load();
+            ->load();*/
 
-        foreach ($attributesCollection->getItems() as $attribute) {
-            $this->getEntity()->getAttribute($attribute);
-            $this->addAttributeToSelect($attribute->getAttributeCode());
+        $this->getEntity()->loadAllAttributes();
+
+        foreach ($this->getEntity()->getAttributesByCode() as $attribute) {
+            if ($attribute->getIsVisible() && $attribute->getIsComparable()
+                && $attribute->isInSet($setIds)) {
+                $this->addAttributeToSelect($attribute->getAttributeCode());
+            }
         }
 
         return $this;
@@ -140,7 +148,8 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Compare_Item_Collection ext
         return $this;
     }
 
-    public function getProductIds() {
+    public function getProductIds()
+    {
         $ids = array();
         foreach ($this->getItems() as $item) {
             $ids[] = $item->getProductId();

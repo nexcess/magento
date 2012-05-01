@@ -21,29 +21,30 @@
 <script type="text/javascript">
 var payment = new Payment('co-payment-form', '<?php echo $this->getUrl('checkout/onepage/savePayment') ?>');
 </script>
-<form id="co-payment-form">
+<form action="" id="co-payment-form">
     <?php echo $this->getChildHtml('methods') ?>
     <div class="tool-tip" id="payment-tool-tip" style="left:0;position:absolute;display:none;padding-top:15px;">
         <a href="#" id="payment-tool-tip-close" class="btn-close">
-            <img src="<?php echo $this->getSkinUrl('images/btn_window_close.gif') ?>" alt="<?php echo $this->__('Close') ?>"/>
+            <img src="<?php echo $this->getSkinUrl('images/btn_window_close.gif') ?>" alt="<?php echo $this->__('Close') ?>" />
         </a>
         <div class="block-content">
-        <img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>"/>
+        <img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>" />
         </div>
     </div>
 </form>
 <div class="button-set">
     <p class="required"><?php echo $this->__('* Required Fields') ?></p>
-    <span id="payment-buttons-container">
+    <div id="payment-buttons-container">
         <a href="#" class="back left" onclick="checkout.back(); return false;"><span><?php echo $this->__('Back') ?></span></a>
         <button class="form-button right" onclick="payment.save()"><span><?php echo $this->__('Continue') ?></span></button>
         <span id="payment-please-wait" style="display:none;" class="opc-please-wait">
-            <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt=""/> &nbsp; <?php echo $this->__('Loading next step...') ?> &nbsp;
+            <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt="" /> &nbsp; <?php echo $this->__('Loading next step...') ?> &nbsp;
         </span>
-    </span>
+    </div>
 </div>
 
 <script type="text/javascript">
+//<![CDATA[
     function toggleToolTip(event){
         if($('payment-tool-tip')){
             $('payment-tool-tip').setStyle({
@@ -61,7 +62,11 @@ var payment = new Payment('co-payment-form', '<?php echo $this->getUrl('checkout
     $$('.cvv-what-is-this').each(function(element){
         Event.observe(element, 'click', toggleToolTip);
     });
+//]]>
 </script>
 <script type="text/javascript">
+//<![CDATA[
     payment.currentMethod = "<?php echo $this->getChild('methods')->getSelectedMethodCode() ?>";
+    payment.init();
+//]]>
 </script>

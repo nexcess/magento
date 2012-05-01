@@ -21,12 +21,12 @@
 /**
  * Zend_Mime
  */
-require_once 'Zend/Mime.php';
+#require_once 'Zend/Mime.php';
 
 /**
  * Zend_Mime_Exception
  */
-require_once 'Zend/Mime/Exception.php';
+#require_once 'Zend/Mime/Exception.php';
 
 /**
  * Class representing a MIME part.

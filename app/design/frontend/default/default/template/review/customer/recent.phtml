@@ -27,7 +27,7 @@
     <?php $iterator = 0 ?>
     <?php foreach ($this->getCollection() as $_review): ?>
     <ol class="recent-reviews">
-        <li <?php if($iterator % 2 == 0): ?>class="odd"<?php endif; ?>>
+        <li<?php if($iterator % 2 == 0): ?> class="odd"<?php endif; ?>>
             <div class="count"><?php echo ++$iterator ?></div>
             <div class="content">
                 <a href="<?php echo $this->getReviewUrl($_review->getReviewId()) ?>"><?php echo $this->htmlEscape($_review->getName()) ?></a>

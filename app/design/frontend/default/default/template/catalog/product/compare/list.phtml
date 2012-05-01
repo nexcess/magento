@@ -34,7 +34,7 @@
                 <?php if($_i++%10==0): ?>
                 <td>&nbsp;</td>
                 <?php endif; ?>
-                <td><a href="#" onclick="setLocation('<?php echo $this->helper('catalog/product_compare')->getRemoveUrl($_item) ?>');window.opener.location.reload();"><img src="<?php echo $this->getSkinUrl('images/chart_remove.gif') ?>" alt="<?php echo $this->__('Remove Product') ?>"/></a></td>
+                <td><a href="#" onclick="setLocation('<?php echo $this->helper('catalog/product_compare')->getRemoveUrl($_item) ?>');window.opener.location.reload();"><img src="<?php echo $this->getSkinUrl('images/chart_remove.gif') ?>" alt="<?php echo $this->__('Remove Product') ?>" /></a></td>
                 <?php endforeach; ?>
             </tr>
         </tbody>
@@ -47,10 +47,10 @@
                     <td class="label">&nbsp;</td>
                 <?php endif; ?>
                 <td>
-                    <a href="#" onclick="setPLocation('<?php echo $_item->getProductUrl() ?>', true)" title="<?php echo $this->htmlEscape($_item->getName()) ?>"><img src="<?php echo $this->helper('catalog/image')->init($_item, 'small_image')->resize(125, 125); ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_item->getName()) ?>"/></a>
+                    <a href="#" onclick="setPLocation('<?php echo $_item->getProductUrl() ?>', true)" title="<?php echo $this->htmlEscape($_item->getName()) ?>"><img src="<?php echo $this->helper('catalog/image')->init($_item, 'small_image')->resize(125, 125); ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_item->getName()) ?>" /></a>
                     <h5><a href="#" onclick="setPLocation('<?php echo $_item->getProductUrl() ?>', true)" title="<?php echo $this->htmlEscape($_item->getName()) ?>"><?php echo $this->htmlEscape($_item->getName()) ?></a></h5>
-                    <?php echo $this->helper('review/product')->getSummaryHtml($_item, 'short') ?>
-                    <?php echo $this->helper('catalog/product')->getPriceHtml($_item) ?>
+                    <?php echo $this->getReviewsSummaryHtml($_item, 'short') ?>
+                    <?php echo $this->getPriceHtml($_item) ?>
                     <?php if($_item->isSaleable()): ?>
                     <button class="form-button" onclick="setPLocation('<?php echo $this->helper('catalog/product_compare')->getAddToCartUrl($_item) ?>', true)"><span><?php echo $this->__('Add to Cart') ?></span></button><br/>
                     <?php else: ?>
@@ -74,10 +74,10 @@
                 <td>
                     <?php switch ($_attribute->getAttributeCode()) {
                         case "price": ?>
-                            <?php echo $this->helper('catalog/product')->getPriceHtml($_item) ?>
+                            <?php echo $this->getPriceHtml($_item) ?>
                             <?php break;
                         case "small_image": ?>
-                            <img src="<?php echo $this->helper('catalog/image')->init($_item, 'small_image')->resize(125, 125); ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_item->getName()) ?>"/>
+                            <img src="<?php echo $this->helper('catalog/image')->init($_item, 'small_image')->resize(125, 125); ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_item->getName()) ?>" />
                             <?php break;
                         default: ?>
                             <?php echo nl2br($this->getProductAttributeValue($_item, $_attribute)) ?>
@@ -96,7 +96,7 @@
                  <td class="label">&nbsp;</td>
                 <?php endif; ?>
                 <td>
-                    <?php echo $this->helper('catalog/product')->getPriceHtml($_item) ?>
+                    <?php echo $this->getPriceHtml($_item) ?>
                     <?php if($_item->isSaleable()): ?>
                     <button class="form-button" onclick="setPLocation('<?php echo $this->helper('catalog/product_compare')->getAddToCartUrl($_item) ?>', true)"><span><?php echo $this->__('Add to Cart') ?></span></button><br/>
                     <?php else: ?>

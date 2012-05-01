@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Newsletter
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Newsletter_Model_Mysql4_Problem_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
 {
@@ -76,8 +77,7 @@ class Mage_Newsletter_Model_Mysql4_Problem_Collection extends Mage_Core_Model_My
         }
 
         $customers = Mage::getResourceModel('customer/customer_collection')
-            ->addAttributeToSelect('firstname')
-            ->addAttributeToSelect('lastname')
+            ->addNameToSelect()
             ->addAttributeToFilter('entity_id', array("in"=>$customersIds));
 
         $customers->load();

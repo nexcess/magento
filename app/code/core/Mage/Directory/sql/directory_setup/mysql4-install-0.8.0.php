@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Directory
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 $installer = $this;
 /* @var $installer Mage_Core_Model_Resource_Setup */

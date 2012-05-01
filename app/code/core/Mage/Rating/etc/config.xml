@@ -23,9 +23,6 @@
     <modules>
         <Mage_Rating>
             <version>0.7.2</version>
-            <depends>
-                <Mage_Core />
-            </depends>
         </Mage_Rating>
     </modules>
     <global>

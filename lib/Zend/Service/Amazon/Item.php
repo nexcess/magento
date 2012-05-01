@@ -93,7 +93,7 @@ class Zend_Service_Amazon_Item
                 /**
                  * @see Zend_Service_Amazon_Image
                  */
-                require_once 'Zend/Service/Amazon/Image.php';
+                #require_once 'Zend/Service/Amazon/Image.php';
                 $this->$im = new Zend_Service_Amazon_Image($result->item(0));
             }
         }
@@ -108,7 +108,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_CustomerReview
              */
-            require_once 'Zend/Service/Amazon/CustomerReview.php';
+            #require_once 'Zend/Service/Amazon/CustomerReview.php';
             foreach ($result as $review) {
                 $this->CustomerReviews[] = new Zend_Service_Amazon_CustomerReview($review);
             }
@@ -121,7 +121,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_EditorialReview
              */
-            require_once 'Zend/Service/Amazon/EditorialReview.php';
+            #require_once 'Zend/Service/Amazon/EditorialReview.php';
             foreach ($result as $r) {
                 $this->EditorialReviews[] = new Zend_Service_Amazon_EditorialReview($r);
             }
@@ -132,7 +132,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_SimilarProduct
              */
-            require_once 'Zend/Service/Amazon/SimilarProduct.php';
+            #require_once 'Zend/Service/Amazon/SimilarProduct.php';
             foreach ($result as $r) {
                 $this->SimilarProducts[] = new Zend_Service_Amazon_SimilarProduct($r);
             }
@@ -143,7 +143,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_ListmaniaList
              */
-            require_once 'Zend/Service/Amazon/ListmaniaList.php';
+            #require_once 'Zend/Service/Amazon/ListmaniaList.php';
             foreach ($result as $r) {
                 $this->ListmaniaLists[] = new Zend_Service_Amazon_ListmaniaList($r);
             }
@@ -168,7 +168,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_OfferSet
              */
-            require_once 'Zend/Service/Amazon/OfferSet.php';
+            #require_once 'Zend/Service/Amazon/OfferSet.php';
             $this->Offers = new Zend_Service_Amazon_OfferSet($dom);
         }
 
@@ -177,7 +177,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_Accessories
              */
-            require_once 'Zend/Service/Amazon/Accessories.php';
+            #require_once 'Zend/Service/Amazon/Accessories.php';
             foreach ($result as $r) {
                 $this->Accessories[] = new Zend_Service_Amazon_Accessories($r);
             }

@@ -20,7 +20,7 @@
  */
 
 /** Zend_Registry */
-require_once 'Zend/Registry.php';
+#require_once 'Zend/Registry.php';
 
 /**
  * Helper for passing data between otherwise segregated Views. It's called

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Widget_Grid_Block extends Varien_Filter_Object implements Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Interface

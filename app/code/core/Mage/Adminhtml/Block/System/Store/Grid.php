@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_System_Store_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -51,24 +52,27 @@ class Mage_Adminhtml_Block_System_Store_Grid extends Mage_Adminhtml_Block_Widget
     protected function _prepareColumns()
     {
         $this->addColumn('website_title', array(
-            'header'    => Mage::helper('core')->__('Website Name'),
-            'align'     =>'left',
-            'index'     => 'name',
-            'renderer'  => 'adminhtml/system_store_grid_render_website'
+            'header'        => Mage::helper('core')->__('Website Name'),
+            'align'         =>'left',
+            'index'         => 'name',
+            'filter_index'  => 'main_table.name',
+            'renderer'      => 'adminhtml/system_store_grid_render_website'
         ));
 
         $this->addColumn('group_title', array(
-            'header'    => Mage::helper('core')->__('Store Name'),
-            'align'     =>'left',
-            'index'     => 'group_title',
-            'renderer'  => 'adminhtml/system_store_grid_render_group'
+            'header'        => Mage::helper('core')->__('Store Name'),
+            'align'         =>'left',
+            'index'         => 'group_title',
+            'filter_index'  => 'group_table.name',
+            'renderer'      => 'adminhtml/system_store_grid_render_group'
         ));
 
         $this->addColumn('store_title', array(
-            'header'    => Mage::helper('core')->__('Store View Name'),
-            'align'     =>'left',
-            'index'     => 'store_title',
-            'renderer'  => 'adminhtml/system_store_grid_render_store'
+            'header'        => Mage::helper('core')->__('Store View Name'),
+            'align'         =>'left',
+            'index'         => 'store_title',
+            'filter_index'  => 'store_table.name',
+            'renderer'      => 'adminhtml/system_store_grid_render_store'
         ));
 
         return parent::_prepareColumns();

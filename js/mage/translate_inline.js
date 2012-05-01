@@ -27,7 +27,8 @@ TranslateInline.prototype = {
         this.trigContentEl = null;
 
         $$('*[translate]').each(this.initializeElement.bind(this));
-
+        var scope = this;
+        Ajax.Responders.register({onComplete: function() {setTimeout(scope.reinitElements.bind(scope), 50)}});
         this.trigEl = $(trigEl);
         this.trigEl.observe('mouseover', this.trigHideClear.bind(this));
         this.trigEl.observe('mouseout', this.trigHideDelayed.bind(this));
@@ -37,9 +38,16 @@ TranslateInline.prototype = {
     },
 
     initializeElement: function(el) {
-        el.addClassName('translate-inline');
-        Event.observe(el, 'mouseover', this.trigShow.bind(this, el));
-        Event.observe(el, 'mouseout', this.trigHideDelayed.bind(this));
+        if(!el.initializedTranslate) {
+            el.addClassName('translate-inline');
+            el.initializedTranslate = true;
+            Event.observe(el, 'mouseover', this.trigShow.bind(this, el));
+            Event.observe(el, 'mouseout', this.trigHideDelayed.bind(this));
+        }
+    },
+
+    reinitElements: function (el) {
+        $$('*[translate]').each(this.initializeElement.bind(this));
     },
 
     trigShow: function (el) {

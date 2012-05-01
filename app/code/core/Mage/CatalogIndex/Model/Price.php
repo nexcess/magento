@@ -22,6 +22,7 @@
 /**
  * Price index model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogIndex_Model_Price extends Mage_Core_Model_Abstract
 {
@@ -35,22 +36,22 @@ class Mage_CatalogIndex_Model_Price extends Mage_Core_Model_Abstract
 
     public function getMaxValue($attribute, $entityIdsFilter)
     {
-        return $this->_getResource()->getMaxValue($attribute, new Zend_Db_Expr($entityIdsFilter));
+        return $this->_getResource()->getMaxValue($attribute, $entityIdsFilter);
     }
 
     public function getCount($attribute, $range, $entityIdsFilter)
     {
-        return $this->_getResource()->getCount($range, $attribute, new Zend_Db_Expr($entityIdsFilter));
+        return $this->_getResource()->getCount($range, $attribute, $entityIdsFilter);
     }
 
     public function getFilteredEntities($attribute, $range, $index, $entityIdsFilter)
     {
-        return $this->_getResource()->getFilteredEntities($range, $index, $attribute, new Zend_Db_Expr($entityIdsFilter));
+        return $this->_getResource()->getFilteredEntities($range, $index, $attribute, $entityIdsFilter);
     }
 
     public function addMinimalPrices(Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $collection)
     {
-        $productIds = $collection->getAllIds();
+        $productIds = $collection->getAllIdsCache();
 
         if (!count($productIds)) {
             return;

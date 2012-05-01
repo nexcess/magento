@@ -20,16 +20,16 @@
 
 
 /** Zend_Pdf_Element */
-require_once 'Zend/Pdf/Element.php';
+#require_once 'Zend/Pdf/Element.php';
 
 /** Zend_Pdf_Element_Reference_Context */
-require_once 'Zend/Pdf/Element/Reference/Context.php';
+#require_once 'Zend/Pdf/Element/Reference/Context.php';
 
 /** Zend_Pdf_Element_Reference_Table */
-require_once 'Zend/Pdf/Element/Reference/Table.php';
+#require_once 'Zend/Pdf/Element/Reference/Table.php';
 
 /** Zend_Pdf_ElementFactory */
-require_once 'Zend/Pdf/ElementFactory.php';
+#require_once 'Zend/Pdf/ElementFactory.php';
 
 
 /**

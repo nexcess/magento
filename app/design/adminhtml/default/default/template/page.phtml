@@ -38,28 +38,30 @@
 </head>
 
 <body id="html-body">
+<?php echo $this->getChildHtml('notification_window'); ?>
 <div class="wrapper">
         <div class="header">
             <?php echo $this->getChildHtml('header') ?>
         <div class="clear"></div>
             <?php echo $this->getChildHtml('menu') ?>
         </div>
+        <?php echo $this->getChildHtml('notification_toolbar'); ?>
         <div class="middle" id="anchor-content">
             <div id="page:main-container">
             <?php if($this->getChildHtml('left')): ?>
-			
-				<div class="columns <?php echo $this->getContainerCssClass() ?>">	
+
+				<div class="columns <?php echo $this->getContainerCssClass() ?>">
 					<div class="side-col" id="page:left">
-						<?php echo $this->getChildHtml('left') ?>						
+						<?php echo $this->getChildHtml('left') ?>
 					</div>
 					<div class="main-col" id="content">
 						<div class="main-col-inner">
 							<div id="messages"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
-							<?php echo $this->getChildHtml('content') ?>					
-						</div>		
-					</div>				
-				</div>	
-			
+							<?php echo $this->getChildHtml('content') ?>
+						</div>
+					</div>
+				</div>
+
             <?php else: ?>
                 <div id="messages"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
                 <?php echo $this->getChildHtml('content') ?>

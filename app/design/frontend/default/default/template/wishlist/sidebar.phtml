@@ -38,11 +38,11 @@
                 </a>
             </div>
             <div class="product-details">
-                <a href="<?php echo $this->helper('wishlist')->getRemoveUrl($_item) ?>" onclick="return confirm('<?php echo $this->__('Are You sure?') ?>');" class="widget-btn">
-                    <img src="<?php echo $this->getSkinUrl('images/list_remove_btn.gif') ?>" alt="<?php echo $this->__('Remove Item') ?>"/>
+                <a href="<?php echo $this->helper('wishlist')->getRemoveUrl($_item) ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the wishlist?') ?>');" class="widget-btn">
+                    <img src="<?php echo $this->getSkinUrl('images/list_remove_btn.gif') ?>" alt="<?php echo $this->__('Remove Item') ?>" />
                 </a>
                 <a href="<?php echo $_item->getProductUrl() ?>"><?php echo $this->htmlEscape($_item->getName()) ?></a>
-                <?php echo $this->helper('catalog/product')->getPriceHtml($_item) ?>
+                <?php echo $this->getPriceHtml($_item) ?>
                 <?php if($_item->isSaleable()): ?>
                 <a href="<?php echo $this->helper('wishlist')->getAddToCartUrlBase64($_item) ?>" class="link-cart"><?php echo $this->__('Add to Cart') ?></a>
                 <?php endif; ?>

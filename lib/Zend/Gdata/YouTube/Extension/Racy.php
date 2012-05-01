@@ -22,7 +22,7 @@
 /**
  * @see Zend_Gdata_Extension
  */
-require_once 'Zend/Gdata/Extension.php';
+#require_once 'Zend/Gdata/Extension.php';
 
 /**
  * Represents the yt:racy element used by the YouTube data API

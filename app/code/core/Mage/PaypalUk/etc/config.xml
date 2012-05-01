@@ -23,9 +23,6 @@
     <modules>
         <Mage_PaypalUk>
             <version>0.7.0</version>
-            <depends>
-                <Mage_Paygate />
-            </depends>
         </Mage_PaypalUk>
     </modules>
 
@@ -70,7 +67,18 @@
         <blocks>
             <paypaluk><class>Mage_PaypalUk_Block</class></paypaluk>
         </blocks>
-	</global>
+        <payment>
+            <cc>
+                <types>
+                    <SS>
+                        <code>SS</code>
+                        <name>Switch/Solo</name>
+                        <order>40</order>
+                    </SS>
+                </types>
+            </cc>
+        </payment>
+    </global>
     <frontend>
         <secure_url>
             <paypaluk_express>/paypaluk/express</paypaluk_express>

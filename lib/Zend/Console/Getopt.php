@@ -23,7 +23,7 @@
 /**
  * @see Zend_Console_Getopt_Exception
  */
-require_once 'Zend/Console/Getopt/Exception.php';
+#require_once 'Zend/Console/Getopt/Exception.php';
 
 /**
  * Zend_Console_Getopt is a class to parse options for command-line
@@ -482,7 +482,7 @@ class Zend_Console_Getopt
         /**
          * @see Zend_Json
          */
-        require_once 'Zend/Json.php';
+        #require_once 'Zend/Json.php';
         $json = Zend_Json::encode($j);
 
         return $json;

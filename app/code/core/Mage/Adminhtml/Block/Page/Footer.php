@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Page_Footer extends Mage_Adminhtml_Block_Template
 {
@@ -41,12 +42,12 @@ class Mage_Adminhtml_Block_Page_Footer extends Mage_Adminhtml_Block_Template
 
     public function getUrlForReferer()
     {
-        return $this->getUrlBase64('*/*/*',array('_current'=>true));
+        return $this->getUrlEncoded('*/*/*',array('_current'=>true));
     }
 
     public function getRefererParamName()
     {
-        return Mage_Core_Controller_Varien_Action::PARAM_NAME_BASE64_URL;
+        return Mage_Core_Controller_Varien_Action::PARAM_NAME_URL_ENCODED;
     }
 
     public function getLanguageSelect()

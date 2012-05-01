@@ -54,7 +54,7 @@ class Mage_Adminhtml_Block_System_Design_Edit_Tab_General extends Mage_Adminhtml
             'title'    => Mage::helper('core')->__('Date From'),
             'name'     => 'date_from',
             'image'    => $this->getSkinUrl('images/grid-cal.gif'),
-            'required' => true,
+            //'required' => true,
         ));
 
         $fieldset->addField('date_to', 'date', array(
@@ -62,7 +62,7 @@ class Mage_Adminhtml_Block_System_Design_Edit_Tab_General extends Mage_Adminhtml
             'title'    => Mage::helper('core')->__('Date To'),
             'name'     => 'date_to',
             'image'    => $this->getSkinUrl('images/grid-cal.gif'),
-            'required' => true,
+            //'required' => true,
         ));
 
         $formData = Mage::getSingleton('adminhtml/session')->getDesignData(true);

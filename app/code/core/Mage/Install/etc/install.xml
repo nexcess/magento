@@ -76,10 +76,15 @@
                 <simplexml/>
                 <pdo_mysql/>
                 <mcrypt/>
+                <hash/>
                 <curl/>
                 <iconv/>
                 <ctype/>
+                <gd/>
             </extensions>
         </php>
+        <mysql>
+            <version>4.1.20</version>
+        </mysql>
     </check>
 </config>

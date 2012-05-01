@@ -19,19 +19,19 @@
 
 
 /** Zend_Pdf_Resource_Image */
-require_once 'Zend/Pdf/Resource/Image.php';
+#require_once 'Zend/Pdf/Resource/Image.php';
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 /** Zend_Pdf_Element_Numeric */
-require_once 'Zend/Pdf/Element/Numeric.php';
+#require_once 'Zend/Pdf/Element/Numeric.php';
 
 /** Zend_Pdf_Element_Name */
-require_once 'Zend/Pdf/Element/Name.php';
+#require_once 'Zend/Pdf/Element/Name.php';
 
 /** Zend_Pdf_ElementFactory */
-require_once 'Zend/Pdf/ElementFactory.php';
+#require_once 'Zend/Pdf/ElementFactory.php';
 
 
 /**

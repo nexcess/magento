@@ -85,20 +85,18 @@ varienTabs.prototype = {
         return false;
     },
 
-    tabMouseClick : function(event){
+    tabMouseClick : function(event) {
         var tab = Event.findElement(event, 'a');
-        if(tab.href.indexOf('#') != tab.href.length-1){
-            if(Element.hasClassName(tab, 'ajax')){
 
-            }
-            else{
-                location.href = tab.href;
-            }
+        // go directly to specified url or switch tab
+        if ((tab.href.indexOf('#') != tab.href.length-1)
+            && !(Element.hasClassName(tab, 'ajax'))
+        ) {
+            location.href = tab.href;
         }
         else {
             this.showTabContent(tab);
         }
-
         Event.stop(event);
     },
 
@@ -108,17 +106,39 @@ varienTabs.prototype = {
         }
     },
 
-    showTabContent : function(tab){
+    // show tab, ready or not
+    showTabContentImmediately : function(tab) {
         this.hideAllTabsContent();
         var tabContentElement = $(this.getTabContentElementId(tab));
-        if(tabContentElement){
+        if (tabContentElement) {
             Element.show(tabContentElement);
-            //new Effect.Appear(tabContentElement, {duration :0.3});
             Element.addClassName(tab, 'active');
             this.activeTab = tab;
         }
-        if(varienGlobalEvents){
+        if (varienGlobalEvents) {
             varienGlobalEvents.fireEvent('showTab', {tab:tab});
+        }
+    },
+
+    // the lazy show tab method
+    showTabContent : function(tab) {
+        var tabContentElement = $(this.getTabContentElementId(tab));
+        if (tabContentElement) {
+            // wait for ajax request, if defined
+            if ((tabContentElement.innerHTML == '')
+                && (tab.href.indexOf('#') != tab.href.length-1)
+                && (Element.hasClassName(tab, 'ajax'))
+            ) {
+                new Ajax.Updater(tabContentElement.id, tab.href, {
+                     onComplete : function () {
+                         this.showTabContentImmediately(tab)
+                     }.bind(this),
+                     evalScripts : true
+                });
+            }
+            else {
+                this.showTabContentImmediately(tab);
+            }
         }
     },
 

@@ -32,11 +32,11 @@ Product.Gallery.prototype = {
         this.uploader = uploader;
         this.imageTypes = imageTypes;
         this.uploader.onFilesComplete = this.handleUploadComplete.bind(this);
-        this.uploader.onFileProgress  = this.handleUploadProgress.bind(this);
-        this.uploader.onFileError     = this.handleUploadError.bind(this);
+        //this.uploader.onFileProgress  = this.handleUploadProgress.bind(this);
+        //this.uploader.onFileError     = this.handleUploadError.bind(this);
         this.images = this.getElement('save').value.evalJSON();
         this.imagesValues = this.getElement('save_image').value.evalJSON();
-        this.template = new Template('<tr id="__id__" class="preview">' + this.getElement('template').innerHTML + '</tr>', /(^|.|\r|\n)(__([a-zA-Z0-9_]+)__)/);
+        this.template = new Template('<tr id="__id__" class="preview">' + this.getElement('template').innerHTML + '</tr>', new RegExp('(^|.|\\r|\\n)(__([a-zA-Z0-9_]+)__)', ''));
         this.fixParentTable();
         this.updateImages();
         varienGlobalEvents.attachEventHandler('moveTab', this.onImageTabMove.bind(this));
@@ -283,7 +283,7 @@ Product.Attributes.prototype = {
 Product.Configurable = Class.create();
 Product.Configurable.prototype = {
 	initialize: function (attributes, links, idPrefix, grid) {
-		this.templatesSyntax = /(^|.|\r|\n)('{{\s*(\w+)\s*}}')/;
+		this.templatesSyntax = new RegExp('(^|.|\\r|\\n)(\'{{\\s*(\\w+)\\s*}}\')', "");
 	    this.attributes = attributes; // Attributes
 		this.idPrefix   = idPrefix;   // Container id prefix
 		this.links 		= $H(links);  // Associated products
@@ -486,7 +486,7 @@ Product.Configurable.prototype = {
 		return result;
 	},
 	updateGrid: function () {
-		this.grid.reloadParams = {'products[]':this.links.keys(), 'new_products[]':this.newProducts};
+		this.grid.reloadParams = {'products[]':this.links.keys().size() ? this.links.keys() : [0], 'new_products[]':this.newProducts};
 	},
 	updateValues: function () {
 		var uniqueAttributeValues = $H({});

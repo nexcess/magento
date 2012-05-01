@@ -25,24 +25,61 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
     {
         parent::__construct();
         $this->setType('rule/condition_combine')
-            ->setAttribute('all')
+            ->setAggregator('all')
             ->setValue(true)
             ->setConditions(array())
             ->setActions(array());
-    }
 
-    public function loadAttributeOptions()
+
+        $this->loadAggregatorOptions();
+        if ($options = $this->getAggregatorOptions()) {
+            foreach ($options as $aggregator=>$dummy) { $this->setAggregator($aggregator); break; }
+        }
+    }
+/* start aggregator methods */
+    public function loadAggregatorOptions()
     {
-        $this->setAttributeOption(array(
+        $this->setAggregatorOption(array(
             'all' => Mage::helper('rule')->__('ALL'),
             'any' => Mage::helper('rule')->__('ANY'),
         ));
         return $this;
     }
 
-    public function loadOperatorOptions()
+    public function getAggregatorSelectOptions()
     {
-        $this->setOperatorOption(array(
+    	$opt = array();
+    	foreach ($this->getAggregatorOption() as $k=>$v) {
+    		$opt[] = array('value'=>$k, 'label'=>$v);
+    	}
+    	return $opt;
+    }
+
+    public function getAggregatorName()
+    {
+        return $this->getAggregatorOption($this->getAggregator());
+    }
+
+    public function getAggregatorElement()
+    {
+        if (is_null($this->getAggregator())) {
+            foreach ($this->getAggregatorOption() as $k=>$v) {
+                $this->setAggregator($k);
+                break;
+            }
+        }
+        return $this->getForm()->addField($this->getPrefix().':'.$this->getId().':aggregator', 'select', array(
+    		'name'=>'rule['.$this->getPrefix().']['.$this->getId().'][aggregator]',
+    		'values'=>$this->getAggregatorSelectOptions(),
+    		'value'=>$this->getAggregator(),
+    		'value_name'=>$this->getAggregatorName(),
+    	))->setRenderer(Mage::getBlockSingleton('rule/editable'));
+    }
+/* end aggregator methods */
+
+    public function loadValueOptions()
+    {
+        $this->setValueOption(array(
             1 => Mage::helper('rule')->__('TRUE'),
             0 => Mage::helper('rule')->__('FALSE'),
         ));
@@ -66,6 +103,11 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
         return $this;
     }
 
+    public function getValueElementType()
+    {
+        return 'select';
+    }
+
     /**
      * Returns array containing conditions in the collection
      *
@@ -86,6 +128,7 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
     public function asArray(array $arrAttributes = array())
     {
         $out = parent::asArray();
+        $out['aggregator'] = $this->getAggregator();
 
         foreach ($this->getConditions() as $condition) {
             $out['conditions'][] = $condition->asArray();
@@ -96,9 +139,8 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
 
     public function asXml($containerKey='conditions', $itemKey='condition')
     {
-        extract($this->asArray());
-        $xml = "<attribute>".$this->getAttribute()."</attribute>"
-            ."<operator>".$this->getOperator()."</operator>"
+        $xml = "<aggregator>".$this->getAggregator()."</aggregator>"
+            ."<value>".$this->getValue()."</value>"
             ."<$containerKey>";
         foreach ($this->getConditions() as $condition) {
             $xml .= "<$itemKey>".$condition->asXml()."</$itemKey>";
@@ -109,8 +151,8 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
 
     public function loadArray($arr, $key='conditions')
     {
-        $this->setAttribute($arr['attribute'])
-            ->setOperator($arr['operator']);
+        $this->setAggregator(isset($arr['aggregator']) ? $arr['aggregator'] : $arr['attribute'])
+            ->setValue(isset($arr['value']) ? $arr['value'] : $arr['operator']);
 
         if (!empty($arr[$key]) && is_array($arr[$key])) {
             foreach ($arr[$key] as $condArr) {
@@ -144,7 +186,10 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
     public function asHtml()
     {
        	$html = $this->getTypeElement()->getHtml().
-       	    Mage::helper('rule')->__("If %s of these conditions are %s:", $this->getAttributeElement()->getHtml(), $this->getOperatorElement()->getHtml());
+       	    Mage::helper('rule')->__("If %s of these conditions are %s:",
+       	        $this->getAggregatorElement()->getHtml(),
+       	        $this->getValueElement()->getHtml()
+       	    );
        	if ($this->getId()!='1') {
        	    $html.= $this->getRemoveLinkHtml();
        	}
@@ -172,7 +217,7 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
 
     public function asString($format='')
     {
-        $str = Mage::helper('rule')->__("If %s of these conditions are %s:", $this->getAttributeName(), $this->getOperatorName());
+        $str = Mage::helper('rule')->__("If %s of these conditions are %s:", $this->getAggregatorName(), $this->getValueName());
         return $str;
     }
 
@@ -191,12 +236,13 @@ class Mage_Rule_Model_Condition_Combine extends Mage_Rule_Model_Condition_Abstra
     		return true;
     	}
 
-        $all = $this->getAttribute()==='all';
-        $true = (bool)$this->getOperator();
+        $all = $this->getAggregator()==='all';
+        $true = (bool)$this->getValue();
         foreach ($this->getConditions() as $cond) {
-            if ($all && $cond->validate($object)!==$true) {
+            $validated = $cond->validate($object);
+            if ($all && $validated!==$true) {
                 return false;
-            } elseif (!$all && $cond->validate($object)===$true) {
+            } elseif (!$all && $validated===$true) {
                 return true;
             }
         }

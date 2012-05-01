@@ -23,17 +23,9 @@
  *
  * @category   Mage
  * @package    Mage_Customer
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Customer_Block_Form_Edit extends Mage_Core_Block_Template
+class Mage_Customer_Block_Form_Edit extends Mage_Customer_Block_Account_Dashboard
 {
-    public function getCustomer()
-    {
-        return Mage::getSingleton('customer/session')->getCustomer();
-    }
-    
-    public function getBackUrl()
-    {
-        return $this->getUrl('customer/account/');
-    }
 
 }

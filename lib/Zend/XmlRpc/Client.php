@@ -23,48 +23,48 @@
 /**
  * For handling the HTTP connection to the XML-RPC service
  */
-require_once 'Zend/Http/Client.php';
+#require_once 'Zend/Http/Client.php';
 
 /**
  * Exception thrown when an HTTP error occurs
  */
-require_once 'Zend/XmlRpc/Client/HttpException.php';
+#require_once 'Zend/XmlRpc/Client/HttpException.php';
 
 /**
  * Exception thrown when an XML-RPC fault is returned
  */
-require_once 'Zend/XmlRpc/Client/FaultException.php';
+#require_once 'Zend/XmlRpc/Client/FaultException.php';
 
 /**
  * Enables object chaining for calling namespaced XML-RPC methods.
  */
-require_once 'Zend/XmlRpc/Client/ServerProxy.php';
+#require_once 'Zend/XmlRpc/Client/ServerProxy.php';
 
 /**
  * Introspects remote servers using the XML-RPC de facto system.* methods
  */
-require_once 'Zend/XmlRpc/Client/ServerIntrospection.php';
+#require_once 'Zend/XmlRpc/Client/ServerIntrospection.php';
 
 /**
  * Represent a native XML-RPC value, used both in sending parameters
  * to methods and as the parameters retrieve from method calls
  */
-require_once 'Zend/XmlRpc/Value.php';
+#require_once 'Zend/XmlRpc/Value.php';
 
 /**
  * XML-RPC Request
  */
-require_once 'Zend/XmlRpc/Request.php';
+#require_once 'Zend/XmlRpc/Request.php';
 
 /**
  * XML-RPC Response
  */
-require_once 'Zend/XmlRpc/Response.php';
+#require_once 'Zend/XmlRpc/Response.php';
 
 /**
  * XML-RPC Fault
  */
-require_once 'Zend/XmlRpc/Fault.php';
+#require_once 'Zend/XmlRpc/Fault.php';
 
 
 /**

@@ -60,7 +60,6 @@ abstract class Mage_Rule_Model_Condition_Abstract
 
     public function asXml()
     {
-        extract($this->toArray());
         $xml = "<type>".$this->getType()."</type>"
             ."<attribute>".$this->getAttribute()."</attribute>"
             ."<operator>".$this->getOperator()."</operator>"
@@ -76,9 +75,9 @@ abstract class Mage_Rule_Model_Condition_Abstract
         $this->setValue(isset($arr['value']) ? $arr['value'] : false);
         $this->setIsValueParsed(isset($arr['is_value_parsed']) ? $arr['is_value_parsed'] : false);
 
-        $this->loadAttributeOptions();
-        $this->loadOperatorOptions();
-        $this->loadValueOptions();
+//        $this->loadAttributeOptions();
+//        $this->loadOperatorOptions();
+//        $this->loadValueOptions();
         return $this;
     }
 
@@ -89,6 +88,11 @@ abstract class Mage_Rule_Model_Condition_Abstract
         }
         $arr = (array)$xml;
         $this->loadArray($arr);
+        return $this;
+    }
+
+    public function loadAttributeOptions()
+    {
         return $this;
     }
 

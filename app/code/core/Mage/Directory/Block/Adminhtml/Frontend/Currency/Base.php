@@ -21,6 +21,7 @@
 /**
  * Backend model for base currency
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Directory_Block_Adminhtml_Frontend_Currency_Base extends Mage_Adminhtml_Block_System_Config_Form_Field

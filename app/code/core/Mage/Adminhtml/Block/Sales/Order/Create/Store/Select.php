@@ -21,6 +21,7 @@
 /**
  * Adminhtml sales order create select store block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Sales_Order_Create_Store_Select extends Mage_Adminhtml_Block_Store_Switcher

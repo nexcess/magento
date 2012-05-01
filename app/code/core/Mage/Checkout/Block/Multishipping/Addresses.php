@@ -23,9 +23,20 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Checkout_Block_Multishipping_Addresses extends Mage_Checkout_Block_Multishipping_Abstract
+class Mage_Checkout_Block_Multishipping_Addresses extends Mage_Sales_Block_Items_Abstract
 {
+    /**
+     * Retrieve multishipping checkout model
+     *
+     * @return Mage_Checkout_Model_Type_Multishipping
+     */
+    public function getCheckout()
+    {
+        return Mage::getSingleton('checkout/type_multishipping');
+    }
+
     protected function _prepareLayout()
     {
         if ($headBlock = $this->getLayout()->getBlock('head')) {
@@ -92,7 +103,7 @@ class Mage_Checkout_Block_Multishipping_Addresses extends Mage_Checkout_Block_Mu
 
     public function getItemDeleteUrl($item)
     {
-        return $this->getUrl('*/*/removeItem', array('address'=>$item->getParentId(), 'id'=>$item->getId()));
+        return $this->getUrl('*/*/removeItem', array('address'=>$item->getQuoteAddressId(), 'id'=>$item->getId()));
     }
 
     public function getPostActionUrl()
@@ -108,5 +119,10 @@ class Mage_Checkout_Block_Multishipping_Addresses extends Mage_Checkout_Block_Mu
     public function getBackUrl()
     {
         return Mage::getUrl('*/cart/');
+    }
+
+    public function isContinueDisabled()
+    {
+        return !$this->getCheckout()->validateMinimumAmount();
     }
 }

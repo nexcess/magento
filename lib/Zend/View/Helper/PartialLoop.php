@@ -21,7 +21,7 @@
  */
 
 /** Zend_View_Helper_Partial */
-require_once 'Zend/View/Helper/Partial.php';
+#require_once 'Zend/View/Helper/Partial.php';
 
 /**
  * Helper for rendering a template fragment in its own variable scope; iterates 
@@ -60,7 +60,7 @@ class Zend_View_Helper_PartialLoop extends Zend_View_Helper_Partial
         } 
 
         if (!is_array($model) && (!$model instanceof Iterator)) {
-            require_once 'Zend/View/Helper/Partial/Exception.php';
+            #require_once 'Zend/View/Helper/Partial/Exception.php';
             throw new Zend_View_Helper_Partial_Exception('PartialLoop helper requires iterable data');
         }
 

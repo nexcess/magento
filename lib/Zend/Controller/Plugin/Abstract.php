@@ -20,10 +20,10 @@
  */
 
 /** Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
+#require_once 'Zend/Controller/Request/Abstract.php';
 
 /** Zend_Controller_Response_Abstract */
-require_once 'Zend/Controller/Response/Abstract.php';
+#require_once 'Zend/Controller/Response/Abstract.php';
 
 /**
  * @category   Zend

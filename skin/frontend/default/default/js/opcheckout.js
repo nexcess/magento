@@ -14,14 +14,15 @@
  * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 var Checkout = Class.create();
 Checkout.prototype = {
-    initialize: function(accordion, progressUrl, reviewUrl, saveMethodUrl, failureUrl){
+    initialize: function(accordion, urls){
         this.accordion = accordion;
-        this.progressUrl = progressUrl;
-        this.reviewUrl = reviewUrl;
-        this.saveMethodUrl = saveMethodUrl;
-		this.failureUrl = failureUrl;
+        this.progressUrl = urls.progress;
+        this.reviewUrl = urls.review;
+        this.saveMethodUrl = urls.saveMethod;
+		this.failureUrl = urls.failure;
         this.billingForm = false;
         this.shippingForm= false;
         this.syncBillingShipping = false;
@@ -48,16 +49,31 @@ Checkout.prototype = {
         var updater = new Ajax.Updater('checkout-review-load', this.reviewUrl, {method: 'get', onFailure: this.ajaxFailure.bind(this)});
     },
 
-    setLoadWaiting: function(step) {
+    _disableEnableAll: function(element, isDisabled) {
+        var descendants = element.descendants();
+        for (var k in descendants) {
+            descendants[k].disabled = isDisabled;
+        }
+        element.disabled = isDisabled;
+    },
+
+    setLoadWaiting: function(step, keepDisabled) {
         if (step) {
             if (this.loadWaiting) {
                 this.setLoadWaiting(false);
             }
-            $(step+'-buttons-container').setStyle({opacity:.5});
+            var container = $(step+'-buttons-container');
+            container.setStyle({opacity:.5});
+            this._disableEnableAll(container, true);
             Element.show(step+'-please-wait');
         } else {
             if (this.loadWaiting) {
-                $(this.loadWaiting+'-buttons-container').setStyle({opacity:1});
+                var container = $(this.loadWaiting+'-buttons-container');
+                var isDisabled = (keepDisabled ? true : false);
+                if (!isDisabled) {
+                    container.setStyle({opacity:1});
+                }
+                this._disableEnableAll(container, isDisabled);
                 Element.hide(this.loadWaiting+'-please-wait');
             }
         }
@@ -97,11 +113,11 @@ Checkout.prototype = {
     },
 
     setBilling: function() {
-    	if (($('billing:pickup_or_use_for_shipping_yes')) && ($('billing:pickup_or_use_for_shipping_yes').checked)) {
+    	if (($('billing:use_for_shipping_yes')) && ($('billing:use_for_shipping_yes').checked)) {
     		shipping.syncWithBilling();
     		$('opc-shipping').addClassName('allow');
     		this.gotoSection('shipping_method');
-    	} else if (($('billing:pickup_or_use_for_shipping_no')) && ($('billing:pickup_or_use_for_shipping_no').checked)) {
+    	} else if (($('billing:use_for_shipping_no')) && ($('billing:use_for_shipping_no').checked)) {
     		$('shipping:same_as_billing').checked = false;
     		this.gotoSection('shipping');
     	} else {
@@ -156,6 +172,27 @@ Checkout.prototype = {
     back: function(){
         if (this.loadWaiting) return;
         this.accordion.openPrevSection(true);
+    },
+
+    setStepResponse: function(response){
+        if (response.update_section) {
+            $('checkout-'+response.update_section.name+'-load').update(response.update_section.html);
+        }
+        if (response.allow_sections) {
+            response.allow_sections.each(function(e){
+                $('opc-'+e).addClassName('allow');
+            });
+        }
+        if (response.goto_section) {
+            this.reloadProgressBlock();
+            this.gotoSection(response.goto_section);
+            return true;
+        }
+        if (response.redirect) {
+            location.href = response.redirect;
+            return true;
+        }
+        return false;
     }
 }
 
@@ -228,35 +265,16 @@ Billing.prototype = {
         $('shipping:same_as_billing').checked = flag;
     },
 
-    /*
-    	Possible flags
-
-    	1 - Use the billing address for shipping
-    	0 - Use different address
-    	2 - Store Pickup (no shipping or billing info needed)
-     */
-    setPickupOrUseForShipping: function(flag) {
-    	switch(flag) {
-    		case 1:
-    			$('shipping:same_as_billing').checked = true;
-    			break;
-    		case 0:
-    		case 2:
-    			$('shipping:same_as_billing').checked = false;
-	    		break;
-    	}
-    },
-
     save: function(){
         if (checkout.loadWaiting!=false) return;
 
         var validator = new Validation(this.form);
         if (validator.validate()) {
-            checkout.setLoadWaiting('billing');
             if (checkout.method=='register' && $('billing:customer_password').value != $('billing:confirm_password').value) {
                 alert(Translator.translate('Error: Passwords do not match'));
                 return;
             }
+            checkout.setLoadWaiting('billing');
 
 //            if ($('billing:use_for_shipping') && $('billing:use_for_shipping').checked) {
 //                $('billing:use_for_shipping').value=1;
@@ -292,6 +310,7 @@ Billing.prototype = {
                 response = {};
             }
         }
+
         if (response.error){
             if ((typeof response.message) == 'string') {
                 alert(response.message);
@@ -305,18 +324,13 @@ Billing.prototype = {
 
             return false;
         }
-        if (response.redirect) {
-            location.href = response.redirect;
-            return;
-        }
-        if (response.shipping_methods_html) {
-        	$('checkout-shipping-method-load').innerHTML = response.shipping_methods_html;
-        }
+
+        checkout.setStepResponse(response);
 
         // DELETE
         //alert('error: ' + response.error + ' / redirect: ' + response.redirect + ' / shipping_methods_html: ' + response.shipping_methods_html);
         // This moves the accordion panels of one page checkout and updates the checkout progress
-        checkout.setBilling();
+        //checkout.setBilling();
     }
 }
 
@@ -389,7 +403,7 @@ Shipping.prototype = {
 
     setSameAsBilling: function(flag) {
         $('shipping:same_as_billing').checked = flag;
-        $('billing:pickup_or_use_for_shipping_yes').checked = flag;
+        $('billing:use_for_shipping_yes').checked = flag;
         if (flag) {
             this.syncWithBilling();
         }
@@ -466,14 +480,8 @@ Shipping.prototype = {
             return false;
         }
 
-        if (response.redirect) {
-            location.href = response.redirect;
-            return;
-        }
+        checkout.setStepResponse(response);
 
-        if (response.shipping_methods_html) {
-        	$('checkout-shipping-method-load').innerHTML = response.shipping_methods_html;
-        }
         /*
         var updater = new Ajax.Updater(
             'checkout-shipping-method-load',
@@ -481,7 +489,7 @@ Shipping.prototype = {
             {method:'get', onSuccess: checkout.setShipping.bind(checkout)}
         );
         */
-        checkout.setShipping();
+        //checkout.setShipping();
     }
 }
 
@@ -551,6 +559,17 @@ ShippingMethod.prototype = {
             alert(response.message);
             return false;
         }
+
+        if (response.update_section) {
+            $('checkout-'+response.update_section.name+'-load').update(response.update_section.html);
+            response.update_section.html.evalScripts();
+        }
+        if (response.goto_section) {
+            checkout.gotoSection(response.goto_section);
+            checkout.reloadProgressBlock();
+            return;
+        }
+
         if (response.payment_methods_html) {
         	$('checkout-payment-method-load').update(response.payment_methods_html);
         }
@@ -668,22 +687,19 @@ Payment.prototype = {
             alert(response.error);
             return;
         }
-        if (response.redirect) {
-            location.href = response.redirect;
-            return;
-        }
-        if (response.review_html) {
-        	$('checkout-review-load').innerHTML = response.review_html;
-        }
-        checkout.setPayment();
+
+        checkout.setStepResponse(response);
+
+        //checkout.setPayment();
     }
 }
 
 var Review = Class.create();
 Review.prototype = {
-    initialize: function(saveUrl, successUrl){
+    initialize: function(saveUrl, successUrl, agreementsForm){
         this.saveUrl = saveUrl;
         this.successUrl = successUrl;
+        this.agreementsForm = agreementsForm;
         this.onSave = this.nextStep.bindAsEventListener(this);
         this.onComplete = this.resetLoadWaiting.bindAsEventListener(this);
     },
@@ -692,6 +708,9 @@ Review.prototype = {
     	if (checkout.loadWaiting!=false) return;
         checkout.setLoadWaiting('review');
         var params = Form.serialize(payment.form);
+        if (this.agreementsForm) {
+            params += '&'+Form.serialize(this.agreementsForm);
+        }
         params.save = true;
         var request = new Ajax.Request(
             this.saveUrl,
@@ -706,7 +725,7 @@ Review.prototype = {
     },
 
     resetLoadWaiting: function(transport){
-        checkout.setLoadWaiting(false);
+        checkout.setLoadWaiting(false, this.isSuccess);
     },
 
     nextStep: function(transport){
@@ -722,6 +741,7 @@ Review.prototype = {
                 return;
             }
             if (response.success) {
+                this.isSuccess = true;
                 window.location=this.successUrl;
             }
             else{
@@ -732,5 +752,7 @@ Review.prototype = {
                 alert(msg);
             }
         }
-    }
+    },
+
+    isSuccess: false
 }

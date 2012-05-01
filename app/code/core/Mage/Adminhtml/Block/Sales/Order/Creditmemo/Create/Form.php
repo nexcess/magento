@@ -23,15 +23,29 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Form extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
-    protected function _construct()
+    /**
+     * Retrieve invoice order
+     *
+     * @return Mage_Sales_Model_Order
+     */
+    public function getOrder()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/creditmemo/create/form.phtml');
-        $this->setOrder($this->getCreditmemo()->getOrder());
+        return $this->getCreditmemo()->getOrder();
+    }
+
+    /**
+     * Retrieve source
+     *
+     * @return Mage_Sales_Model_Order_Invoice
+     */
+    public function getSource()
+    {
+        return $this->getCreditmemo();
     }
 
     /**
@@ -42,25 +56,6 @@ class Mage_Adminhtml_Block_Sales_Order_Creditmemo_Create_Form extends Mage_Admin
     public function getCreditmemo()
     {
         return Mage::registry('current_creditmemo');
-    }
-
-    protected function _prepareLayout()
-    {
-        $this->setChild(
-            'items',
-            $this->getLayout()->createBlock('adminhtml/sales_order_creditmemo_create_items')
-        );
-
-        $infoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_view_info')
-            ->setOrder($this->getCreditmemo()->getOrder());
-        $this->setChild('order_info', $infoBlock);
-
-
-        $paymentInfoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_payment')
-            ->setPayment($this->getCreditmemo()->getOrder()->getPayment());
-        $this->setChild('payment_info', $paymentInfoBlock);
-
-        return parent::_prepareLayout();
     }
 
     public function getSaveUrl()

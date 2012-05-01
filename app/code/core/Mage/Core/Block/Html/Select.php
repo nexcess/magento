@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Block_Html_Select extends Mage_Core_Block_Abstract
 {
@@ -91,7 +92,7 @@ class Mage_Core_Block_Html_Select extends Mage_Core_Block_Abstract
         $values = $this->getValue();
 
         if (!is_array($values)){
-            if (!empty($values)) {
+            if (!is_null($values)) {
                 $values = array($values);
             } else {
                 $values = array();
@@ -109,10 +110,40 @@ class Mage_Core_Block_Html_Select extends Mage_Core_Block_Abstract
                 $label = $option;
                 $isArrayOption = false;
             }
-            $selected = in_array($value, $values) ? ' selected="selected"' : '';
-            $html.= '<option value="'.$value.'"'.$selected.'>'.$label.'</option>';
+
+            if (is_array($value)) {
+                $html.= '<optgroup label="'.$label.'">';
+                foreach ($value as $keyGroup => $optionGroup) {
+                    if (!is_array($optionGroup)) {
+                        $optionGroup = array(
+                            'value' => $keyGroup,
+                            'label' => $optionGroup
+                        );
+                    }
+                    $html.= $this->_optionToHtml(
+                        $optionGroup,
+                        in_array($optionGroup['value'], $values)
+                    );
+                }
+                $html.= '</optgroup>';
+            } else {
+                $html.= $this->_optionToHtml(array(
+                    'value' => $value,
+                    'label' => $label
+                ),
+                    in_array($value, $values)
+                );
+            }
         }
         $html.= '</select>';
+        return $html;
+    }
+
+    protected function _optionToHtml($option, $selected=false)
+    {
+        $selectedHtml = $selected ? ' selected="selected"' : '';
+        $html = '<option value="'.$option['value'].'"'.$selectedHtml.'>'.$option['label'].'</option>';
+
         return $html;
     }
 

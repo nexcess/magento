@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Dashboard_Grids extends Mage_Adminhtml_Block_Widget_Tabs
@@ -35,27 +36,46 @@ class Mage_Adminhtml_Block_Dashboard_Grids extends Mage_Adminhtml_Block_Widget_T
         $this->setTemplate('widget/tabshoriz.phtml');
     }
 
+    /**
+     * Prepare layout for dashboard bottom tabs
+     *
+     * To load block statically:
+     *     1) content must be generated
+     *     2) url should not be specified
+     *     3) class should not be 'ajax'
+     * To load with ajax:
+     *     1) do not load content
+     *     2) specify url (BE CAREFUL)
+     *     3) specify class 'ajax'
+     *
+     * @return Mage_Adminhtml_Block_Dashboard_Grids
+     */
     protected function _prepareLayout()
     {
+        // load this active tab statically
         $this->addTab('reviewed_products', array(
             'label'     => $this->__('Bestsellers'),
             'content'   => $this->getLayout()->createBlock('adminhtml/dashboard_tab_products_ordered')->toHtml(),
             'active'    => true
         ));
 
+        // load other tabs with ajax
         $this->addTab('ordered_products', array(
             'label'     => $this->__('Most Viewed Products'),
-            'content'   => $this->getLayout()->createBlock('adminhtml/dashboard_tab_products_viewed')->toHtml()
+            'url'       => $this->getUrl('*/*/productsViewed', array('_current'=>true)),
+            'class'     => 'ajax'
         ));
 
         $this->addTab('new_customers', array(
             'label'     => $this->__('New Customers'),
-            'content'   => $this->getLayout()->createBlock('adminhtml/dashboard_tab_customers_newest')->toHtml()
+            'url'       => $this->getUrl('*/*/customersNewest', array('_current'=>true)),
+            'class'     => 'ajax'
         ));
 
         $this->addTab('customers', array(
             'label'     => $this->__('Customers'),
-            'content'   => $this->getLayout()->createBlock('adminhtml/dashboard_tab_customers_most')->toHtml()
+            'url'       => $this->getUrl('*/*/customersMost', array('_current'=>true)),
+            'class'     => 'ajax'
         ));
 
         return parent::_prepareLayout();

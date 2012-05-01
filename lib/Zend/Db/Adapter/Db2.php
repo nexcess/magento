@@ -22,17 +22,17 @@
 /**
  * @see Zend_Db
  */
-require_once 'Zend/Db.php';
+#require_once 'Zend/Db.php';
 
 /**
  * @see Zend_Db_Adapter_Abstract
  */
-require_once 'Zend/Db/Adapter/Abstract.php';
+#require_once 'Zend/Db/Adapter/Abstract.php';
 
 /**
  * @see Zend_Db_Statement_Db2
  */
-require_once 'Zend/Db/Statement/Db2.php';
+#require_once 'Zend/Db/Statement/Db2.php';
 
 
 /**
@@ -115,7 +115,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            #require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception('The IBM DB2 extension is required for this adapter but the extension is not loaded');
         }
 
@@ -171,7 +171,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            #require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception(db2_conn_errormsg(), db2_conn_error());
         }
     }
@@ -227,7 +227,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Adapter_Db2_Exception
                  */
-                require_once 'Zend/Db/Adapter/Db2/Exception.php';
+                #require_once 'Zend/Db/Adapter/Db2/Exception.php';
                 throw new Zend_Db_Adapter_Db2_Exception("execution mode not supported");
                 break;
         }
@@ -487,7 +487,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            #require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception(
                 db2_conn_errormsg($this->_connection),
                 db2_conn_error($this->_connection));
@@ -507,7 +507,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            #require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception(
                 db2_conn_errormsg($this->_connection),
                 db2_conn_error($this->_connection));
@@ -535,14 +535,14 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Adapter_Db2_Exception
                  */
-                require_once 'Zend/Db/Adapter/Db2/Exception.php';
+                #require_once 'Zend/Db/Adapter/Db2/Exception.php';
                 throw new Zend_Db_Adapter_Db2_Exception('FETCH_BOUND is not supported yet');
                 break;
             default:
                 /**
                  * @see Zend_Db_Adapter_Db2_Exception
                  */
-                require_once 'Zend/Db/Adapter/Db2/Exception.php';
+                #require_once 'Zend/Db/Adapter/Db2/Exception.php';
                 throw new Zend_Db_Adapter_Db2_Exception("Invalid fetch mode '$mode' specified");
                 break;
         }
@@ -563,7 +563,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            #require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception("LIMIT argument count=$count is not valid");
         }
 
@@ -572,7 +572,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            #require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception("LIMIT argument offset=$offset is not valid");
         }
 

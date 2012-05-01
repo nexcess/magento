@@ -21,6 +21,7 @@
 /**
  * Customer model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Model_Customer extends Mage_Core_Model_Abstract
 {
@@ -124,7 +125,19 @@ class Mage_Customer_Model_Customer extends Mage_Core_Model_Abstract
      */
     public function getName()
     {
-        return $this->getFirstname() . ' ' . $this->getLastname();
+        $name = '';
+        if ($this->getPrefix()) {
+            $name .= $this->getPrefix() . ' ';
+        }
+        $name .= $this->getFirstname();
+        if ($this->getMiddlename()) {
+            $name .= ' ' . $this->getMiddlename();
+        }
+        $name .=  ' ' . $this->getLastname();
+        if ($this->getSuffix()) {
+            $name .= ' ' . $this->getSuffix();
+        }
+        return $name;
     }
 
     /**
@@ -192,7 +205,7 @@ class Mage_Customer_Model_Customer extends Mage_Core_Model_Abstract
     {
         return $this->_getResource()
             ->loadAllAttributes($this)
-            ->getAttributesByCode();
+            ->getSortedAttributes();
     }
 
     /**
@@ -392,14 +405,27 @@ class Mage_Customer_Model_Customer extends Mage_Core_Model_Abstract
      */
     public function sendNewAccountEmail()
     {
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
+        $storeId = $this->getStoreId();
+        if ($this->getWebsiteId() != '0' && $storeId == '0') {
+            $storeIds = Mage::app()->getWebsite($this->getWebsiteId())->getStoreIds();
+            reset($storeIds);
+            $storeId = current($storeIds);
+        }
         Mage::getModel('core/email_template')
-            ->setDesignConfig(array('area'=>'frontend', 'store'=>$this->getStoreId()))
+            ->setDesignConfig(array('area'=>'frontend', 'store'=>$storeId))
             ->sendTransactional(
                 Mage::getStoreConfig(self::XML_PATH_REGISTER_EMAIL_TEMPLATE),
                 Mage::getStoreConfig(self::XML_PATH_REGISTER_EMAIL_IDENTITY),
                 $this->getEmail(),
                 $this->getName(),
                 array('customer'=>$this));
+
+        $translate->setTranslateInline(true);
+
         return $this;
     }
 
@@ -410,13 +436,29 @@ class Mage_Customer_Model_Customer extends Mage_Core_Model_Abstract
      */
     public function sendPasswordReminderEmail()
     {
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
+        $storeId = $this->getStoreId();
+        if ($this->getWebsiteId() != '0' && $storeId == '0') {
+            $storeIds = Mage::app()->getWebsite($this->getWebsiteId())->getStoreIds();
+            reset($storeIds);
+            $storeId = current($storeIds);
+        }
+
         Mage::getModel('core/email_template')
+            ->setDesignConfig(array('area'=>'frontend', 'store'=>$storeId))
             ->sendTransactional(
-              Mage::getStoreConfig(self::XML_PATH_FORGOT_EMAIL_TEMPLATE),
-              Mage::getStoreConfig(self::XML_PATH_FORGOT_EMAIL_IDENTITY),
-              $this->getEmail(),
-              $this->getName(),
-              array('customer'=>$this));
+                Mage::getStoreConfig(self::XML_PATH_FORGOT_EMAIL_TEMPLATE),
+                Mage::getStoreConfig(self::XML_PATH_FORGOT_EMAIL_IDENTITY),
+                $this->getEmail(),
+                $this->getName(),
+                array('customer'=>$this)
+            );
+
+        $translate->setTranslateInline(true);
+
         return $this;
     }
 
@@ -478,11 +520,47 @@ class Mage_Customer_Model_Customer extends Mage_Core_Model_Abstract
     /**
      * Retrieve shared store ids
      *
-     * @return array|false
+     * @return array
      */
     public function getSharedStoreIds()
     {
-        return $this->getStore()->getWebsite()->getStoresIds();
+        $ids = $this->_getData('shared_store_ids');
+        if (is_null($ids)) {
+            $ids = array();
+            if ((bool)$this->getSharingConfig()->isWebsiteScope()) {
+            	$ids = $this->getStore()->getWebsite()->getStoresIds();
+            }
+            else {
+                foreach (Mage::app()->getStores() as $store) {
+                    $ids[] = $store->getId();
+                }
+            }
+            $this->setData('shared_store_ids', $ids);
+        }
+        return $ids;
+    }
+
+    /**
+     * Retrive shared website ids
+     *
+     * @return array
+     */
+    public function getSharedWebsiteIds()
+    {
+        $ids = $this->_getData('shared_website_ids');
+        if (is_null($ids)) {
+            $ids = array();
+            if ((bool)$this->getSharingConfig()->isWebsiteScope()) {
+            	$ids[] = $this->getWebsiteId();
+            }
+            else {
+                foreach (Mage::app()->getWebsites() as $website) {
+                    $ids[] = $website->getId();
+                }
+            }
+            $this->setData('shared_website_ids', $ids);
+        }
+        return $ids;
     }
 
     /**

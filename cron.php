@@ -20,7 +20,7 @@
 
 require 'app/Mage.php';
 
-Mage::app('default');
+Mage::app('admin');
 
 if (!Mage::app()->isInstalled()) {
     echo "Application is not installed yet, please complete install wizard first.";

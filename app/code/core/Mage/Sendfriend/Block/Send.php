@@ -59,6 +59,11 @@ class Mage_Sendfriend_Block_Send extends Mage_Core_Block_Template
         return $this->getRequest()->getParam('id');
     }
 
+    public function getCategoryId()
+    {
+        return $this->getRequest()->getParam('cat_id', null);
+    }
+
 	public function getMaxRecipients()
 	{
 	    $sendToFriendModel = Mage::registry('send_to_friend_model');

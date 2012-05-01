@@ -20,16 +20,16 @@
 
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 /** Zend_Pdf_Color */
-require_once 'Zend/Pdf/Color.php';
+#require_once 'Zend/Pdf/Color.php';
 
 /** Zend_Pdf_Color_Rgb */
-require_once 'Zend/Pdf/Color/Rgb.php';
+#require_once 'Zend/Pdf/Color/Rgb.php';
 
 /** Zend_Pdf_GrayScale */
-require_once 'Zend/Pdf/Color/GrayScale.php';
+#require_once 'Zend/Pdf/Color/GrayScale.php';
 
 
 /**

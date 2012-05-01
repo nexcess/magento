@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Model_System_Config_Backend_Sitemap_Cron extends Mage_Core_Model_Config_Data
 {
@@ -47,9 +48,9 @@ class Mage_Adminhtml_Model_System_Config_Backend_Sitemap_Cron extends Mage_Core_
         $cronExprArray = array(
             intval($time[1]),                                   # Minute
             intval($time[0]),                                   # Hour
-            ( $frequncy == $frequencyMonthly ) ? '1' : '*',     # Day of the Month
+            ($frequncy == $frequencyMonthly) ? '1' : '*',       # Day of the Month
             '*',                                                # Month of the Year
-            ( $frequncy == $frequencyDaily ) ? '1' : '*',       # Day of the Week
+            ($frequncy == $frequencyWeekly) ? '1' : '*',        # Day of the Week
         );
 
         $cronExprString = join(' ', $cronExprArray);

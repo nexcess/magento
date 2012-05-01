@@ -29,6 +29,7 @@ AdminOrder.prototype = {
         this.billingAddressContainer = '';
         this.shippingAddressContainer= '';
         this.isShippingMethodReseted = data.shipping_method_reseted ? data.shipping_method_reseted : false;
+        this.overlayData = {};
     },
 
     setLoadBaseUrl : function(url){
@@ -45,7 +46,13 @@ AdminOrder.prototype = {
         $('back_order_top_button').hide();
         $('reset_order_top_button').show();
         this.customerSelectorHide();
-        this.storeSelectorShow();
+        if (this.storeId) {
+            $(this.getAreaId('data')).callback = 'dataShow';
+            this.loadArea(['header', 'data'], true);
+        }
+        else {
+            this.storeSelectorShow();
+        }
     },
 
     setStoreId : function(id){
@@ -63,7 +70,8 @@ AdminOrder.prototype = {
         this.loadArea(['data'], true);
     },
 
-    selectAddress : function(id, container){
+    selectAddress : function(el, container){
+        id = el.value;
         if(this.addresses[id]){
             this.fillAddressFields(container, this.addresses[id]);
         }
@@ -72,7 +80,7 @@ AdminOrder.prototype = {
         }
 
         var data = this.serializeData(container);
-        data['order[customer_address_id]'] = id;
+        data[el.name] = id;
         if(this.isShippingField(container) && !this.isShippingMethodReseted){
             this.resetShippingMethod(data);
         }
@@ -120,6 +128,8 @@ AdminOrder.prototype = {
                 data['reset_shipping'] = true;
             }
         }
+
+        data['order['+type+'_address][customer_address_id]'] = $('order:'+type+'_address_customer_address_id').value;
 
         if (data['reset_shipping']) {
             this.resetShippingMethod(data);
@@ -428,7 +438,7 @@ AdminOrder.prototype = {
     },
 
     itemsUpdate : function(){
-        var info = $('order:items_grid').getElementsBySelector('input', 'select');
+        var info = $('order:items_grid').getElementsBySelector('input', 'select', 'textarea');
         var data = $H({});
         for(var i=0; i<info.length; i++){
             if(!info[i].disabled && (info[i].type != 'checkbox' || info[i].checked)) {
@@ -442,7 +452,7 @@ AdminOrder.prototype = {
     },
 
     itemsOnchangeBind : function(){
-        var elems = $('order:items_grid').getElementsBySelector('input', 'select');
+        var elems = $('order:items_grid').getElementsBySelector('input', 'select', 'textarea');
         for(var i=0; i<elems.length; i++){
             if(!elems[i].bindOnchange){
                 elems[i].bindOnchange = true;
@@ -526,6 +536,9 @@ AdminOrder.prototype = {
                         var id = this.loadingAreas[i];
                         if($(this.getAreaId(id))){
                             $(this.getAreaId(id)).update(response[id] ? response[id] : '');
+                            if ($(this.getAreaId(id)).callback) {
+                                this[$(this.getAreaId(id)).callback]();
+                            }
                         }
                     }
                 }.bind(this)
@@ -542,12 +555,25 @@ AdminOrder.prototype = {
 
     showArea : function(area){
         var id = this.getAreaId(area);
-        if($(id)) $(id).show();
+        if($(id)) {
+            $(id).show();
+            this.areaOverlay();
+        }
     },
 
     hideArea : function(area){
         var id = this.getAreaId(area);
-        if($(id)) $(id).hide();
+        if($(id)) {
+            $(id).hide();
+            this.areaOverlay();
+        }
+    },
+
+    areaOverlay : function()
+    {
+        $H(order.overlayData).each(function(e){
+            e.value.fx();
+        });
     },
 
     getAreaId : function(area){
@@ -603,5 +629,63 @@ AdminOrder.prototype = {
             //$('edit_form').submit();
             editForm.submit();
         }
+    },
+
+    overlay : function(elId, show, observe)
+    {
+        if (typeof(show) == 'undefined') { show = true; }
+
+        var orderObj = this;
+        var obj = this.overlayData[elId]
+        if (!obj) {
+            obj = {
+                show: show,
+                el: elId,
+                order: orderObj,
+                fx: function(event) {
+                    this.order.processOverlay(this.el, this.show);
+                }
+            }
+            obj.bfx = obj.fx.bindAsEventListener(obj);
+            this.overlayData[elId] = obj;
+        }
+        else {
+            obj.show = show;
+            Event.stopObserving(window, 'resize', obj.bfx);
+        }
+
+        Event.observe(window, 'resize', obj.bfx);
+
+        this.processOverlay(elId, show);
+    },
+
+    processOverlay : function(elId, show)
+    {
+        var el = $(elId);
+        var parentEl = el.up(1);
+        var parentPos = Position.cumulativeOffset(parentEl);
+        if (show) {
+            parentEl.removeClassName('ignore-validate');
+        }
+        else {
+            parentEl.addClassName('ignore-validate');
+        }
+        
+        if (Prototype.Browser.IE) {
+            parentEl.getElementsBySelector('select').each(function (elem) {
+                show ? elem .show() : elem.hide();
+            });
+        }
+        
+        el.setStyle({
+            display: show ? 'none' : '',
+            position: 'absolute',
+            backgroundColor: '#999999',
+            opacity: 0.8,
+            width: parentEl.getWidth() + 'px',
+            height: parentEl.getHeight() + 'px',
+            top: parentPos[1] + 'px',
+            left: parentPos[0] + 'px'
+        });
     }
 }

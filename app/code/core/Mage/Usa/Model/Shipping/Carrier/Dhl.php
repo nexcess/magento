@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Usa
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Usa_Model_Shipping_Carrier_Dhl
     extends Mage_Usa_Model_Shipping_Carrier_Abstract
@@ -150,7 +151,8 @@ class Mage_Usa_Model_Shipping_Carrier_Dhl
         $shippingWeight = round(max(1, $weight),0);
 
         $r->setValue(round($request->getPackageValue(),2));
-        $r->setDestStreet(substr($request->getDestStreet(), 0, 35));
+        $r->setValueWithDiscount($request->getPackageValueWithDiscount());
+        $r->setDestStreet(Mage::helper('core/string')->substr($request->getDestStreet(), 0, 35));
         $r->setDestCity($request->getDestCity());
 
         if ($request->getDestCountryId()) {

@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Cms
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Cms_PageController extends Mage_Adminhtml_Controller_Action
 {
@@ -120,6 +121,26 @@ class Mage_Adminhtml_Cms_PageController extends Mage_Adminhtml_Controller_Action
 //            }
 
             $model->setData($data);
+
+            $format = Mage::app()->getLocale()->getDateFormat(
+                Mage_Core_Model_Locale::FORMAT_TYPE_SHORT
+            );
+
+            if (!empty($data['custom_theme_from'])) {
+                $date = Mage::app()->getLocale()->date($data['custom_theme_from'], $format);
+                $time = $date->getTimestamp();
+	    		$model->setCustomThemeFrom(
+                    Mage::getSingleton('core/date')->gmtDate(null, $time)
+                );
+            }
+
+            if (!empty($data['custom_theme_to'])) {
+                $date = Mage::app()->getLocale()->date($data['custom_theme_to'], $format);
+                $time = $date->getTimestamp();
+	    		$model->setCustomThemeTo(
+                    Mage::getSingleton('core/date')->gmtDate(null, $time)
+                );
+            }
 
             // try to save it
             try {

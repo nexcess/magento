@@ -19,10 +19,10 @@
  */
 
 /** Zend_Pdf_Resource */
-require_once 'Zend/Pdf/Resource.php';
+#require_once 'Zend/Pdf/Resource.php';
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 
 /**

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Paypal
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Paypal_Block_Link_Shortcut extends Mage_Core_Block_Template
 {
@@ -43,7 +44,8 @@ class Mage_Paypal_Block_Link_Shortcut extends Mage_Core_Block_Template
 
     public function _toHtml()
     {
-        if((bool)Mage::getStoreConfig('payment/paypal_express/active')) {
+        if (Mage::getStoreConfigFlag('payment/paypal_express/active')
+            && Mage::getSingleton('checkout/session')->getQuote()->validateMinimumAmount()) {
             return parent::_toHtml();
         }
 

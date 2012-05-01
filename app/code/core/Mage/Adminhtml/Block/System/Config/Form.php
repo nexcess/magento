@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_System_Config_Form extends Mage_Adminhtml_Block_Widget_Form
 {
@@ -117,6 +118,9 @@ class Mage_Adminhtml_Block_System_Config_Form extends Mage_Adminhtml_Block_Widge
         $form = new Varien_Data_Form();
 
         $sections = $this->_configFields->getSection($this->getSectionCode(), $this->getWebsiteCode(), $this->getStoreCode());
+        if (empty($sections)) {
+            $sections = array();
+        }
         foreach ($sections as $section) {
             /* @var $section Varien_Simplexml_Element */
             if (!$this->_canShowField($section)) {

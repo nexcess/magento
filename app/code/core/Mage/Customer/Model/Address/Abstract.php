@@ -21,9 +21,12 @@
 /**
  * Address abstract model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Model_Address_Abstract extends Mage_Core_Model_Abstract
 {
+    protected $_eventPrefix = 'customer_address';
+    protected $_eventObject = 'customer_address';
     /**
      * Directory country models
      *
@@ -40,7 +43,19 @@ class Mage_Customer_Model_Address_Abstract extends Mage_Core_Model_Abstract
 
     public function getName()
     {
-    	return $this->getFirstname().' '.$this->getLastname();
+        $name = '';
+        if ($this->getPrefix()) {
+            $name .= $this->getPrefix() . ' ';
+        }
+        $name .= $this->getFirstname();
+        if ($this->getMiddlename()) {
+            $name .= ' ' . $this->getMiddlename();
+        }
+        $name .=  ' ' . $this->getLastname();
+        if ($this->getSuffix()) {
+            $name .= ' ' . $this->getSuffix();
+        }
+        return $name;
     }
 
     /**
@@ -56,7 +71,7 @@ class Mage_Customer_Model_Address_Abstract extends Mage_Core_Model_Abstract
             return $street;
         } else {
             $arr = is_array($street) ? $street : explode("\n", $street);
-            if (0===$line) {
+            if (0===$line || $line === null) {
                 return $arr;
             } elseif (isset($arr[$line-1])) {
                 return $arr[$line-1];
@@ -64,6 +79,31 @@ class Mage_Customer_Model_Address_Abstract extends Mage_Core_Model_Abstract
                 return '';
             }
         }
+    }
+
+    public function getStreet1()
+    {
+        return $this->getSteet(1);
+    }
+
+    public function getStreet2()
+    {
+        return $this->getSteet(2);
+    }
+
+    public function getStreet3()
+    {
+        return $this->getStreet(3);
+    }
+
+    public function getStreet4()
+    {
+        return $this->getStreet(4);
+    }
+
+    public function getStreetFull()
+    {
+        return $this->getData('street');
     }
 
     /**
@@ -79,24 +119,6 @@ class Mage_Customer_Model_Address_Abstract extends Mage_Core_Model_Abstract
         }
         $this->setData('street', $street);
         return $this;
-    }
-
-    /**
-     * get address data
-     *
-     * @param   string $key
-     * @param   int $index
-     * @return  mixed
-     */
-    public function getData($key='', $index=null)
-    {
-        if (strncmp($key, 'street', 6)) {
-            $index = substr($key, 6);
-            if (!is_numeric($index)) {
-                $index = null;
-            }
-        }
-        return parent::getData($key, $index);
     }
 
     /**
@@ -241,14 +263,17 @@ class Mage_Customer_Model_Address_Abstract extends Mage_Core_Model_Abstract
         return self::$_regionModels[$region];
     }
 
+    /**
+     * @deprecated for public function format
+     */
     public function getHtmlFormat()
     {
-        return "{{firstname}} {{lastname}}<br/>
-            {{street}}<br/>
-            {{city}}, {{regionName}} {{postcode}}<br/>
-            T: {{telephone}}";
+        return $this->getConfig()->getFormatByCode('html');
     }
 
+    /**
+     * @deprecated for public function format
+     */
     public function getFormated($html=false)
     {
     	return $this->format($html ? 'html' : 'text');//Mage::getModel('directory/country')->load($this->getCountryId())->formatAddress($this, $html);

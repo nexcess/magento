@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Catalog_Category_Tree extends Mage_Adminhtml_Block_Template
 {
@@ -55,7 +56,7 @@ class Mage_Adminhtml_Block_Catalog_Category_Tree extends Mage_Adminhtml_Block_Te
 
         $this->setChild('store_switcher',
             $this->getLayout()->createBlock('adminhtml/store_switcher')
-                ->setSwitchUrl($this->getUrl('*/*/*', array('store'=>null)))
+                ->setSwitchUrl($this->getUrl('*/*/*', array('_current'=>true, '_query'=>array() ,'store'=>null)))
         );
         return parent::_prepareLayout();
     }
@@ -67,14 +68,17 @@ class Mage_Adminhtml_Block_Catalog_Category_Tree extends Mage_Adminhtml_Block_Te
 
     public function getCategoryCollection()
     {
+        $storeId = $this->getRequest()->getParam('store', $this->_getDefaultStoreId());
         $collection = $this->getData('category_collection');
         if (is_null($collection)) {
             $collection = Mage::getModel('catalog/category')->getCollection();
 
             /* @var $collection Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
             $collection->addAttributeToSelect('name')
-                ->setProductStoreId($this->getRequest()->getParam('store', $this->_getDefaultStoreId()))
-                ->setLoadProductCount($this->_withProductCount);
+                ->addAttributeToSelect('is_active')
+                ->setProductStoreId($storeId)
+                ->setLoadProductCount($this->_withProductCount)
+                ->setStoreId($storeId);
 
             $this->setData('category_collection', $collection);
         }
@@ -122,7 +126,7 @@ class Mage_Adminhtml_Block_Catalog_Category_Tree extends Mage_Adminhtml_Block_Te
 
     public function getEditUrl()
     {
-        return $this->getUrl('*/catalog_category/edit', array('_current'=>true, 'id'=>null, 'parent'=>null));
+        return $this->getUrl('*/catalog_category/edit', array('_current'=>true, '_query'=>array(), 'id'=>null, 'parent'=>null));
     }
 
     public function getMoveUrl()

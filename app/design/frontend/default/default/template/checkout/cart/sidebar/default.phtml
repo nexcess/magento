@@ -1,0 +1,58 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php $_item = $this->getItem() ?>
+<li>
+    <div class="product-images">
+        <a href="<?php echo $this->getProductUrl()?>"><img src="<?php echo $this->getProductThumbnail()->resize(50, 50)->setWatermarkSize('30x10'); ?>" alt="<?php echo $this->htmlEscape($this->getProductName()) ?>" width="50" height="50" /></a>
+    </div>
+    <div class="product-details">
+        <a href="<?php echo $this->getDeleteUrl() ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the shopping cart?') ?>');" class="widget-btn"><img src="<?php echo $this->getSkinUrl('images/list_remove_btn.gif') ?>" alt="<?php echo $this->__('Remove Product') ?>" /></a>
+        <a href="<?php echo $this->getProductUrl() ?>"><?php echo $this->getProductName() ?></a><br />
+        <strong><?php echo $this->getQty() ?></strong> x <?php echo $this->helper('core')->currency($_item->getPrice()) ?>
+        <?php if ($this->helper('tax')->displayCartBothPrices()):?>
+        <br />
+        (<span><?php echo $this->helper('checkout')->formatPrice($this->helper('checkout')->getPriceInclTax($_item)); ?></span> <?php echo Mage::helper('tax')->__('Incl. Tax') ?>)
+        <?php endif;?>
+        <?php $_randomId = str_replace('.', '_', 'truncated_' . microtime(true)); ?>
+        <?php if ($_options = $this->getOptionList()): ?>
+        <div class="truncated">
+            <div class="truncated_value" id="<?php echo $_randomId?>_full_view">
+                <ul class="super-product-attributes">
+                <?php foreach ($_options as $_option) : ?>
+                <?php
+                if (is_array($_option['value'])) {
+                    $_truncatedValue = implode('<br />', $_option['value']);
+                } else {
+                    $_truncatedValue = nl2br($this->htmlEscape($_option['value']));
+                }
+                ?>
+                    <li><strong><?php echo $this->htmlEscape($_option['label']) ?></strong><br />
+                        <?php echo $_truncatedValue; ?>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            </div>
+            <a href="javascript:void(0);" class="truncate-option" id="<?php echo $_randomId?>"><?php echo $this->__('Details') ?></a>
+
+        </div>
+        <?php endif; ?>
+    </div>
+</li>

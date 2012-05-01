@@ -20,5 +20,5 @@
  ?>
 <!--<h4 class="icon-head fieldset-legend <?php echo $this->getHeaderCssClass() ?>"><?php echo $this->getHeaderText() ?></h4>-->
 <?php echo Mage::helper('sales')->__('Order Comments') ?><br/>
-<textarea style="width:90%; height: 8em;" name="order[comment][customer_note]"><?php echo $this->getCommentNote() ?></textarea><br/>
+<textarea style="width:98%; height:8em;" name="order[comment][customer_note]" rows="3" cols="5"><?php echo $this->getCommentNote() ?></textarea><br/>
 <script type="text/javascript">order.commentFieldsBind('order:comment')</script>

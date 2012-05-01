@@ -22,12 +22,12 @@
 /**
  * @see Zend_Loader
  */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 /**
  * @see Zend_Http_Client
  */
-require_once 'Zend/Http/Client.php';
+#require_once 'Zend/Http/Client.php';
 
 /**
  * This class allows Nirvanix authentication credentials to be specified

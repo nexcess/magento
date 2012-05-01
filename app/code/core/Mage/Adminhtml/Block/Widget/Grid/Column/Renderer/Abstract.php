@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 abstract class Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Abstract extends Mage_Adminhtml_Block_Abstract implements Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Interface
@@ -82,7 +83,7 @@ abstract class Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Abstract extends
             $dir = strtolower($this->getColumn()->getDir());
             $nDir= ($dir=='asc') ? 'desc' : 'asc';
             if ($this->getColumn()->getDir()) {
-                $className = 'sort-arrow-' . $nDir;
+                $className = 'sort-arrow-' . $dir;
             }
             $out = '<a href="#" name="'.$this->getColumn()->getId().'" target="'.$nDir
                    .'" class="' . $className . '"><span class="sort-title">'.$this->getColumn()->getHeader().'</span></a>';

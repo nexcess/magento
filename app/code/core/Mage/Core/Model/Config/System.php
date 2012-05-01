@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Config_System extends Mage_Core_Model_Config_Base
 {

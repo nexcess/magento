@@ -21,8 +21,9 @@
 /**
  * Product type model
  *
- * @category   Mage
- * @package    Mage_Catalog
+ * @category    Mage
+ * @package     Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Product_Type
 {
@@ -36,9 +37,18 @@ class Mage_Catalog_Model_Product_Type
     const TYPE_VIRTUAL      = 'virtual';
 
     const DEFAULT_TYPE      = 'simple';
+    const DEFAULT_TYPE_MODEL    = 'catalog/product_type_simple';
+    const DEFAULT_PRICE_MODEL   = 'catalog/product_type_price';
 
     static protected $_types;
+    static protected $_priceModels;
 
+    /**
+     * Product type instance factory
+     *
+     * @param   Mage_Catalog_Model_Product $product
+     * @return  Mage_Catalog_Model_Product_Type_Abstract
+     */
     public static function factory($product)
     {
         $types = self::getTypes();
@@ -46,12 +56,36 @@ class Mage_Catalog_Model_Product_Type
         if (!empty($types[$product->getTypeId()]['model'])) {
             $typeModelName = $types[$product->getTypeId()]['model'];
         } else {
-            $typeModelName = $types[self::DEFAULT_TYPE]['model'];
+            $typeModelName = self::DEFAULT_TYPE_MODEL;
         }
 
         $typeModel = Mage::getModel($typeModelName);
         $typeModel->setProduct($product);
         return $typeModel;
+    }
+
+    /**
+     * Product type price model factory
+     *
+     * @param   string $productType
+     * @return  Mage_Catalog_Model_Product_Type_Price
+     */
+    public static function priceFactory($productType)
+    {
+        if (isset(self::$_priceModels[$productType])) {
+            return self::$_priceModels[$productType];
+        }
+
+        $types = self::getTypes();
+
+        if (!empty($types[$productType]['price_model'])) {
+            $priceModelName = $types[$productType]['price_model'];
+        } else {
+            $priceModelName = self::DEFAULT_PRICE_MODEL;
+        }
+
+        self::$_priceModels[$productType] = Mage::getModel($priceModelName);
+        return self::$_priceModels[$productType];
     }
 
     static public function getOptionArray()

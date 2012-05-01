@@ -23,11 +23,10 @@
 $numColumns = sizeof($this->getColumns());
 ?>
 <?php if($this->getCollection()): ?>
-
-<div class="grid" style="padding:0px;">
+<div class="grid np">
 <table cellspacing="0" style="border:0;" id="<?php echo $this->getId() ?>_table">
     <?php foreach ($this->getColumns() as $_column): ?>
-    <col <?php echo $_column->getHtmlProperty() ?>>
+    <col <?php echo $_column->getHtmlProperty() ?> />
     <?php endforeach; ?>
     <?php if ($this->getHeadersVisibility() || $this->getFilterVisibility()): ?>
         <thead>
@@ -58,7 +57,8 @@ $numColumns = sizeof($this->getColumns());
 </table>
 </div>
 <?php if($this->canDisplayContainer()): ?>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
+//<![CDATA[
     <?php echo $this->getJsObjectName() ?> = new varienGrid('<?php echo $this->getId() ?>', '<?php echo $this->getGridUrl() ?>', '<?php echo $this->getVarNamePage() ?>', '<?php echo $this->getVarNameSort() ?>', '<?php echo $this->getVarNameDir() ?>', '<?php echo $this->getVarNameFilter() ?>');
     <?php echo $this->getJsObjectName() ?>.useAjax = '<?php echo $this->getUseAjax() ?>';
     <?php if($this->getRowClickCallback()): ?>
@@ -74,6 +74,7 @@ $numColumns = sizeof($this->getColumns());
     <?php if($this->getMassactionBlock()->isAvailable()): ?>
     <?php echo $this->getMassactionBlock()->getJavaScript() ?>
     <?php endif ?>
+//]]>
 </script>
 <?php endif; ?>
 <?php endif ?>

@@ -24,9 +24,15 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Catalog_Block_Product_Abstract extends Mage_Core_Block_Template
 {
+    private $_priceBlock = array();
+    private $_priceBlockDefaultTemplate = 'catalog/product/price.phtml';
+    private $_priceBlockTypes = array();
+
+    private $_reviewsHelperBlock;
 
     /**
      * Enter description here...
@@ -62,4 +68,104 @@ abstract class Mage_Catalog_Block_Product_Abstract extends Mage_Core_Block_Templ
         return $this->helper('catalog/product_compare')->getAddUrl($product);
     }
 
+    public function getMinimalQty($product)
+    {
+        if ($stockItem = $product->getStockItem()) {
+            return $stockItem->getMinSaleQty()>1 ? $stockItem->getMinSaleQty()*1 : null;
+        }
+        return null;
+    }
+
+    protected function _getPriceBlock($productTypeId)
+    {
+        if (!isset($this->_priceBlock[$productTypeId])) {
+            $block = 'catalog/product_price';
+            if (isset($this->_priceBlockTypes[$productTypeId])) {
+                if ($this->_priceBlockTypes[$productTypeId]['block'] != '') {
+                    $block = $this->_priceBlockTypes[$productTypeId]['block'];
+                }
+            }
+            $this->_priceBlock[$productTypeId] = $this->getLayout()->createBlock($block);
+        }
+        return $this->_priceBlock[$productTypeId];
+    }
+
+    protected function _getPriceBlockTemplate($productTypeId)
+    {
+        if (isset($this->_priceBlockTypes[$productTypeId])) {
+            if ($this->_priceBlockTypes[$productTypeId]['template'] != '') {
+                return $this->_priceBlockTypes[$productTypeId]['template'];
+            }
+        }
+        return $this->_priceBlockDefaultTemplate;
+    }
+
+    /**
+     * Returns product price block html
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param boolean $displayMinimalPrice
+     */
+    public function getPriceHtml($product, $displayMinimalPrice = false)
+    {
+        return $this->_getPriceBlock($product->getTypeId())
+            ->setTemplate($this->_getPriceBlockTemplate($product->getTypeId()))
+            ->setProduct($product)
+            ->setDisplayMinimalPrice($displayMinimalPrice)
+            ->toHtml();
+    }
+
+    /**
+     * Adding customized price template for product type
+     *
+     * @param string $type
+     * @param string $block
+     * @param string $template
+     */
+    public function addPriceBlockType($type, $block = '', $template = '')
+    {
+        if ($type) {
+            $this->_priceBlockTypes[$type] = array(
+                'block' => $block,
+                'template' => $template
+            );
+        }
+    }
+
+    /**
+     * Get product reviews summary
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param bool $templateType
+     * @param bool $displayIfNoReviews
+     * @return string
+     */
+    public function getReviewsSummaryHtml(Mage_Catalog_Model_Product $product, $templateType = false, $displayIfNoReviews = false)
+    {
+        $this->_initReviewsHelperBlock();
+        return $this->_reviewsHelperBlock->getSummaryHtml($product, $templateType, $displayIfNoReviews);
+    }
+
+    /**
+     * Add/replace reviews summary template by type
+     *
+     * @param string $type
+     * @param string $template
+     */
+    public function addReviewSummaryTemplate($type, $template)
+    {
+        $this->_initReviewsHelperBlock();
+        $this->_reviewsHelperBlock->addTemplate($type, $template);
+    }
+
+    /**
+     * Create reviews summary helper block once
+     *
+     */
+    protected function _initReviewsHelperBlock()
+    {
+        if (!$this->_reviewsHelperBlock) {
+            $this->_reviewsHelperBlock = $this->getLayout()->createBlock('review/helper');
+        }
+    }
 }

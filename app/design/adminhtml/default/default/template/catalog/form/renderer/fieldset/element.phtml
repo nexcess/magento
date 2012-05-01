@@ -28,8 +28,8 @@
 </tr>
 <?php else: ?>
 <tr class="hidden">
-    <td class="label"><?php echo trim($_element->getLabelHtml()) ?></td>
-    <td class="value"><?php echo trim($_element->getElementHtml()) ?></td>
+    <td class="label"><?php echo trim($this->getElementLabelHtml()) ?></td>
+    <td class="value"><?php echo trim($this->getElementHtml()) ?></td>
     <td class="scope-label"><?php echo $this->getScopeLabel() ?></td>
     <?php if ($this->canDisplayUseDefault()): ?>
     <td class="value use-default">

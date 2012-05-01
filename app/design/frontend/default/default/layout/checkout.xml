@@ -36,7 +36,11 @@ Default layout, loads most of the pages
             </block>
         </reference>
         <reference name="right">
-            <block type="checkout/cart_sidebar" name="cart_sidebar" before="-" template="checkout/cart/sidebar.phtml"/>
+            <block type="checkout/cart_sidebar" name="cart_sidebar" template="checkout/cart/sidebar.phtml" before="-">
+                <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>checkout/cart/sidebar/default.phtml</template></action>
+                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/cart/sidebar/default.phtml</template></action>
+                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/cart/sidebar/default.phtml</template></action>
+            </block>
         </reference>
 
     </default>
@@ -48,11 +52,17 @@ Default layout, loads most of the pages
         <reference name="root">
             <action method="setTemplate"><template>page/1column.phtml</template></action>
         </reference>
+        <reference name="head">
+            <action method="addJs"><name>lib/switchDisplay.js</name></action>
+        </reference>
         <reference name="content">
             <block type="checkout/cart" name="checkout.cart">
                 <action method="setCartTemplate"><value>checkout/cart.phtml</value></action>
                 <action method="setEmptyTemplate"><value>checkout/cart/noItems.phtml</value></action>
                 <action method="chooseTemplate"/>
+                <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>checkout/cart/item/default.phtml</template></action>
+                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/cart/item/default.phtml</template></action>
+                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/cart/item/default.phtml</template></action>
 
                 <block type="core/text_list" name="checkout.cart.top_methods" as="top_methods">
                     <block type="checkout/onepage_link" name="checkout.cart.methods.onepage" template="checkout/onepage/link.phtml"/>
@@ -66,6 +76,8 @@ Default layout, loads most of the pages
                 <block type="checkout/cart_coupon" name="checkout.cart.coupon" as="coupon" template="checkout/cart/coupon.phtml"/>
                 <block type="checkout/cart_shipping" name="checkout.cart.shipping" as="shipping" template="checkout/cart/shipping.phtml"/>
                 <block type="checkout/cart_crosssell" name="checkout.cart.crosssell" as="crosssell" template="checkout/cart/crosssell.phtml"/>
+
+                <block type="checkout/cart_totals" name="checkout.cart.totals" as="totals" template="checkout/cart/totals.phtml"/>
             </block>
         </reference>
     </checkout_cart_index>
@@ -156,7 +168,11 @@ Multi address shipping checkout address page
         <update handle="checkout_multishipping"/>
         <!-- Mage_Checkout -->
         <reference name="content">
-            <block type="checkout/multishipping_addresses" name="checkout_addresses" template="checkout/multishipping/addresses.phtml"/>
+            <block type="checkout/multishipping_addresses" name="checkout_addresses" template="checkout/multishipping/addresses.phtml">
+                <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/multishipping/item/default.phtml</template></action>
+                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/multishipping/item/default.phtml</template></action>
+                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/multishipping/item/default.phtml</template></action>
+            </block>
         </reference>
     </checkout_multishipping_addresses>
 
@@ -168,7 +184,17 @@ Multi address shipping checkout shipping information
         <update handle="checkout_multishipping"/>
         <!-- Mage_Checkout -->
         <reference name="content">
-            <block type="checkout/multishipping_shipping" name="checkout_shipping" template="checkout/multishipping/shipping.phtml"/>
+            <block type="checkout/multishipping_shipping" name="checkout_shipping" template="checkout/multishipping/shipping.phtml">
+                <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/multishipping/item/default.phtml</template></action>
+                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/multishipping/item/default.phtml</template></action>
+                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/multishipping/item/default.phtml</template></action>
+
+                <block type="checkout/multishipping_billing_items" name="checkout_billing_items" template="checkout/multishipping/billing/items.phtml">
+                    <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/multishipping/item/default.phtml</template></action>
+                    <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/multishipping/item/default.phtml</template></action>
+                    <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/multishipping/item/default.phtml</template></action>
+                </block>
+            </block>
         </reference>
     </checkout_multishipping_shipping>
 
@@ -182,6 +208,13 @@ Multi address shipping checkout billing information
         <reference name="content">
             <block type="checkout/multishipping_billing" name="checkout_billing" template="checkout/multishipping/billing.phtml">
                 <action method="setMethodFormTemplate"><method>purchaseorder</method><template>payment/form/purchaseorder.phtml</template></action>
+
+                <!--<block type="checkout/multishipping_billing_items" name="checkout_billing_items" template="checkout/multishipping/billing/items.phtml">
+                    <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/multishipping/item/default.phtml</template></action>
+                    <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/multishipping/item/default.phtml</template></action>
+                    <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/multishipping/item/default.phtml</template></action>
+                </block>-->
+
             </block>
         </reference>
     </checkout_multishipping_billing>
@@ -195,9 +228,14 @@ Multi address shipping checkout overview
         <!-- Mage_Checkout -->
         <reference name="content">
             <block type="checkout/multishipping_overview" name="checkout_overview" template="checkout/multishipping/overview.phtml">
+                <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/multishipping/item/default.phtml</template></action>
+                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/multishipping/item/default.phtml</template></action>
+                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/multishipping/item/default.phtml</template></action>
                 <block type="checkout/multishipping_payment_info" name="payment_info">
                     <action method="setInfoTemplate"><method></method><template></template></action>
                 </block>
+                <block type="checkout/agreements" name="checkout.multishipping.agreements" as="agreements" template="checkout/multishipping/agreements.phtml"/>
+                <block type="checkout/cart_totals" name="totals" />
             </block>
         </reference>
     </checkout_multishipping_overview>
@@ -245,7 +283,7 @@ One page checkout main layout
                     </block>
                 </block>
                 <block type="checkout/onepage_review" name="checkout.onepage.review" as="review" template="checkout/onepage/review.phtml">
-                    <block type="checkout/onepage_review_info" name="checkout.onepage.review.info" as="info" template="checkout/onepage/review/info.phtml"/>
+                    <block type="checkout/agreements" name="checkout.onepage.agreements" as="agreements" template="checkout/onepage/agreements.phtml"/>
                 </block>
             </block>
         </reference>
@@ -311,7 +349,12 @@ One page checkout order review block
         <remove name="right"/>
         <remove name="left"/>
 
-        <block type="checkout/onepage_review_info" name="root" output="toHtml" template="checkout/onepage/review/info.phtml"/>
+        <block type="checkout/onepage_review_info" name="root" output="toHtml" template="checkout/onepage/review/info.phtml">
+            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/onepage/review/item.phtml</template></action>
+            <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals" template="checkout/onepage/review/totals.phtml"/>
+        </block>
     </checkout_onepage_review>
 
     <checkout_onepage_success>
@@ -319,7 +362,15 @@ One page checkout order review block
             <action method="setTemplate"><template>page/2columns-right.phtml</template></action>
         </reference>
         <reference name="content">
-            <block type="core/template" name="checkout.success" template="checkout/success.phtml"/>
+            <block type="checkout/onepage_success" name="checkout.success" template="checkout/success.phtml"/>
         </reference>
     </checkout_onepage_success>
+    <checkout_onepage_failure>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="checkout/onepage_failure" name="checkout.failure" template="checkout/onepage/failure.phtml"/>
+        </reference>
+    </checkout_onepage_failure>
 </layout>

@@ -23,10 +23,6 @@
     <modules>
         <Mage_Wishlist>
             <version>0.7.3</version>
-            <depends>
-                <Mage_Customer />
-                <Mage_Catalog />
-            </depends>
         </Mage_Wishlist>
     </modules>
     <global>
@@ -82,7 +78,16 @@
             </email>
         </template>
         <events>
-            <checkout_cart_after_add>
+            <checkout_cart_update_items_before>
+                <observers>
+                    <wishlist>
+                        <type>singleton</type>
+                        <class>wishlist/observer</class>
+                        <method>processCartUpdateBefore</method>
+                    </wishlist>
+                </observers>
+            </checkout_cart_update_items_before>
+            <checkout_cart_add_product_complete>
                 <observers>
                     <wishlist>
                         <type>singleton</type>
@@ -90,7 +95,7 @@
                         <method>processAddToCart</method>
                     </wishlist>
                 </observers>
-            </checkout_cart_after_add>
+            </checkout_cart_add_product_complete>
         </events>
     </global>
     <frontend>

@@ -21,7 +21,7 @@
 /**
  * class hinting
  */
-require_once 'Zend/XmlRpc/Server.php';
+#require_once 'Zend/XmlRpc/Server.php';
 
 /**
  * Zend_XmlRpc_Server_Cache: cache Zend_XmlRpc_Server dispatch tables
@@ -82,8 +82,8 @@ class Zend_XmlRpc_Server_Cache
      *
      * <code>
      * if (!Zend_XmlRpc_Server_Cache::get($filename, $server)) {
-     *     require_once 'Some/Service/Class.php';
-     *     require_once 'Another/Service/Class.php';
+     *     #require_once 'Some/Service/Class.php';
+     *     #require_once 'Another/Service/Class.php';
      *
      *     // Attach Some_Service_Class with namespace 'some'
      *     $server->attach('Some_Service_Class', 'some');

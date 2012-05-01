@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -46,19 +47,7 @@ class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml
         }
 
         $collection = Mage::getResourceModel('reports/quote_collection')
-            ->addAttributeToSelect('*')
-            ->addAttributeToFilter('items_count', array('neq' => '0'))
-            ->setActiveFilter()
-            ->addCustomerName()
-            ->addCustomerEmail()
-            ->addAttributeToSelect('coupon_code')
-            ->addSubtotal($storeIds)
-            ->groupByAttribute('entity_id')
-            ->setOrder('updated_at');
-
-        if (is_array($storeIds)) {
-            $collection->addAttributeToFilter('store_id', array('in' => $storeIds));
-        }
+            ->prepareForAbandonedReport($storeIds);
 
         $this->setCollection($collection);
         return parent::_prepareCollection();
@@ -72,9 +61,9 @@ class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml
             'sortable'  =>false
         ));
 
-        $this->addColumn('customer_email', array(
+        $this->addColumn('email', array(
             'header'    =>Mage::helper('reports')->__('Email'),
-            'index'     =>'customer_email',
+            'index'     =>'email',
             'sortable'  =>false
         ));
 

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Reports
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Reports_Model_Mysql4_Review_Collection extends Mage_Review_Model_Mysql4_Review_Collection

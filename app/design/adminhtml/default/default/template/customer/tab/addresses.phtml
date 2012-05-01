@@ -124,7 +124,8 @@ addressesModel.prototype = {
         this.itemContainer= $('address_list');
         this.formContainer= $('address_form_container');
         this.baseItemId   = 'new_item';
-        this.itemContentTemplate = new Template('#{firstname} #{lastname}<br/>#{company}<br/>#{street0}<br/>#{street1}<br/>#{city}, #{region}, #{postcode}<br/>#{country_id}<br/>T: #{telephone}<br/>F: #{fax}');
+
+        this.itemContentTemplate = new Template('<?php echo $this->helper('customer/address')->getFormat('js_template')?>');
 
         this.onNewAddressClick  = this.addNewAddress.bindAsEventListener(this);
         this.onItemMouseOver    = this.itemMouseOver.bindAsEventListener(this);

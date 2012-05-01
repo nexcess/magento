@@ -18,7 +18,6 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-
 class Mage_Sales_Model_Observer
 {
     public function cleanExpiredQuotes($schedule)
@@ -27,15 +26,12 @@ class Mage_Sales_Model_Observer
         foreach ($lifetimes as $storeId=>$lifetime) {
             $lifetime *= 86400;
 
-            $quotes = Mage::getModel('sales/quote')->getResourceCollection();
-            /* @var $quotes Mage_Sales_Model_Entity_Quote_Collection */
+            $quotes = Mage::getModel('sales/quote')->getCollection();
+            /* @var $quotes Mage_Sales_Model_Mysql4_Quote_Collection */
 
-            $quotes->addAttributeToFilter('store_id', $storeId);
-            $quotes->addAttributeToFilter(array(
-                    array('attribute'=>'updated_at', 'to'=>date("Y-m-d", time()-$lifetime)),
-                    array('attribute'=>'is_active', 'eq'=>0),
-                ));
-            $quotes->load();
+            $quotes->addFieldToFilter('store_id', $storeId);
+            $quotes->addFieldToFilter('updated_at', array('to'=>date("Y-m-d", time()-$lifetime)));
+            $quotes->addFieldToFilter('is_active', 0);
             $quotes->walk('delete');
         }
     }

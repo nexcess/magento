@@ -42,14 +42,14 @@
             <h1 id="logo">Magento Downloader</h1>
         </div>
         <div class="main">
-        <?php if ($this->controller()->getAction()!='login'): ?>
+        <?php if ($this->controller()->getAction()!='login' && !$this->get('exception')): ?>
             <div class="nav">
             <?php if ($this->controller()->isWritable()): ?>
                 <?php if ($this->controller()->session()->getUserId()): ?>
                     <a href="<?php echo $this->url('logout') ?>" class="f-right" style="margin:0px 10px;">Log Out</a>
                     <?php if ($returnUrl = $this->controller()->session()->getReturnUrl()): ?>
                         <a href="<?php echo $returnUrl ?>" class="f-right" style="margin:0px 10px;">Return to Admin</a>
-                    <?php endif ?>
+                    <?php endif; ?>
                 <?php endif; ?>
                 <ul>
                     <li class="first"><a <?php echo $this->getNavLinkParams('pearPackages') ?>>Extensions</a></li>
@@ -59,7 +59,7 @@
                 <ul>
                     <li class="first last"><a class="active">Check Write Permissions</a></li>
                 </ul>
-             <?php endif ?>
+             <?php endif; ?>
             </div>
         <?php endif; ?>
             <div class="content">

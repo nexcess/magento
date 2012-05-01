@@ -38,3 +38,4 @@
 #nav ul li.parent { margin-bottom:-3px}
 #nav ul li.parent li.parent { margin-bottom:-3px}
 
+#message-popup-window-mask .flash-window { position: absolute; top: 200px; }

@@ -35,6 +35,15 @@
                 </args>
             </contacts>
         </routers>
+        <translate>
+            <modules>
+                <Mage_Contacts>
+                    <files>
+                        <default>Mage_Contacts.csv</default>
+                    </files>
+                </Mage_Contacts>
+            </modules>
+        </translate>
         <layout>
             <updates>
                 <contact>
@@ -66,6 +75,15 @@
     </global>
 
     <adminhtml>
+        <translate>
+            <modules>
+                <Mage_Contacts>
+                    <files>
+                        <default>Mage_Contacts.csv</default>
+                    </files>
+                </Mage_Contacts>
+            </modules>
+        </translate>
         <acl>
             <resources>
                 <admin>

@@ -24,6 +24,7 @@ class Mage_Core_Model_Session_Abstract extends Mage_Core_Model_Session_Abstract_
     const XML_PATH_COOKIE_DOMAIN    = 'web/cookie/cookie_domain';
     const XML_PATH_COOKIE_PATH      = 'web/cookie/cookie_path';
     const XML_PATH_COOKIE_LIFETIME  = 'web/cookie/cookie_lifetime';
+    const XML_NODE_SESSION_SAVE     = 'global/session_save';
 
     const SESSION_ID_QUERY_PARAM = 'SID';
 
@@ -31,44 +32,41 @@ class Mage_Core_Model_Session_Abstract extends Mage_Core_Model_Session_Abstract_
 
     protected static $_encryptedSessionId;
 
-	public function init($namespace, $sessionName=null)
-	{
-		parent::init($namespace, $sessionName);
-		if (isset($_SERVER['HTTP_HOST'])) {
-			$hostArr = explode(':', $_SERVER['HTTP_HOST']);
-			$this->addHost($hostArr[0]);
-		}
-		return $this;
-	}
+    public function init($namespace, $sessionName=null)
+    {
+        parent::init($namespace, $sessionName);
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $hostArr = explode(':', $_SERVER['HTTP_HOST']);
+            $this->addHost($hostArr[0]);
+        }
+        return $this;
+    }
 
     public function getCookieDomain()
     {
         return Mage::getSingleton('core/cookie')->getCookieDomain();
-    	$domain = Mage::getStoreConfig(self::XML_PATH_COOKIE_DOMAIN);
-    	if (empty($domain) && isset($_SERVER['HTTP_HOST'])) {
-    		$domainArr = explode(':', $_SERVER['HTTP_HOST']);
-    		$domain = $domainArr[0];
-    	}
-    	return $domain;
+        $domain = Mage::getStoreConfig(self::XML_PATH_COOKIE_DOMAIN);
+        if (empty($domain) && isset($_SERVER['HTTP_HOST'])) {
+            $domainArr = explode(':', $_SERVER['HTTP_HOST']);
+            $domain = $domainArr[0];
+        }
+        return $domain;
     }
 
     public function getCookiePath()
     {
         return Mage::getSingleton('core/cookie')->getCookiePath();
-    	$path = Mage::getStoreConfig(self::XML_PATH_COOKIE_PATH);
-    	if (empty($path)) {
-    		$path = '/';
-    	}
-    	return $path;
+        $path = Mage::getStoreConfig(self::XML_PATH_COOKIE_PATH);
+        if (empty($path)) {
+            $path = '/';
+        }
+        return $path;
     }
 
     public function getCookieLifetime()
     {
-    	$lifetime = Mage::getStoreConfig(self::XML_PATH_COOKIE_LIFETIME);
-    	if (empty($lifetime)) {
-    		$lifetime = 60*60*3;
-    	}
-    	return $lifetime;
+        $lifetime = Mage::getStoreConfig(self::XML_PATH_COOKIE_LIFETIME);
+        return $lifetime;
     }
 
 
@@ -101,7 +99,6 @@ class Mage_Core_Model_Session_Abstract extends Mage_Core_Model_Session_Abstract_
      */
     public function addException(Exception $exception, $alternativeText)
     {
-        Mage::loadExtension($exception);
         $this->addMessage(Mage::getSingleton('core/message')->error($alternativeText));
         return $this;
     }
@@ -191,9 +188,9 @@ class Mage_Core_Model_Session_Abstract extends Mage_Core_Model_Session_Abstract_
                 }
             }
         }
-		if (isset($_SERVER['HTTP_HOST'])) {
-	        $this->addHost($_SERVER['HTTP_HOST']);
-		}
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $this->addHost($_SERVER['HTTP_HOST']);
+        }
         parent::setSessionId($id);
     }
 
@@ -248,18 +245,35 @@ class Mage_Core_Model_Session_Abstract extends Mage_Core_Model_Session_Abstract_
 
     public function isValidForHost($host)
     {
-    	$hostArr = explode(':', $host);
-    	$hosts = $this->getSessionHosts();
-    	return (!empty($hosts[$hostArr[0]]));
+        $hostArr = explode(':', $host);
+        $hosts = $this->getSessionHosts();
+        return (!empty($hosts[$hostArr[0]]));
     }
 
     public function addHost($host)
     {
-    	$hostArr = explode(':', $host);
-    	$hosts = $this->getSessionHosts();
-    	$hosts[$hostArr[0]] = true;
-    	$this->setSessionHosts($hosts);
-    	return $this;
+        $hostArr = explode(':', $host);
+        $hosts = $this->getSessionHosts();
+        $hosts[$hostArr[0]] = true;
+        $this->setSessionHosts($hosts);
+        return $this;
     }
 
+    public function getSessionHosts()
+    {
+        return $this->getData('session_hosts');
+    }
+
+    /**
+     * Retrieve session save method
+     *
+     * @return string
+     */
+    public function getSessionSaveMethod()
+    {
+        if (Mage::app()->isInstalled() && $sessionSave = Mage::getConfig()->getNode(self::XML_NODE_SESSION_SAVE)) {
+            return $sessionSave;
+        }
+        return parent::getSessionSaveMethod();
+    }
 }

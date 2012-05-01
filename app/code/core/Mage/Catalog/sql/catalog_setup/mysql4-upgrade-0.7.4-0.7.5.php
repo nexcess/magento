@@ -56,7 +56,7 @@ $categoryTable = $this->getTable('catalog_category_entity');
 $installer->getConnection()->dropForeignKey($categoryTable, 'FK_CATALOG_CATEGORY_ENTITY_TREE_NODE');
 
 try {
-	$this->run("ALTER TABLE `{$this->getTable('catalog/category_entity')}` ADD `path` VARCHAR( 255 ) NOT NULL, ADD `position` INT NOT NULL;");
+	$this->run("ALTER TABLE `{$this->getTable('catalog_category_entity')}` ADD `path` VARCHAR( 255 ) NOT NULL, ADD `position` INT NOT NULL;");
 } catch (Exception $e) {
 }
 

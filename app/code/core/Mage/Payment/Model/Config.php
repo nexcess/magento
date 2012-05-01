@@ -25,6 +25,7 @@
  *
  * @category   Mage
  * @package    Mage_Payment
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Payment_Model_Config
 {
@@ -67,9 +68,13 @@ class Mage_Payment_Model_Config
      */
     public function getCcTypes()
     {
+        $_types = Mage::getConfig()->getNode('global/payment/cc/types')->asArray();
+
+        uasort($_types, array('Mage_Payment_Model_Config', 'compareCcTypes'));
+
         $types = array();
-        foreach (Mage::getConfig()->getNode('global/payment/cc/types')->asArray() as $data) {
-        	$types[$data['code']] = $data['name'];
+        foreach ($_types as $data) {
+            $types[$data['code']] = $data['name'];
         }
         return $types;
     }
@@ -84,7 +89,7 @@ class Mage_Payment_Model_Config
         $data = Mage::app()->getLocale()->getLocale()->getTranslationList('month');
         foreach ($data as $key => $value) {
             $monthNum = ($key < 10) ? '0'.$key : $key;
-        	$data[$key] = $monthNum . ' - ' . $value;
+            $data[$key] = $monthNum . ' - ' . $value;
         }
         return $data;
     }
@@ -104,5 +109,32 @@ class Mage_Payment_Model_Config
             $years[$year] = $year;
         }
         return $years;
+    }
+
+    /**
+     * Statis Method for compare sort order of CC Types
+     *
+     * @param array $a
+     * @param array $b
+     * @return int
+     */
+    static function compareCcTypes($a, $b)
+    {
+        if (!isset($a['order'])) {
+            $a['order'] = 0;
+        }
+
+        if (!isset($b['order'])) {
+            $b['order'] = 0;
+        }
+
+        if ($a['order'] == $b['order']) {
+            return 0;
+        } else if ($a['order'] > $b['order']) {
+            return 1;
+        } else {
+            return -1;
+        }
+
     }
 }

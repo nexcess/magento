@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Helper_Data extends Mage_Core_Helper_Abstract
 {
@@ -68,8 +69,15 @@ class Mage_Adminhtml_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getModel('adminhtml/url')->getUrl($route, $params);
     }
 
+//    public function getCurrentUserId()
+//    {
+//        return Mage::getSingleton('admin/session')->getUser()->getId();
+//    }
     public function getCurrentUserId()
     {
-        return Mage::getSingleton('admin/session')->getUser()->getId();
+        if (Mage::getSingleton('admin/session')->getUser()) {
+            return Mage::getSingleton('admin/session')->getUser()->getId();
+        }
+        return false;
     }
 }

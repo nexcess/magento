@@ -74,7 +74,7 @@ class Mage_Catalog_Block_Product_View extends Mage_Catalog_Block_Product_Abstrac
             if ($attribute->getIsVisibleOnFront() && $attribute->getIsUserDefined()) {
 
                 $value = $attribute->getFrontend()->getValue($product);
-                if (strlen($value)) {
+                if (strlen($value) && $product->hasData($attribute->getAttributeCode())) {
                     $data[$attribute->getAttributeCode()] = array(
                        'label' => $attribute->getFrontend()->getLabel(),
                        'value' => $value//$product->getData($attribute->getAttributeCode())
@@ -83,21 +83,6 @@ class Mage_Catalog_Block_Product_View extends Mage_Catalog_Block_Product_Abstrac
             }
         }
         return $data;
-    }
-
-    public function getAlertHtml($type)
-    {
-        return $this->getLayout()->createBlock('customeralert/alerts')
-            ->setAlertType($type)
-            ->toHtml();
-    }
-
-    public function getMinimalQty($product)
-    {
-        if ($stockItem = $product->getStockItem()) {
-            return $stockItem->getMinSaleQty()>1 ? $stockItem->getMinSaleQty()*1 : null;
-        }
-        return null;
     }
 
     public function canEmailToFriend()
@@ -115,6 +100,36 @@ class Mage_Catalog_Block_Product_View extends Mage_Catalog_Block_Product_Abstrac
         }
 
         return parent::getAddToCartUrl($product, $additional);
+    }
+
+    public function getJsonConfig()
+    {
+        $config = array();
+
+        $_request = Mage::getSingleton('tax/calculation')->getRateRequest(false, false, false);
+        $_request->setProductClassId($this->getProduct()->getTaxClassId());
+        $defaultTax = Mage::getSingleton('tax/calculation')->getRate($_request);
+
+        $_request = Mage::getSingleton('tax/calculation')->getRateRequest();
+        $_request->setProductClassId($this->getProduct()->getTaxClassId());
+        $currentTax = Mage::getSingleton('tax/calculation')->getRate($_request);
+
+        $_finalPrice = $this->getProduct()->getFinalPrice();
+        $_priceInclTax = Mage::helper('tax')->getPrice($this->getProduct(), $_finalPrice, true);
+        $_priceExclTax = Mage::helper('tax')->getPrice($this->getProduct(), $_finalPrice);
+
+        $config = array(
+            'productId' => $this->getProduct()->getId(),
+            'priceFormat' => Mage::app()->getLocale()->getJsPriceFormat(),
+            'includeTax' => Mage::helper('tax')->priceIncludesTax() ? 'true' : 'false',
+            'showIncludeTax' => $this->helper('tax')->displayPriceIncludingTax(),
+            'productPrice' => Mage::helper('core')->currency($_finalPrice, false, false),
+            'skipCalculate' => ($_priceExclTax != $_priceInclTax ? 0 : 1),
+            'defaultTax' => $defaultTax,
+            'currentTax' => $currentTax
+        );
+
+        return Zend_Json::encode($config);
     }
 
 }

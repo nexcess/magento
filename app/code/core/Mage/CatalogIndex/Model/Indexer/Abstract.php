@@ -22,6 +22,7 @@
 /**
  * Catalog indexer abstract class
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogIndex_Model_Indexer_Abstract extends Mage_Core_Model_Abstract
 {

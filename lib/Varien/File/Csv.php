@@ -21,6 +21,7 @@
 /**
  * Csv parse
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_File_Csv
 {

@@ -23,17 +23,17 @@
 /**
  * @see Zend_Controller_Action_Exception
  */
-require_once 'Zend/Controller/Action/Exception.php';
+#require_once 'Zend/Controller/Action/Exception.php';
 
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
-require_once 'Zend/Controller/Action/Helper/Abstract.php';
+#require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
 /**
  * @see Zend_Loader
  */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 /**
  * @category   Zend

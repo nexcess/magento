@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Shipping_TrackingController extends Mage_Core_Controller_Front_Action
@@ -66,8 +67,9 @@ class Mage_Shipping_TrackingController extends Mage_Core_Controller_Front_Action
         $id = $this->getRequest()->getParam('order_id');
 
         $order = Mage::getModel('sales/order')->load($id);
+        $customerId = Mage::getSingleton('customer/session')->getCustomerId();
 
-        if (!$order->getId() || !$order->belongsToCurrentCustomer()) {
+        if (!$order->getId() || !$customerId || $order->getCustomerId() != $customerId) {
             return false;
         }
         return $order;

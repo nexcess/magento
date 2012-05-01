@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogInventory
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogInventory_Model_Mysql4_Stock_Item_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
 {

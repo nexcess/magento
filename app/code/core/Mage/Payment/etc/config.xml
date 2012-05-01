@@ -57,22 +57,27 @@
                     <AE>
                         <code>AE</code>
                         <name>American Express</name>
+                        <order>0</order>
                     </AE>
                     <VI>
                         <code>VI</code>
                         <name>Visa</name>
+                        <order>10</order>
                     </VI>
                     <MC>
                         <code>MC</code>
                         <name>Master Card</name>
+                        <order>20</order>
                     </MC>
                     <DI>
                         <code>DI</code>
                         <name>Discover</name>
+                        <order>30</order>
                     </DI>
                     <OT>
                         <code>OT</code>
                         <name>Other</name>
+                        <order>1000</order>
                     </OT>
                 </types>
             </cc>

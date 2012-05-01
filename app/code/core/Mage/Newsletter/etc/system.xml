@@ -23,7 +23,7 @@
     <sections>
         <newsletter translate="label" module="newsletter">
             <label>Newsletter</label>
-            <tab>customers</tab>
+            <tab>customer</tab>
             <frontend_type>text</frontend_type>
             <sort_order>110</sort_order>
             <show_in_default>1</show_in_default>

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Cms_Block extends Mage_Adminhtml_Block_Widget_Grid_Container
 {
@@ -30,7 +31,7 @@ class Mage_Adminhtml_Block_Cms_Block extends Mage_Adminhtml_Block_Widget_Grid_Co
     public function __construct()
     {
         $this->_controller = 'cms_block';
-        $this->_headerText = Mage::helper('cms')->__('CMS Blocks');
+        $this->_headerText = Mage::helper('cms')->__('Static Blocks');
         $this->_addButtonLabel = Mage::helper('cms')->__('Add New Block');
         parent::__construct();
     }

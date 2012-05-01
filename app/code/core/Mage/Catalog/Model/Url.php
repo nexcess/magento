@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author     Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Url
 {
@@ -68,6 +69,20 @@ class Mage_Catalog_Model_Url
      * @var Varien_Object
      */
     protected $_rewrite;
+
+    /**
+     * Cache for product rewrite suffix
+     *
+     * @var array
+     */
+    protected $_productUrlSuffix = array();
+
+    /**
+     * Cache for category rewrite suffix
+     *
+     * @var array
+     */
+    protected $_categoryUrlSuffix = array();
 
     /**
      * Retrieve stores array or store model
@@ -154,15 +169,20 @@ class Mage_Catalog_Model_Url
                 $urlKey = $this->getCategoryModel()->formatUrlKey($category->getUrlKey());
             }
 
+            $categoryUrlSuffix = $this->getCategoryUrlSuffix($category->getStoreId());
             if (is_null($parentPath)) {
                 $parentPath = $this->getResource()->getCategoryParentPath($category);
             } elseif ($parentPath == '/') {
                 $parentPath = '';
             }
 
+            if ($categoryUrlSuffix) {
+                $parentPath = preg_replace('#('.preg_quote($categoryUrlSuffix, '#').')/$#i', '/', $parentPath);
+            }
+
             $idPath      = 'category/' . $category->getId();
             $targetPath  = 'catalog/category/view/id/'.$category->getId();
-            $requestPath = $this->getUnusedPath($category->getStoreId(), $parentPath . $urlKey, $idPath);
+            $requestPath = $this->getUnusedPath($category->getStoreId(), $parentPath . $urlKey . $categoryUrlSuffix, $idPath);
 
             $rewriteData = array(
                 'store_id'      => $category->getStoreId(),
@@ -222,11 +242,20 @@ class Mage_Catalog_Model_Url
             $urlKey = $this->getProductModel()->formatUrlKey($product->getUrlKey());
         }
 
-        $productUrlSuffix = (string)Mage::app()->getStore($category->getStoreId())->getConfig('catalog/seo/product_url_suffix');
+        $productUrlSuffix  = $this->getProductUrlSuffix($category->getStoreId());
+        $categoryUrlSuffix = $this->getCategoryUrlSuffix($category->getStoreId());
         if ($category->getUrlPath()) {
+            if ($categoryUrlSuffix) {
+                $categoryUrl = preg_replace('#('.preg_quote($categoryUrlSuffix, '#').')$#i', '', $category->getUrlPath());
+            }
+            else {
+                $categoryUrl = $category->getUrlPath();
+            }
             $idPath = 'product/'.$product->getId().'/'.$category->getId();
             $targetPath = 'catalog/product/view/id/'.$product->getId().'/category/'.$category->getId();
-            $requestPath = $this->getUnusedPath($category->getStoreId(), $category->getUrlPath() . '/' . $urlKey . $productUrlSuffix, $idPath);
+            $requestPath = $categoryUrl . '/' . $urlKey . $productUrlSuffix;
+
+            $requestPath = $this->getUnusedPath($category->getStoreId(), $requestPath, $idPath);
             $categoryId = $category->getId();
             $updateKeys = false;
         }
@@ -306,21 +335,23 @@ class Mage_Catalog_Model_Url
                 $this->refreshCategoryRewrite($categoryId, $store->getId(), $refreshProducts);
             }
             return $this;
-    	}
+        }
 
-    	$category = $this->getResource()->getCategory($categoryId, $storeId);
-    	if (!$category) {
-    	    return $this;
-    	}
-    	$category = $this->getResource()->loadCategoryChilds($category);
-    	$categoryIds = array($category->getId());
+        $category = $this->getResource()->getCategory($categoryId, $storeId);
+        if (!$category) {
+            return $this;
+        }
+        $category = $this->getResource()->loadCategoryChilds($category);
+        $categoryIds = array($category->getId());
         if ($category->getAllChilds()) {
             $categoryIds = array_merge($categoryIds, array_keys($category->getAllChilds()));
         }
-    	$this->_rewrites = $this->getResource()->prepareRewrites($storeId, $categoryIds);
+        $this->_rewrites = $this->getResource()->prepareRewrites($storeId, $categoryIds);
         $this->_refreshCategoryRewrites($category, null, $refreshProducts);
 
-    	unset($category);
+        unset($category);
+        $this->_rewrites = array();
+
         return $this;
     }
 
@@ -338,7 +369,7 @@ class Mage_Catalog_Model_Url
                 $this->refreshProductRewrite($productId, $store->getId());
             }
             return $this;
-    	}
+        }
 
         if ($product = $this->getResource()->getProduct($productId, $storeId)) {
             $storeRootCategoryId = $this->getStores($storeId)->getRootCategoryId();
@@ -404,6 +435,7 @@ class Mage_Catalog_Model_Url
                     }
                 }
             }
+
             unset($products);
             $this->_rewrites = array();
         }
@@ -427,6 +459,9 @@ class Mage_Catalog_Model_Url
         if (empty($requestPath)) {
             $requestPath = '-';
         }
+        elseif ($requestPath == $this->getProductUrlSuffix($storeId)) {
+            $requestPath = '-' . $this->getProductUrlSuffix($storeId);
+        }
 
         if (strlen($requestPath) > self::MAX_REQUEST_PATH_LENGTH + self::ALLOWED_REQUEST_PATH_OVERFLOW) {
             $requestPath = substr($requestPath, 0, self::MAX_REQUEST_PATH_LENGTH);
@@ -449,7 +484,7 @@ class Mage_Catalog_Model_Url
                 return $requestPath;
             }
             // retrieve url_suffix for product urls
-            $productUrlSuffix = (string)Mage::app()->getStore($storeId)->getConfig('catalog/seo/product_url_suffix');
+            $productUrlSuffix = $this->getProductUrlSuffix($storeId);
             // match request_url abcdef1234(-12)(.html) pattern
             $match = array();
             if (!preg_match('#^([0-9a-z/-]+?)(-([0-9]+))?('.preg_quote($productUrlSuffix).')?$#i', $requestPath, $match)) {
@@ -461,5 +496,33 @@ class Mage_Catalog_Model_Url
         else {
             return $requestPath;
         }
+    }
+
+    /**
+     * Retrieve product rewrite sufix for store
+     *
+     * @param int $storeId
+     * @return string
+     */
+    public function getProductUrlSuffix($storeId)
+    {
+        if (!isset($this->_productUrlSuffix[$storeId])) {
+            $this->_productUrlSuffix[$storeId] = (string)Mage::app()->getStore($storeId)->getConfig('catalog/seo/product_url_suffix');
+        }
+        return $this->_productUrlSuffix[$storeId];
+    }
+
+    /**
+     * Retrieve category rewrite sufix for store
+     *
+     * @param int $storeId
+     * @return string
+     */
+    public function getCategoryUrlSuffix($storeId)
+    {
+        if (!isset($this->_categoryUrlSuffix[$storeId])) {
+            $this->_categoryUrlSuffix[$storeId] = (string)Mage::app()->getStore($storeId)->getConfig('catalog/seo/category_url_suffix');
+        }
+        return $this->_categoryUrlSuffix[$storeId];
     }
 }

@@ -21,6 +21,7 @@
 /**
  * Js translation block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Page_Block_Js_Translate extends Mage_Core_Block_Template
 {

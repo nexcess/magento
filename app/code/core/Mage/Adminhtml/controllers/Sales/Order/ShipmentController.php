@@ -23,17 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Controller_Action
+class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Controller_Sales_Shipment
 {
-    /**
-     * Additional initialization
-     */
-    protected function _construct()
-    {
-        $this->setUsedModuleName('Mage_Sales');
-    }
-
     protected function _getItemQtys()
     {
         $data = $this->getRequest()->getParam('shipment');
@@ -77,27 +70,39 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
 
             $convertor  = Mage::getModel('sales/convert_order');
             $shipment    = $convertor->toShipment($order);
-
             $savedQtys = $this->_getItemQtys();
             foreach ($order->getAllItems() as $orderItem) {
-                if (!$orderItem->getQtyToShip()) {
+                if (!$orderItem->isDummy(true) && !$orderItem->getQtyToShip()) {
                     continue;
                 }
+
+                if ($orderItem->isDummy(true) && !$this->_needToAddDummy($orderItem, $savedQtys)) {
+                    continue;
+                }
+
+                if ($orderItem->getIsVirtual()) {
+                    continue;
+                }
+
                 $item = $convertor->itemToShipmentItem($orderItem);
                 if (isset($savedQtys[$orderItem->getId()])) {
                     $qty = $savedQtys[$orderItem->getId()];
                 }
                 else {
-                    $qty = $orderItem->getQtyToShip();
+                    if ($orderItem->isDummy(true)) {
+                        $qty = 1;
+                    } else {
+                        $qty = $orderItem->getQtyToShip();
+                    }
                 }
                 $item->setQty($qty);
-            	$shipment->addItem($item);
+                $shipment->addItem($item);
             }
 
             if ($tracks = $this->getRequest()->getPost('tracking')) {
                 foreach ($tracks as $data) {
-                	$track = Mage::getModel('sales/order_shipment_track')
-                	   ->addData($data);
+                    $track = Mage::getModel('sales/order_shipment_track')
+                    ->addData($data);
                     $shipment->addTrack($track);
                 }
             }
@@ -109,6 +114,7 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
 
     protected function _saveShipment($shipment)
     {
+        $shipment->getOrder()->setIsInProcess(true);
         $transactionSave = Mage::getModel('core/resource_transaction')
             ->addObject($shipment)
             ->addObject($shipment->getOrder())
@@ -123,9 +129,10 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
     public function viewAction()
     {
         if ($shipment = $this->_initShipment()) {
-            $this->loadLayout()
-                ->_setActiveMenu('sales/order')
-                ->_addContent($this->getLayout()->createBlock('adminhtml/sales_order_shipment_view')->updateBackButtonUrl())
+            $this->loadLayout();
+            $this->getLayout()->getBlock('sales_shipment_view')
+                ->updateBackButtonUrl($this->getRequest()->getParam('come_from'));
+            $this->_setActiveMenu('sales/order')
                 ->renderLayout();
         }
         else {
@@ -152,11 +159,10 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
         if ($shipment = $this->_initShipment()) {
             $this->loadLayout()
                 ->_setActiveMenu('sales/order')
-                ->_addContent($this->getLayout()->createBlock('adminhtml/sales_order_shipment_create'))
                 ->renderLayout();
         }
         else {
-            $this->_forward('noRoute');
+            $this->_redirect('*/sales_order/view', array('order_id'=>$this->getRequest()->getParam('order_id')));
         }
     }
 
@@ -243,8 +249,9 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
                     ->setTitle($title);
                 $shipment->addTrack($track)
                     ->save();
-                $block = $this->getLayout()->createBlock('adminhtml/sales_order_shipment_view_tracking');
-                $response = $block->toHtml();
+
+                $this->loadLayout();
+                $response = $this->getLayout()->getBlock('shipment_tracking')->toHtml();
             }
             else {
                 $response = array(
@@ -280,8 +287,9 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
             try {
                 if ($shipmentId = $this->_initShipment()) {
                     $track->delete();
-                    $block = $this->getLayout()->createBlock('adminhtml/sales_order_shipment_view_tracking');
-                    $response = $block->toHtml();
+
+                    $this->loadLayout();
+                    $response = $this->getLayout()->getBlock('shipment_tracking')->toHtml();
                 }
                 else {
                     $response = array(
@@ -352,19 +360,6 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
         }
     }
 
-    public function printAction()
-    {
-        if ($invoiceId = $this->getRequest()->getParam('invoice_id')) {
-            if ($invoice = Mage::getModel('sales/order_shipment')->load($invoiceId)) {
-                $pdf = Mage::getModel('sales/order_pdf_shipment')->getPdf(array($invoice));
-                $this->_prepareDownloadResponse('packingslip'.Mage::getSingleton('core/date')->date('Y-m-d_H-i-s').'.pdf', $pdf->render(), 'application/pdf');
-            }
-        }
-        else {
-            $this->_forward('noRoute');
-        }
-    }
-    
     public function addCommentAction()
     {
         try {
@@ -381,9 +376,8 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
             $shipment->sendUpdateEmail(!empty($data['is_customer_notified']), $data['comment']);
             $shipment->save();
 
-            $response = $this->getLayout()->createBlock('adminhtml/sales_order_comments_view')
-                ->setEntity($shipment)
-                ->toHtml();
+            $this->loadLayout();
+            $response = $this->getLayout()->getBlock('shipment_comments')->toHtml();
         }
         catch (Mage_Core_Exception $e) {
             $response = array(
@@ -402,4 +396,29 @@ class Mage_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Contr
         $this->getResponse()->setBody($response);
     }
 
+    /**
+     * Decides if we need to create dummy invoice item or not
+     * for eaxample we don't need create dummy parent if all
+     * children are not in process
+     *
+     * @param Mage_Sales_Model_Order_Item $item
+     * @param array $qtys
+     * @return bool
+     */
+    protected function _needToAddDummy($item, $qtys) {
+        if ($item->getHasChildren()) {
+            foreach ($item->getChildrenItems() as $child) {
+                if ((isset($qtys[$child->getId()]) && $qtys[$child->getId()] > 0) || $child->getQtyToShip()) {
+                    return true;
+                }
+            }
+            return false;
+        } else if($item->getParentItem()) {
+            if ((isset($qtys[$item->getParentItem()->getId()]) && $qtys[$item->getParentItem()->getId()] > 0)
+                || $item->getParentItem()->getQtyToShip()) {
+                return true;
+            }
+            return false;
+        }
+    }
 }

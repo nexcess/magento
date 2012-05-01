@@ -89,6 +89,9 @@ Default layout, loads most of the pages
 
             <block type="page/html_head" name="head" as="head">
                 <action method="addJs"><script>prototype/prototype.js</script></action>
+                <action method="addJs"><script>mage/translate.js</script></action>
+								<action method="addJs"><script>prototype/validation.js</script></action>
+								<action method="addJs"><script>varien/js.js</script></action>
 
                 <action method="addCss"><stylesheet>css/reset.css</stylesheet></action>
                 <action method="addCss"><stylesheet>css/boxes.css</stylesheet></action>

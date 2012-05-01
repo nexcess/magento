@@ -55,7 +55,7 @@ class Zend_View_Helper_Layout
     public function getLayout()
     {
         if (null === $this->_layout) {
-            require_once 'Zend/Layout.php';
+            #require_once 'Zend/Layout.php';
             $this->_layout = Zend_Layout::getMvcInstance();
             if (null === $this->_layout) {
                 // Implicitly creates layout object

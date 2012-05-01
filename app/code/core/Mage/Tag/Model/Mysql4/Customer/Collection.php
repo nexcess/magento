@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Tag
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Tag_Model_Mysql4_Customer_Collection extends Mage_Customer_Model_Entity_Customer_Collection
@@ -125,6 +126,7 @@ class Mage_Tag_Model_Mysql4_Customer_Collection extends Mage_Customer_Model_Enti
         $tagRelationTable = $this->getTable('tag/relation');
         $tagTable = $this->getTable('tag/tag');
 
+        //TODO: add full name logic
         $this->addAttributeToSelect('firstname')
             ->addAttributeToSelect('lastname')
             ->addAttributeToSelect('email');

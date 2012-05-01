@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Catalog_Product_Action_AttributeController extends Mage_Adminhtml_Controller_Action
 {
@@ -83,25 +84,40 @@ class Mage_Adminhtml_Catalog_Product_Action_AttributeController extends Mage_Adm
             $data = array();
         }
 
-        $productsNotInStore = $this->_getHelper()->getProductsNotInStoreIds();
         try {
-            foreach ($this->_getHelper()->getProducts() as $product) {
-                if(in_array($product->getId(), $productsNotInStore)) {
-                    // If product not available in selected store
+            $productIds = array();
+            $product = Mage::getModel('catalog/product');
+
+            foreach ($this->_getHelper()->getProductIds() as $productId) {
+                $product->setData(array());
+                $product->setStoreId($this->_getHelper()->getSelectedStoreId())
+                    ->load($productId)
+                    ->addData($data)
+                    ->setIsMassupdate(true);
+
+                if (!$product->getId()) {
                     continue;
                 }
 
-                $product->setStoreId($this->_getHelper()->getSelectedStoreId())
-                    ->load($product->getId())
-                    ->addData($data);
-
-
                 $product->save();
+                $productIds[] = $product->getId();
             }
+
+            $productWebsiteModel = Mage::getModel('catalog/product_website');
+
+            if ($removeWebsiteIds = $this->getRequest()->getParam('remove_website_ids', false)) {
+                $productWebsiteModel->removeProducts($removeWebsiteIds, $productIds);
+            }
+
+            if ($addWebsiteIds = $this->getRequest()->getParam('add_website_ids', false)) {
+                $productWebsiteModel->addProducts($addWebsiteIds, $productIds);
+            }
+
+            Mage::dispatchEvent('catalog_product_massupdate_after', array('products'=>$productIds));
 
             $this->_getSession()->addSuccess(
                 $this->__('Total of %d record(s) were successfully updated',
-                count($this->_getHelper()->getProducts()))
+                count($productIds))
             );
         }
         catch (Mage_Core_Exception $e) {
@@ -141,7 +157,7 @@ class Mage_Adminhtml_Catalog_Product_Action_AttributeController extends Mage_Adm
     {
         return Mage::helper('adminhtml/catalog_product_edit_action_attribute');
     }
-    
+
     protected function _isAllowed()
     {
         return Mage::getSingleton('admin/session')->isAllowed('catalog/attributes/attributes');

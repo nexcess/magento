@@ -1,4 +1,21 @@
-/** * Magento * * NOTICE OF LICENSE * * This source file is subject to the Open Software License (OSL 3.0) * that is bundled with this package in the file LICENSE.txt. * It is also available through the world-wide-web at this URL: * http://opensource.org/licenses/osl-3.0.php * If you did not receive a copy of the license and are unable to * obtain it through the world-wide-web, please send an email * to license@magentocommerce.com so we can send you a copy immediately. * * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com) * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0) */* { background:none !important;  }
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+* { background:none !important;  }
 
 /* Resets */
 * { min-height:0 !important;text-align:left !important; }
@@ -9,8 +26,9 @@ td { border-color:#ccc !important; }
 hr{ visibility:visible; height:1px; margin:20px 0; }
 
 
-/* Common Elements */.button-set { display:none; }
-.col2-set *, .col3-set *, .col4-set * { float:none !important; width:auto !important; }
+/* Common Elements */
+.button-set { display:none; }
+.col3-set *, .col4-set * { float:none !important; width:auto !important; }
 .form-button { display:none; }
 .head { text-align:left; }
 .head *, .page-head *, .page-head-alt * { display:block !important; float:none; }
@@ -60,19 +78,10 @@ p.grand-total { padding-right:0; }
 .account-box .head h4 { background:none; padding-left:0; }
 .account-box .product-images { width:auto; }
 .account-box .product-details { margin:0; }
+table.data-table {width:90% !important;}
 body.page-popup .data-table td, body.page-popup .data-table th { border-right:1px solid #D9DDE3 !important; border-bottom:1px solid #D9DDE3 !important; }
 body.page-popup .data-table th.last, body.page-popup .data-table td.last { border-right:0 !important; }
 body.page-popup .data-table tfoot td { border-bottom:none !important; }
 body.page-popup .data-table td, body.page-popup .data-table th { border-color:#bbb; }
 .page-popup h1#logo {  display:block; margin-bottom:10px; }
-
-
-
-
-
-
-
-
-
-
-
+.a-right {text-align: right !important;}

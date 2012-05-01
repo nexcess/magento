@@ -22,17 +22,17 @@
 /**
  * @see Zend_Gdata_Entry
  */
-require_once 'Zend/Gdata/Entry.php';
+#require_once 'Zend/Gdata/Entry.php';
 
 /**
  * @see Zend_Gdata_Extension_FeedLink
  */
-require_once 'Zend/Gdata/Extension/FeedLink.php';
+#require_once 'Zend/Gdata/Extension/FeedLink.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_Description
  */
-require_once 'Zend/Gdata/YouTube/Extension/Description.php';
+#require_once 'Zend/Gdata/YouTube/Extension/Description.php';
 
 /**
  * Represents the YouTube video subscription flavor of an Atom entry

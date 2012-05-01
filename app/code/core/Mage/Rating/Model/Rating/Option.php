@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Rating
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Rating_Model_Rating_Option extends Varien_Object
 {

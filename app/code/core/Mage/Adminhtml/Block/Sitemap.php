@@ -33,7 +33,7 @@ class Mage_Adminhtml_Block_Sitemap extends Mage_Adminhtml_Block_Widget_Grid_Cont
     public function __construct()
     {
         $this->_controller = 'sitemap';
-        $this->_headerText = Mage::helper('sitemap')->__('Manage Google Sitemaps');
+        $this->_headerText = Mage::helper('sitemap')->__('Google Sitemap');
         $this->_addButtonLabel = Mage::helper('sitemap')->__('Add Sitemap');
         parent::__construct();
     }

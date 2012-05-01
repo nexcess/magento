@@ -22,22 +22,22 @@
 /**
  * @see Zend_Gdata_App_Entry
  */
-require_once 'Zend/Gdata/App/Entry.php';
+#require_once 'Zend/Gdata/App/Entry.php';
 
 /**
  * @see Zend_Gdata_App_MediaSource
  */
-require_once 'Zend/Gdata/App/MediaSource.php';
+#require_once 'Zend/Gdata/App/MediaSource.php';
 
 /**
  * @see Zend_Mime
  */
-require_once 'Zend/Mime.php';
+#require_once 'Zend/Mime.php';
 
 /**
  * @see Zend_Mime_Message
  */
-require_once 'Zend/Mime/Message.php';
+#require_once 'Zend/Mime/Message.php';
 
 
 /**
@@ -140,7 +140,7 @@ class Zend_Gdata_App_MediaEntry extends Zend_Gdata_App_Entry
         if ($value instanceof Zend_Gdata_App_MediaSource) {
             $this->_mediaSource = $value;
         } else {
-            require_once 'Zend/Gdata/App/InvalidArgumentException.php';
+            #require_once 'Zend/Gdata/App/InvalidArgumentException.php';
             throw new Zend_Gdata_App_InvalidArgumentException(
                     'You must specify the media data as a class that conforms to Zend_Gdata_App_MediaSource.');
         }

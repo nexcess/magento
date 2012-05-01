@@ -22,7 +22,7 @@
 /**
  * @see Zend_Gdata_App_MediaEntry
  */
-require_once 'Zend/Gdata/App/MediaEntry.php';
+#require_once 'Zend/Gdata/App/MediaEntry.php';
 
 /**
  * Represents the GData flavor of an Atom entry

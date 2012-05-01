@@ -21,6 +21,7 @@
 /**
  * Active record implementation
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Resource_Iterator extends Varien_Object
 {

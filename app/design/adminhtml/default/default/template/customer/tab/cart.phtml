@@ -30,9 +30,13 @@
 <?php echo $this->getGridParentHtml() ?>
 <?php if($this->canDisplayContainer()): ?>
 <script type="text/javascript">
-var cartControl = {
+<?php echo $this->getJsObjectName() ?>cartControl = {
     removeItem: function (itemId) {
-        if(!confirm('<?php echo Mage::helper('customer')->__('Are you sure the you want to remove this item?') ?>')) {
+        if (!itemId) {
+            alert('<?php echo Mage::helper('customer')->__('No item specified.') ?>');
+            return false;
+        }
+        if(!confirm('<?php echo Mage::helper('customer')->__('Are you sure that you want to remove this item?') ?>')) {
             return false;
         }
         <?php echo $this->getJsObjectName() ?>.reloadParams = {'delete':itemId}
@@ -40,7 +44,7 @@ var cartControl = {
         <?php echo $this->getJsObjectName() ?>.reloadParams = {};
         return false;
     }
-}
+};
 </script>
 <?php endif ?>
 <br />

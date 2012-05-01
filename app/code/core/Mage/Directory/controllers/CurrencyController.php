@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Directory
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Directory_CurrencyController extends Mage_Core_Controller_Front_Action
 {
@@ -32,7 +33,8 @@ class Mage_Directory_CurrencyController extends Mage_Core_Controller_Front_Actio
             Mage::app()->getStore()->setCurrentCurrencyCode($curency);
         }
         if (Mage::getSingleton('checkout/session')->getQuote()) {
-            Mage::getSingleton('checkout/session')->getQuote()->collectTotals()
+            Mage::getSingleton('checkout/session')->getQuote()
+                ->collectTotals()
                 ->save();
         }
         $this->_redirectReferer(Mage::getBaseUrl());

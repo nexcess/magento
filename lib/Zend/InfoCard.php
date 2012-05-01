@@ -23,37 +23,37 @@
 /**
  * Zend_InfoCard_Xml_EncryptedData
  */
-require_once 'Zend/InfoCard/Xml/EncryptedData.php';
+#require_once 'Zend/InfoCard/Xml/EncryptedData.php';
 
 /**
  * Zend_InfoCard_Xml_Assertion
  */
-require_once 'Zend/InfoCard/Xml/Assertion.php';
+#require_once 'Zend/InfoCard/Xml/Assertion.php';
 
 /**
  * Zend_InfoCard_Exception
  */
-require_once 'Zend/InfoCard/Exception.php';
+#require_once 'Zend/InfoCard/Exception.php';
 
 /**
  * Zend_InfoCard_Cipher
  */
-require_once 'Zend/InfoCard/Cipher.php';
+#require_once 'Zend/InfoCard/Cipher.php';
 
 /**
  * Zend_InfoCard_Xml_Security
  */
-require_once 'Zend/InfoCard/Xml/Security.php';
+#require_once 'Zend/InfoCard/Xml/Security.php';
 
 /**
  * Zend_InfoCard_Adapter_Interface
  */
-require_once 'Zend/InfoCard/Adapter/Interface.php';
+#require_once 'Zend/InfoCard/Adapter/Interface.php';
 
 /**
  * Zend_InfoCard_Claims
  */
-require_once 'Zend/InfoCard/Claims.php';
+#require_once 'Zend/InfoCard/Claims.php';
 
 
 /**

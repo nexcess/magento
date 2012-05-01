@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php $_order=$this->getOrder() ?>
+<?php $_order = $this->getOrder() ?>
 
 <div class="box-left">
     <!--Order Information-->
@@ -66,6 +66,12 @@
                 </a></td>
             </tr>
             <?php endif; ?>
+            <?php if($_order->getRemoteIp()): ?>
+            <tr>
+                <td class="label"><label><?php echo Mage::helper('sales')->__('Placed from IP') ?></label></td>
+                <td class="value"><strong><?php echo $_order->getRemoteIp() ?></strong></td>
+            </tr>
+            <?php endif; ?>
             </table>
         </fieldset>
     </div>
@@ -76,24 +82,34 @@
         <div class="entry-edit-head">
             <h4 class="icon-head head-account"><?php echo Mage::helper('sales')->__('Account Information') ?></h4>
         </div>
-        <fieldset>
-            <table cellspacing="0" class="form-list">
-            <tr>
-                <td class="label"><label><?php echo Mage::helper('sales')->__('Customer Name') ?></label></td>
-                <td class="value"><strong><?php echo $this->htmlEscape($_order->getCustomerName()) ?></strong></td>
-            </tr>
-            <tr>
-                <td class="label"><label><?php echo Mage::helper('sales')->__('Email') ?></label></td>
-                <td class="value"><a href="mailto:<?php echo $_order->getCustomerEmail() ?>"><strong><?php echo $_order->getCustomerEmail() ?></strong></a></td>
-            </tr>
-            <?php if ($_groupName=$this->getCustomerGroupName()) : ?>
-            <tr>
-                <td class="label"><label><?php echo Mage::helper('sales')->__('Customer Group') ?></label></td>
-                <td class="value"><strong><?php echo $_groupName ?></strong></td>
-            </tr>
-            <?php endif; ?>
-            </table>
-        </fieldset>
+        <div class="fieldset">
+            <div class="hor-scroll">
+              <div class="account-info">
+                <table cellspacing="0" class="form-list">
+                <tr>
+                    <td class="label"><label><?php echo Mage::helper('sales')->__('Customer Name') ?></label></td>
+                    <td class="value"><strong><?php echo $this->htmlEscape($_order->getCustomerName()) ?></strong></td>
+                </tr>
+                <tr>
+                    <td class="label"><label><?php echo Mage::helper('sales')->__('Email') ?></label></td>
+                    <td class="value"><a href="mailto:<?php echo $_order->getCustomerEmail() ?>"><strong><?php echo $_order->getCustomerEmail() ?></strong></a></td>
+                </tr>
+                <?php if ($_groupName=$this->getCustomerGroupName()) : ?>
+                <tr>
+                    <td class="label"><label><?php echo Mage::helper('sales')->__('Customer Group') ?></label></td>
+                    <td class="value"><strong><?php echo $_groupName ?></strong></td>
+                </tr>
+                <?php endif; ?>
+                <?php if ($_dob=$this->getOrder()->getCustomerDob()) : ?>
+                <tr>
+                    <td class="label"><label><?php echo Mage::helper('sales')->__('Date of Birth') ?></label></td>
+                    <td class="value"><strong><?php echo Mage::helper('core')->formatDate($_dob, 'medium') ?></strong></td>
+                </tr>
+                <?php endif; ?>
+                </table>
+              </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="clear"></div>
@@ -109,6 +125,7 @@
         </fieldset>
     </div>
 </div>
+<?php if (!$this->getOrder()->getIsVirtual()): ?>
 <div class="box-right">
     <!--Shipping Address-->
     <div class="entry-edit">
@@ -121,3 +138,4 @@
     </div>
 </div>
 <div class="clear"></div>
+<?php endif; ?>

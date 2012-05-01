@@ -38,87 +38,88 @@
     </div>
     <div class="col2-set">
         <div class="col-1">
+        <?php if (!$_order->getIsVirtual()): ?>
             <h4><?php echo $this->__('Shipping Address') ?></h4>
             <?php $_shipping = $_invoice->getShippingAddress() ?>
             <address><?php echo $_shipping->format('html') ?></address>
         </div>
         <div class="col-2">
+        <?php endif; ?>
             <h4><?php echo $this->__('Billing Address') ?></h4>
             <?php $_billing = $_invoice->getbillingAddress() ?>
             <address><?php echo $_order->getBillingAddress()->format('html') ?></address>
         </div>
+        <?php if (!$_order->getIsVirtual()): ?>
     </div>
-    <br/>
+    <br />
     <div class="col2-set">
         <div class="col-1">
             <h4><?php echo $this->__('Shipping Method') ?></h4>
              <?php echo $_order->getShippingDescription() ?>
         </div>
+        <?php endif; ?>
         <div class="col-2">
             <h4><?php echo $this->__('Payment Method') ?></h4>
             <?php echo $this->getPaymentInfoHtml() ?>
         </div>
     </div>
-    <br/>
-    <h4><?php echo $this->__('Items Ordered') ?></h4>
-    <table cellspacing="0" class="data-table">
+    <br />
+    <h4><?php echo $this->__('Items Invoiced') ?></h4>
+    <table cellspacing="0" class="data-table" id="my-invoice-table-<?php echo $_invoice->getId(); ?>">
+        <col />
+        <col width="25%" />
+        <col width="1" />
+        <col width="1" />
+        <col width="1" />
         <thead>
             <tr>
                 <th><?php echo $this->__('Product Name') ?></th>
-                <th class="a-right" width="15%"><?php echo $this->__('Price') ?></th>
-                <th class="a-center" width="10%"><?php echo $this->__('Qty Ordered') ?></th>
-                <th class="a-center" width="10%"><?php echo $this->__('Qty Shipped') ?></th>
-                <th class="a-right" width="20%"><?php echo $this->__('Subtotal') ?></th>
+                <th><?php echo $this->__('SKU') ?></th>
+                <th class="a-right"><?php echo $this->__('Price') ?></th>
+                <th class="a-center"><span class="nobr"><?php echo $this->__('Qty Invoiced') ?></span></th>
+                <th class="a-right last"><?php echo $this->__('Subtotal') ?></th>
             </tr>
         </thead>
-        <tbody>
-            <?php $_items = $_invoice->getItemsCollection(); ?>
-            <?php $_count = $_items->count(); ?>
-            <?php $_index = 0; ?>
-            <?php foreach ($_items as $_item): ?>
-                <tr<?php echo ($_index++ > $_count ? ' class="last"' : '') ?>>
-                <td>
-                    <?php echo $this->htmlEscape($_item->getName()) ?>
-                    <?php echo $_item->getDescription() ?>
-                </td>
-                <td class="a-right nowrap"><?php echo $_order->formatPrice($_item->getPrice()*1) ?></td>
-                <td class="a-center"><?php echo $_item->getQty()*1 ?></td>
-                <td class="a-center"><?php echo $_item->getQty()*1 ?></td>
-                <td class="last a-right nowrap"><?php echo $_order->formatPrice($_item->getRowTotal()*1) ?></td>
-            <?php endforeach; ?>
-            </tr>
-        </tbody>
+        <?php $colspan = 4; ?>
         <tfoot>
             <?php if($_invoice->getSubtotal() != $_invoice->getGrandTotal()): ?>
             <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Order Subtotal') ?></td>
+                <td colspan="<?php echo $colspan; ?>" class="a-right"><?php echo $this->__('Order Subtotal') ?></td>
                 <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getSubtotal()) ?></td>
             </tr>
             <?php endif; ?>
             <?php if ($_invoice->getDiscountAmount() > 0): ?>
             <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Discount :') ?></td>
+                <td colspan="<?php echo $colspan; ?>" class="a-right"><?php echo $this->__('Discount :') ?></td>
                 <td class="last a-right"><?php echo $_order->formatPrice(0.00 - $_invoice->getDiscountAmount()) ?></td>
             </tr>
             <?php endif; ?>
             <?php if ($_invoice->getTaxAmount() > 0): ?>
             <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Tax') ?></td>
+                <td colspan="<?php echo $colspan; ?>" class="a-right"><?php echo $this->__('Tax') ?></td>
                 <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getTaxAmount()) ?></td>
             </tr>
             <?php endif; ?>
             <?php if ($_invoice->getShippingAmount()*1 || $_invoice->getShippingDescription()): ?>
             <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Shipping & Handling') ?></td>
+                <td colspan="<?php echo $colspan; ?>" class="a-right"><?php echo $this->__('Shipping & Handling') ?></td>
                 <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getShippingAmount()) ?></td>
             </tr>
             <?php endif; ?>
             <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Grand Total') ?></td>
+                <td colspan="<?php echo $colspan; ?>" class="a-right"><?php echo $this->__('Grand Total') ?></td>
                 <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getGrandTotal()) ?></td>
             </tr>
         </tfoot>
+        <?php $_items = $_invoice->getItemsCollection(); ?>
+        <?php $_count = $_items->count(); ?>
+        <?php foreach ($_items as $_item): ?>
+        <?php if ($_item->getOrderItem()->getParentItem()) continue; ?>
+        <tbody>
+            <?php echo $this->getItemHtml($_item) ?>
+        </tbody>
+        <?php endforeach; ?>
     </table>
-    <br/>
+		<script type="text/javascript">decorateTable('my-invoice-table-<?php echo $_invoice->getId(); ?>', {'tbody' : ['odd', 'even'], 'tbody tr' : ['first', 'last']})</script>
 <?php endforeach; ?>
 <script type="text/javascript">window.print();</script>

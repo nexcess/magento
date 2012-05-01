@@ -22,22 +22,22 @@
 /**
  * Zend_Server_Interface
  */
-require_once 'Zend/Server/Interface.php';
+#require_once 'Zend/Server/Interface.php';
 
 /**
  * Zend_Server_Reflection
  */
-require_once 'Zend/Server/Reflection.php';
+#require_once 'Zend/Server/Reflection.php';
 
 /**
  * Zend_Rest_Server_Exception
  */
-require_once 'Zend/Rest/Server/Exception.php';
+#require_once 'Zend/Rest/Server/Exception.php';
 
 /**
  * Zend_Server_Abstract
  */
-require_once 'Zend/Server/Abstract.php';
+#require_once 'Zend/Server/Abstract.php';
 
 /**
  * @category   Zend

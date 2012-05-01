@@ -21,6 +21,7 @@
 /**
  * Express Checkout Controller
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
@@ -148,6 +149,7 @@ class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
         * 3- save order
         */
         $error_message = '';
+        $payPalSession = Mage::getSingleton('paypaluk/session');
 
         try {
             $address = $this->getReview()->getQuote()->getShippingAddress();
@@ -155,13 +157,86 @@ class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
                 if ($shippingMethod = $this->getRequest()->getParam('shipping_method')) {
                     $this->getReview()->saveShippingMethod($shippingMethod);
                 } else {
-                    Mage::getSingleton('paypaluk/session')->addError(Mage::helper('paypalUk')->__('Please select a valid shipping method'));
+                    $payPalSession->addError(Mage::helper('paypalUk')->__('Please select a valid shipping method'));
                     $this->_redirect('paypaluk/express/review');
                     return;
                 }
             }
             $billing = $this->getReview()->getQuote()->getBillingAddress();
             $shipping = $this->getReview()->getQuote()->getShippingAddress();
+
+            /*logic for saving customer for checking out from onge page*/
+            if ($payPalSession->getExpressCheckoutMethod()=='mark') {
+                switch ($this->getReview()->getQuote()->getCheckoutMethod()) {
+                    case 'guest':
+                        $this->getReview()->getQuote()->setCustomerEmail($billing->getEmail())
+                            ->setCustomerIsGuest(true)
+                            ->setCustomerGroupId(Mage_Customer_Model_Group::NOT_LOGGED_IN_ID);
+                        break;
+
+                    case 'register':
+                        $customer = Mage::getModel('customer/customer');
+                        /* @var $customer Mage_Customer_Model_Customer */
+
+                        $customerBilling = $billing->exportCustomerAddress();
+                        $customer->addAddress($customerBilling);
+
+                        if (!$shipping->getSameAsBilling()) {
+                            $customerShipping = $shipping->exportCustomerAddress();
+                            $customer->addAddress($customerShipping);
+                        }
+
+                        $customer->setPrefix($billing->getPrefix());
+                        $customer->setFirstname($billing->getFirstname());
+                        $customer->setMiddlename($billing->getMiddlename());
+                        $customer->setLastname($billing->getLastname());
+                        $customer->setSuffix($billing->getSuffix());
+                        $customer->setEmail($billing->getEmail());
+                        $customer->setPassword($customer->decryptPassword($this->getReview()->getQuote()->getPasswordHash()));
+                        $customer->setPasswordHash($customer->hashPassword($customer->getPassword()));
+
+                        break;
+
+                    default:
+                        $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+                        /*
+                        for express checkout, we only have a way to get address from shipping
+                        which is set up by checkout details
+                        */
+                        if (!$billing->getCustomerAddressId()) {
+                            $customerBilling = $billing->exportCustomerAddress();
+                            $customer->addAddress($customerBilling);
+                        }
+
+                        if (!$shipping->getCustomerAddressId() && !$shipping->getSameAsBilling()) {
+                            $customerShipping = $shipping->exportCustomerAddress();
+                            $customer->addAddress($customerShipping);
+                        }
+
+                        $customer->setSavedFromQuote(true);
+                        $customer->save();
+
+                        $changed = false;
+                        if (isset($customerBilling) && !$customer->getDefaultBilling()) {
+                            $customer->setDefaultBilling($customerBilling->getId());
+                            $changed = true;
+                        }
+                        if (isset($customerBilling) && !$customer->getDefaultShipping() && $shipping->getSameAsBilling()) {
+                            $customer->setDefaultShipping($customerBilling->getId());
+                            $changed = true;
+                        }
+                        elseif (isset($customerShipping) && !$customer->getDefaultShipping()){
+                            $customer->setDefaultShipping($customerShipping->getId());
+                            $changed = true;
+                        }
+
+                        if ($changed) {
+                            $customer->save();
+                        }
+                }
+            }
+            /*end logic for saving customer*/
 
             $convertQuote = Mage::getModel('sales/convert_quote');
             /* @var $convertQuote Mage_Sales_Model_Convert_Quote */
@@ -188,6 +263,27 @@ class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
 
             $order->place();
 
+            if (isset($customer) && $customer && $this->getReview()->getQuote()->getCheckoutMethod()=='register') {
+                $customer->save();
+                $customer->setDefaultBilling($customerBilling->getId());
+                $customerShippingId = isset($customerShipping) ? $customerShipping->getId() : $customerBilling->getId();
+                $customer->setDefaultShipping($customerShippingId);
+                $customer->save();
+
+                $order->setCustomerId($customer->getId())
+                    ->setCustomerEmail($customer->getEmail())
+                    ->setCustomerPrefix($customer->getPrefix())
+                    ->setCustomerFirstname($customer->getFirstname())
+                    ->setCustomerMiddlename($customer->getMiddlename())
+                    ->setCustomerLastname($customer->getLastname())
+                    ->setCustomerSuffix($customer->getSuffix())
+                    ->setCustomerGroupId($customer->getGroupId())
+                    ->setCustomerTaxClassId($customer->getTaxClassId());
+
+                $billing->setCustomerId($customer->getId())->setCustomerAddressId($customerBilling->getId());
+                $shipping->setCustomerId($customer->getId())->setCustomerAddressId($customerShippingId);
+            }
+
         } catch (Mage_Core_Exception $e){
             $error_message = $e->getMessage();
         } catch (Exception $e){
@@ -199,7 +295,7 @@ class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
         }
 
         if ($error_message) {
-            Mage::getSingleton('paypaluk/session')->addError($e->getMessage());
+            $payPalSession->addError($e->getMessage());
             $this->_redirect('paypaluk/express/review');
             return;
         }
@@ -207,7 +303,7 @@ class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
         try {
             $this->getExpress()->placeOrder($order->getPayment());
         } catch (Exception $e) {
-            Mage::getSingleton('paypaluk/session')->addError($e->getMessage());
+            $payPalSession->addError($e->getMessage());
             $this->_redirect('paypaluk/express/review');
             return;
         }
@@ -223,6 +319,13 @@ class Mage_PaypalUk_ExpressController extends Mage_Core_Controller_Front_Action
         $this->getReview()->getCheckout()->setLastRealOrderId($order->getIncrementId());
 
         $order->sendNewOrderEmail();
+
+        if (isset($customer) && $customer && $this->getReview()->getQuote()->getCheckoutMethod()=='register') {
+            $customer->sendNewAccountEmail();
+            Mage::getSingleton('customer/session')->loginById($customer->getId());
+        }
+
+        $payPalSession->unsExpressCheckoutMethod();
 
         $this->_redirect('checkout/onepage/success');
     }

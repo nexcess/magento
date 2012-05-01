@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Directory
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Directory_Model_Currency extends Mage_Core_Model_Abstract
 {
@@ -48,7 +49,17 @@ class Mage_Directory_Model_Currency extends Mage_Core_Model_Abstract
      */
     public function getCode()
     {
-        return $this->getData('currency_code');
+        return $this->_getData('currency_code');
+    }
+
+    public function getCurrencyCode()
+    {
+        return $this->_getData('currency_code');
+    }
+
+    public function getRates()
+    {
+        return $this->_getData('rates');
     }
 
     /**
@@ -125,16 +136,20 @@ class Mage_Directory_Model_Currency extends Mage_Core_Model_Abstract
      * Format price to currency format
      *
      * @param   double $price
+     * @param   bool $includeContainer
      * @return  string
      */
-    public function format($price, $options=array())
+    public function format($price, $options=array(), $includeContainer = true, $addBrackets = false)
     {
-        return '<span class="nobr">'.$this->formatTxt($price, $options).'</span>';
+        if ($includeContainer) {
+            return '<span class="price">' . ($addBrackets ? '[' : '') . $this->formatTxt($price, $options) . ($addBrackets ? ']' : '') . '</span>';
+        }
+        return $this->formatTxt($price, $options);
     }
 
     public function formatTxt($price, $options=array())
     {
-        $price = floatval($price);
+        $price = Mage::app()->getLocale()->getNumber($price);
         /**
          * Fix problem with 12 000 000, 1 200 000
          */

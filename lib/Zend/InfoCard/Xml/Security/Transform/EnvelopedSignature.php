@@ -24,12 +24,12 @@
 /**
  * Zend_InfoCard_Xml_Security_Transform_Interface
  */
-require_once 'Zend/InfoCard/Xml/Security/Transform/Interface.php';
+#require_once 'Zend/InfoCard/Xml/Security/Transform/Interface.php';
 
 /**
  * Zend_InfoCard_Xml_Security_Transform_Exception
  */
-require_once 'Zend/InfoCard/Xml/Security/Transform/Exception.php';
+#require_once 'Zend/InfoCard/Xml/Security/Transform/Exception.php';
 
 /**
  * A object implementing the EnvelopedSignature XML Transform

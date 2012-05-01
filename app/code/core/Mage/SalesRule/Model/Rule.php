@@ -39,6 +39,8 @@ class Mage_SalesRule_Model_Rule extends Mage_Rule_Model_Rule
                 'title' => Mage::helper('salesRule')->__('Coupon with the same code')
             ));
             Mage::app()->cleanCache('salesrule_coupon_'.md5($coupon));
+        } else {
+            $this->getResource()->resetUniqueField();
         }
         return parent::_beforeSave();
     }

@@ -22,7 +22,7 @@
 /**
  * @see Zend_Gdata_App_Base
  */
-require_once 'Zend/Gdata/App/Base.php';
+#require_once 'Zend/Gdata/App/Base.php';
 
 /**
  * Gdata App extensions

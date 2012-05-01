@@ -24,8 +24,9 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
- class Mage_Catalog_Block_Product_Compare_List extends Mage_Core_Block_Template
+ class Mage_Catalog_Block_Product_Compare_List extends Mage_Catalog_Block_Product_Abstract
  {
     protected $_items = null;
     protected $_attributes = null;
@@ -53,16 +54,8 @@
 
             $this->_items
                 ->loadComaparableAttributes()
-                ->addAttributeToSelect('name')
-                ->addAttributeToSelect('price')
-                ->addAttributeToSelect('special_price')
-                ->addAttributeToSelect('special_from_date')
-                ->addAttributeToSelect('special_to_date')
-                ->addAttributeToSelect('image')
-                ->addAttributeToSelect('status')
-                ->addAttributeToSelect('small_image')
-                ->addAttributeToSelect('tax_class_id')
-                ->useProductItem();
+                ->addAttributeToSelect(Mage::getSingleton('catalog/config')->getProductAttributes());
+
             Mage::getSingleton('catalog/product_visibility')->addVisibleInSiteFilterToCollection($this->_items);
         }
 
@@ -82,25 +75,15 @@
     {
         $this->_attributes = array();
         foreach($this->getItems() as $item) {
-            foreach ($item->getAttributes() as $attribute) {
-                if($attribute->getIsComparable() && !$this->hasAttribute($attribute->getAttributeCode()) && $item->getData($attribute->getAttributeCode())!==null) {
-                    $this->_attributes[] = $attribute;
+            foreach ($item->getTypeInstance()->getSetAttributes() as $attribute) {
+                if ($attribute->getIsComparable()
+                    && !isset($this->_attributes[$attribute->getAttributeCode()])
+                    && $item->getData($attribute->getAttributeCode())!==null) {
+                    $this->_attributes[$attribute->getAttributeCode()] = $attribute;
                 }
             }
         }
-
         return $this;
-    }
-
-    public function hasAttribute($code)
-    {
-        foreach($this->_attributes as $attribute) {
-            if($attribute->getAttributeCode()==$code) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public function getProductAttributeValue($product, $attribute)
@@ -116,7 +99,7 @@
         } else {
             $value = $product->getData($attribute->getAttributeCode());
         }
-        return $value ? $value : '&nbsp';
+        return $value ? $value : '&nbsp;';
     }
 
     public function getPrintUrl()

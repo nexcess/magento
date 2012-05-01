@@ -24,12 +24,12 @@
 /**
  * Zend_InfoCard_Cipher_Pki_Interface
  */
-require_once 'Zend/InfoCard/Cipher/Pki/Interface.php';
+#require_once 'Zend/InfoCard/Cipher/Pki/Interface.php';
 
 /**
  * Zend_InfoCard_Cipher_Exception
  */
-require_once 'Zend/InfoCard/Cipher/Exception.php';
+#require_once 'Zend/InfoCard/Cipher/Exception.php';
 
 /**
  * An abstract class for public-key ciphers

@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Eav_Model_Entity_Collection_Abstract extends Varien_Data_Collection_Db
 {
@@ -281,7 +282,7 @@ class Mage_Eav_Model_Entity_Collection_Abstract extends Varien_Data_Collection_D
             if ($attrInstance->getBackend()->isStatic()) {
                 $this->getSelect()->order($entityField.' '.$dir);
             } else {
-                $this->_addAttributeJoin($attribute);
+                $this->_addAttributeJoin($attribute, 'left');
                 if (isset($this->_joinAttributes[$attribute])) {
                     $this->getSelect()->order($attribute.' '.$dir);
                 }
@@ -310,8 +311,7 @@ class Mage_Eav_Model_Entity_Collection_Abstract extends Varien_Data_Collection_D
             }
             return $this;
         }
-
-        if ($joinType!==false) {
+        if ($joinType!==false && !$this->getEntity()->getAttribute($attribute)->getBackend()->isStatic()) {
             $this->_addAttributeJoin($attribute, $joinType);
         } elseif ('*'===$attribute) {
             $attributes = $this->getEntity()

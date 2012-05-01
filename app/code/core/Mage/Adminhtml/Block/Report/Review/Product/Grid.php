@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Report_Review_Product_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -31,6 +32,8 @@ class Mage_Adminhtml_Block_Report_Review_Product_Grid extends Mage_Adminhtml_Blo
     {
         parent::__construct();
         $this->setId('gridProducts');
+        $this->setDefaultSort('review_cnt');
+        $this->setDefaultDir('desc');
     }
 
     protected function _prepareCollection()
@@ -53,8 +56,8 @@ class Mage_Adminhtml_Block_Report_Review_Product_Grid extends Mage_Adminhtml_Blo
         ));
 
         $this->addColumn('name', array(
-            'header'    =>Mage::helper('reports')->__('Product Name'),
-            'index'     =>'name'
+            'header'    => Mage::helper('reports')->__('Product Name'),
+            'index'     => 'name'
         ));
 
         $this->addColumn('review_cnt', array(
@@ -78,6 +81,15 @@ class Mage_Adminhtml_Block_Report_Review_Product_Grid extends Mage_Adminhtml_Blo
             'type'      =>'datetime'
         ));
 
+        $this->addColumn('action', array(
+            'header'    => Mage::helper('reports')->__('Action'),
+            'width'     => '100px',
+            'align'     => 'center',
+            'filter'    => false,
+            'sortable'  => false,
+            'renderer'  => 'adminhtml/report_grid_column_renderer_product'
+        ));
+
         $this->setFilterVisibility(false);
 
         $this->addExportType('*/*/exportProductCsv', Mage::helper('reports')->__('CSV'));
@@ -88,7 +100,6 @@ class Mage_Adminhtml_Block_Report_Review_Product_Grid extends Mage_Adminhtml_Blo
 
     public function getRowUrl($row)
     {
-        return $this->getUrl('*/*/productDetail', array('id'=>$row->getId()));
+        return $this->getUrl('*/catalog_product_review/', array('productId' => $row->getId()));
     }
-
 }

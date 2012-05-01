@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Abstract extends Mage_Adminhtml_Block_Widget
 {
@@ -79,5 +80,45 @@ class Mage_Adminhtml_Block_Sales_Order_Abstract extends Mage_Adminhtml_Block_Wid
             }
         }
         return $res;
+    }
+
+    /**
+     * Retrieve order totals block settings
+     *
+     * @return array
+     */
+    public function getOrderTotalData()
+    {
+        return array();
+    }
+
+    /**
+     * Retrieve order info block settings
+     *
+     * @return array
+     */
+    public function getOrderInfoData()
+    {
+        return array();
+    }
+
+
+    /**
+     * Retrieve subtotal price include tax html formated content
+     *
+     * @param Varien_Object $item
+     * @return string
+     */
+    public function displayShippingPriceInclTax($order)
+    {
+        $baseTax = $order->getBaseShippingTaxAmount();
+        $tax = $order->getShippingTaxAmount();
+
+        return $this->displayPrices(
+            $order->getBaseShippingAmount()+$baseTax,
+            $order->getShippingAmount()+$tax,
+            false,
+            ' '
+        );
     }
 }

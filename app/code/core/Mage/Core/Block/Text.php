@@ -22,6 +22,7 @@
 /**
  * Base html block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Block_Text extends Mage_Core_Block_Abstract
 {

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_System_Store_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
@@ -69,6 +70,10 @@ class Mage_Adminhtml_Block_System_Store_Edit_Form extends Mage_Adminhtml_Block_W
             $showStoreFieldset = true;
         }
 
+        /* @var $websiteModel Mage_Core_Model_Website */
+        /* @var $groupModel Mage_Core_Model_Store_Group */
+        /* @var $storeModel Mage_Core_Model_Store */
+
         $form = new Varien_Data_Form(array(
             'id'        => 'edit_form',
             'action'    => $this->getData('action'),
@@ -114,6 +119,20 @@ class Mage_Adminhtml_Block_System_Store_Edit_Form extends Mage_Adminhtml_Block_W
                     'value'     => $websiteModel->getDefaultGroupId(),
                     'values'    => $groups,
                     'required'  => false
+                ));
+            }
+
+            if (!$websiteModel->getIsDefault() && $websiteModel->getStoresCount()) {
+                $fieldset->addField('is_default', 'checkbox', array(
+                    'name'      => 'website[is_default]',
+                    'label'     => Mage::helper('core')->__('Set as default'),
+                    'value'     => 1
+                ));
+            }
+            else {
+                $fieldset->addField('is_default', 'hidden', array(
+                    'name'      => 'website[is_default]',
+                    'value'     => $websiteModel->getIsDefault()
                 ));
             }
 

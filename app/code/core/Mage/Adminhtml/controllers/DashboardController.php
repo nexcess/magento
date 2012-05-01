@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_DashboardController extends Mage_Adminhtml_Controller_Action
 {
@@ -33,6 +34,32 @@ class Mage_Adminhtml_DashboardController extends Mage_Adminhtml_Controller_Actio
         $this->_addBreadcrumb(Mage::helper('adminhtml')->__('Dashboard'), Mage::helper('adminhtml')->__('Dashboard'));
         $this->_addContent($this->getLayout()->createBlock('adminhtml/dashboard', 'dashboard'));
         $this->renderLayout();
+    }
+
+    public function productsViewedAction()
+    {
+        $this->getResponse()->setBody($this->getLayout()->createBlock('adminhtml/dashboard_tab_products_viewed')->toHtml());
+    }
+
+    public function customersNewestAction()
+    {
+        $this->getResponse()->setBody($this->getLayout()->createBlock('adminhtml/dashboard_tab_customers_newest')->toHtml());
+    }
+
+    public function customersMostAction()
+    {
+        $this->getResponse()->setBody($this->getLayout()->createBlock('adminhtml/dashboard_tab_customers_most')->toHtml());
+    }
+
+    public function ajaxBlockAction()
+    {
+        $output   = '';
+        $blockTab = $this->getRequest()->getParam('block');
+        if (in_array($blockTab, array('tab_orders', 'tab_amounts'))) {
+            $output = $this->getLayout()->createBlock('adminhtml/dashboard_' . $blockTab)->toHtml();
+        }
+        $this->getResponse()->setBody($output);
+        return;
     }
 
 /**
@@ -240,6 +267,27 @@ class Mage_Adminhtml_DashboardController extends Mage_Adminhtml_Controller_Actio
         $this->getResponse()->setBody( $xmlObject->toXml(array(), 'dataSource', true, false) );
     }
 */
+
+    public function tunnelAction()
+    {
+        $httpClient = new Varien_Http_Client();
+
+        foreach ($this->getRequest()->getParams() as $name => $value) {
+            // fixing slashes
+            $params[$name] = str_replace('\\', '/', urldecode($value));
+        }
+
+        $response = $httpClient->setUri(Mage_Adminhtml_Block_Dashboard_Graph::API_URL)
+                ->setParameterGet($params)
+                ->setConfig(array('timeout' => 15))
+                ->request('GET');
+
+        $headers = $response->getHeaders();
+
+        $this->getResponse()
+            ->setHeader('Content-type', $headers['Content-type'])
+            ->setBody($response->getBody());
+    }
 
     protected function _isAllowed()
     {

@@ -22,27 +22,27 @@
 /**
  * @see Zend_Gdata_App_Feed
  */
-require_once 'Zend/Gdata/App/Feed.php';
+#require_once 'Zend/Gdata/App/Feed.php';
 
 /**
  * @see Zend_Gdata_Entry
  */
-require_once 'Zend/Gdata/Entry.php';
+#require_once 'Zend/Gdata/Entry.php';
 
 /**
  * @see Zend_Gdata_Extension_OpenSearchTotalResults
  */
-require_once 'Zend/Gdata/Extension/OpenSearchTotalResults.php';
+#require_once 'Zend/Gdata/Extension/OpenSearchTotalResults.php';
 
 /**
  * @see Zend_Gdata_Extension_OpenSearchStartIndex
  */
-require_once 'Zend/Gdata/Extension/OpenSearchStartIndex.php';
+#require_once 'Zend/Gdata/Extension/OpenSearchStartIndex.php';
 
 /**
  * @see Zend_Gdata_Extension_OpenSearchItemsPerPage
  */
-require_once 'Zend/Gdata/Extension/OpenSearchItemsPerPage.php';
+#require_once 'Zend/Gdata/Extension/OpenSearchItemsPerPage.php';
 
 /**
  * The GData flavor of an Atom Feed

@@ -21,6 +21,7 @@
 /**
  * Abstract class for PaypalUk Debug
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_PaypalUk_Model_Api_Debug extends Mage_Core_Model_Abstract
 {

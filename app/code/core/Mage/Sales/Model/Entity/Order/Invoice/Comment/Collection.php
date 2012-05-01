@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Sales_Model_Entity_Order_Invoice_Comment_Collection extends Mage_Eav_Model_Entity_Collection_Abstract
 {
@@ -35,6 +36,12 @@ class Mage_Sales_Model_Entity_Order_Invoice_Comment_Collection extends Mage_Eav_
     public function setInvoiceFilter($invoiceId)
     {
         $this->addAttributeToFilter('parent_id', $invoiceId);
+        return $this;
+    }
+    
+    public function setCreatedAtOrder($order='desc')
+    {
+        $this->setOrder('created_at', $order);
         return $this;
     }
 }

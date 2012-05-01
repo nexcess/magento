@@ -24,7 +24,7 @@
 /**
  * Zend_InfoCard_Xml_EncryptedData
  */
-require_once 'Zend/InfoCard/Xml/Exception.php';
+#require_once 'Zend/InfoCard/Xml/Exception.php';
 
 /**
  * A factory class for producing Zend_InfoCard_Xml_EncryptedData objects based on

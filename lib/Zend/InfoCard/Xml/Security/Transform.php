@@ -24,7 +24,7 @@
 /**
  * Zend_Loader
  */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 /**
  * A class to create a transform rule set based on XML URIs and then apply those rules

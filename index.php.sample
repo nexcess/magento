@@ -36,5 +36,7 @@ if (!file_exists($mageFilename)) {
 
 require_once $mageFilename;
 
+#Varien_Profiler::enable();
+
 umask(0);
 Mage::run('default');

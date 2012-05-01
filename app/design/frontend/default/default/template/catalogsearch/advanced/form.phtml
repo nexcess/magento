@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Catalog advanced search form
  *
@@ -41,17 +41,20 @@
         <?php foreach ($this->getSearchableAttributes() as $_attribute): ?>
         <?php $_code = $_attribute->getAttributeCode() ?>
         <li>
-            <label for="<?php echo $_code ?>_search_field"><?php echo $this->getAttributeLabel($_attribute) ?></label>
+            <label for="<?php echo $_code ?>"><?php echo $this->getAttributeLabel($_attribute) ?></label>
             <?php switch($this->getAttributeInputType($_attribute)):
                 case 'number': ?>
                 <div class="range field-row">
-                    <input name="<?php echo $_code ?>[from]" value="<?php echo $this->htmlEscape($this->getAttributeValue($_attribute, 'from')) ?>" id="<?php echo $_code ?>_from" title="<?php echo $this->htmlEscape($this->getAttributeLabel($_attribute)) ?>"  class="input-text validate-number" type="text"/>
+                    <input name="<?php echo $_code ?>[from]" value="<?php echo $this->htmlEscape($this->getAttributeValue($_attribute, 'from')) ?>" id="<?php echo $_code ?>" title="<?php echo $this->htmlEscape($this->getAttributeLabel($_attribute)) ?>"  class="input-text validate-number" type="text" />
                     -
-                    <input name="<?php echo $_code ?>[to]" value="<?php echo $this->htmlEscape($this->getAttributeValue($_attribute, 'to')) ?>" id="<?php echo $_code ?>_to" title="<?php echo $this->htmlEscape($this->getAttributeLabel($_attribute)) ?>"  class="input-text validate-number" type="text"/>
+                    <input name="<?php echo $_code ?>[to]" value="<?php echo $this->htmlEscape($this->getAttributeValue($_attribute, 'to')) ?>" id="<?php echo $_code ?>_to" title="<?php echo $this->htmlEscape($this->getAttributeLabel($_attribute)) ?>"  class="input-text validate-number" type="text" />
                 </div>
                 <?php break;
                 case 'select': ?>
                     <?php echo $this->getAttributeSelectElement($_attribute) ?>
+                <?php break;
+                case 'yesno': ?>
+                    <?php echo $this->getAttributeYesNoElement($_attribute) ?>
                 <?php break;
                 case 'date': ?>
                     <?php echo $this->getDateInput($_attribute, 'from') ?>
@@ -59,7 +62,7 @@
                     <?php echo $this->getDateInput($_attribute, 'to') ?>
                 <?php break;
                 default: ?>
-                <input name="<?php echo $_code ?>" id="<?php echo $_code ?>_search_field" value="<?php echo $this->htmlEscape($this->getAttributeValue($_attribute)) ?>" title="<?php echo $this->htmlEscape($this->getAttributeLabel($_attribute)) ?>"  class="input-text <?php echo $this->getAttributeValidationClass($_attribute) ?>" type="text"/>
+                <input name="<?php echo $_code ?>" id="<?php echo $_code ?>" value="<?php echo $this->htmlEscape($this->getAttributeValue($_attribute)) ?>" title="<?php echo $this->htmlEscape($this->getAttributeLabel($_attribute)) ?>"  class="input-text <?php echo $this->getAttributeValidationClass($_attribute) ?>" type="text" />
             <?php endswitch; ?>
         </li>
         <?php endforeach; ?>
@@ -74,4 +77,4 @@
 <script type="text/javascript">
     var dataForm = new VarienForm('form-validate', true);
 </script>
-<br/>
+<br />

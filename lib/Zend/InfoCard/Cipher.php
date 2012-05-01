@@ -24,7 +24,7 @@
 /**
  * Zend_InfoCard_Cipher_Exception
  */
-require_once 'Zend/InfoCard/Cipher/Exception.php';
+#require_once 'Zend/InfoCard/Cipher/Exception.php';
 
 /**
  * Provides an abstraction for encryption ciphers used in an Information Card

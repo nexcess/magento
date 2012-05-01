@@ -30,9 +30,34 @@
 <?php if($this->getRootNode() && $this->getRootNode()->hasChildren()): ?>
 <script type="text/javascript">
 Ext.EventManager.onDocumentReady(function() {
-	var tree = new Ext.tree.TreePanel('product-categories', {
+    var categoryLoader = new Ext.tree.TreeLoader({
+       dataUrl: '<?php echo $this->getLoadTreeUrl()?>'
+    });
+
+    categoryLoader.createNode = function(config) {
+        config.uiProvider = Ext.tree.CheckboxNodeUI;
+        var node;
+        if (config.children && !config.children.length) {
+            delete(config.children);
+            node = new Ext.tree.AsyncTreeNode(config);
+
+        } else {
+            node = new Ext.tree.TreeNode(config);
+        }
+        return node;
+    };
+
+    categoryLoader.on("beforeload", function(treeLoader, node) {
+        treeLoader.baseParams.category = node.attributes.id;
+    });
+
+    categoryLoader.on("load", function(treeLoader, node, config) {
+        varienWindowOnload();
+    });
+
+    var tree = new Ext.tree.TreePanel('product-categories', {
         animate:false,
-        loader: false,
+        loader: categoryLoader,
         enableDD:false,
         containerScroll: true,
 		rootUIProvider: Ext.tree.CheckboxNodeUI,
@@ -64,7 +89,7 @@ Ext.EventManager.onDocumentReady(function() {
     // render the tree
     tree.render();
     root.expand();
-    tree.expandAll();
+    //tree.expandAll();
 });
 
 function bildCategoryTree(parent, config){
@@ -73,8 +98,16 @@ function bildCategoryTree(parent, config){
     if (parent && config && config.length){
         for (var i = 0; i < config.length; i++){
             config[i].uiProvider = Ext.tree.CheckboxNodeUI;
-            var node = new Ext.tree.TreeNode(config[i]);
+            var node;
+            if (config[i].children && !config[i].children.length) {
+                delete(config[i].children);
+                node = new Ext.tree.AsyncTreeNode(config[i]);
+
+            } else {
+                node = new Ext.tree.TreeNode(config[i]);
+            }
             parent.appendChild(node);
+            node.loader = node.getOwnerTree().loader;
             if(config[i].children){
                 bildCategoryTree(node, config[i].children);
             }

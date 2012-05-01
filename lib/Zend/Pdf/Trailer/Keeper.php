@@ -19,10 +19,10 @@
 
 
 /** Zend_Pdf_Trailer */
-require_once 'Zend/Pdf/Trailer.php';
+#require_once 'Zend/Pdf/Trailer.php';
 
 /** Zend_Pdf_Element_Reference_Context */
-require_once 'Zend/Pdf/Element/Reference/Context.php';
+#require_once 'Zend/Pdf/Element/Reference/Context.php';
 
 
 /**

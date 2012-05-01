@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_GoogleCheckout
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_GoogleCheckout_Block_Link extends Mage_Core_Block_Template
 {
@@ -70,7 +71,10 @@ class Mage_GoogleCheckout_Block_Link extends Mage_Core_Block_Template
 
     public function _toHtml()
     {
-        if((bool)Mage::getStoreConfig('google/checkout/active')) {
+        if (!Mage::getSingleton('checkout/session')->getQuote()->validateMinimumAmount()) {
+            return '';
+        }
+        if (Mage::getStoreConfigFlag('google/checkout/active')) {
             return parent::_toHtml();
         }
 

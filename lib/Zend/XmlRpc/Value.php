@@ -20,40 +20,40 @@
 
 
 /** Zend_XmlRpc_Value_Exception */
-require_once 'Zend/XmlRpc/Value/Exception.php';
+#require_once 'Zend/XmlRpc/Value/Exception.php';
 
 /** Zend_XmlRpc_Value_Scalar */
-require_once 'Zend/XmlRpc/Value/Scalar.php';
+#require_once 'Zend/XmlRpc/Value/Scalar.php';
 
 /** Zend_XmlRpc_Value_Base64 */
-require_once 'Zend/XmlRpc/Value/Base64.php';
+#require_once 'Zend/XmlRpc/Value/Base64.php';
 
 /** Zend_XmlRpc_Value_Boolean */
-require_once 'Zend/XmlRpc/Value/Boolean.php';
+#require_once 'Zend/XmlRpc/Value/Boolean.php';
 
 /** Zend_XmlRpc_Value_DateTime */
-require_once 'Zend/XmlRpc/Value/DateTime.php';
+#require_once 'Zend/XmlRpc/Value/DateTime.php';
 
 /** Zend_XmlRpc_Value_Double */
-require_once 'Zend/XmlRpc/Value/Double.php';
+#require_once 'Zend/XmlRpc/Value/Double.php';
 
 /** Zend_XmlRpc_Value_Integer */
-require_once 'Zend/XmlRpc/Value/Integer.php';
+#require_once 'Zend/XmlRpc/Value/Integer.php';
 
 /** Zend_XmlRpc_Value_String */
-require_once 'Zend/XmlRpc/Value/String.php';
+#require_once 'Zend/XmlRpc/Value/String.php';
 
 /** Zend_XmlRpc_Value_Nil */
-require_once 'Zend/XmlRpc/Value/Nil.php';
+#require_once 'Zend/XmlRpc/Value/Nil.php';
 
 /** Zend_XmlRpc_Value_Collection */
-require_once 'Zend/XmlRpc/Value/Collection.php';
+#require_once 'Zend/XmlRpc/Value/Collection.php';
 
 /** Zend_XmlRpc_Value_Array */
-require_once 'Zend/XmlRpc/Value/Array.php';
+#require_once 'Zend/XmlRpc/Value/Array.php';
 
 /** Zend_XmlRpc_Value_Struct */
-require_once 'Zend/XmlRpc/Value/Struct.php';
+#require_once 'Zend/XmlRpc/Value/Struct.php';
 
 
 /**

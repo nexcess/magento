@@ -26,7 +26,7 @@
         <ul class="tags-list">
             <?php $_iterator = 0; ?>
             <?php foreach( $this->getTags() as $_tag ): ?>
-                <li <?php if( 1 == ++$_iterator && $this->getCount() != 1 ): ?>class="first"<?php elseif($_iterator == $this->getCount()): ?>class="last"<?php endif; ?>><a href="<?php echo $_tag->getTaggedProductsUrl() ?>"><?php echo $this->htmlEscape($_tag->getName()) ?></a> (<?php echo $_tag->getPopularity() ?>)</li>
+                <li<?php if( 1 == ++$_iterator && $this->getCount() != 1 ): ?> class="first"<?php elseif($_iterator == $this->getCount()): ?> class="last"<?php endif; ?>><a href="<?php echo $_tag->getTaggedProductsUrl() ?>"><?php echo $this->htmlEscape($_tag->getName()) ?></a> (<?php echo $_tag->getPopularity() ?>)</li>
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>

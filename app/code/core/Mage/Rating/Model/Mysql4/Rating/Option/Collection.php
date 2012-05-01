@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Rating
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Rating_Model_Mysql4_Rating_Option_Collection extends Varien_Data_Collection_Db
 {

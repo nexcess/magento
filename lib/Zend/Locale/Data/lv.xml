@@ -1431,6 +1431,7 @@
 				<displayName>Lietuvas lits</displayName>
 			</currency>
 			<currency type="LVL">
+				<displayName>Latvijas lats</displayName>
 				<symbol>Ls</symbol>
 			</currency>
 			<currency type="MAD">

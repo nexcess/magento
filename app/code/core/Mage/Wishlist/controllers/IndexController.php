@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Wishlist
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
 {
@@ -36,6 +37,10 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
             if(!Mage::getSingleton('customer/session')->getBeforeWishlistUrl()) {
                 Mage::getSingleton('customer/session')->setBeforeWishlistUrl($this->_getRefererUrl());
             }
+        }
+        if (!Mage::getStoreConfigFlag('wishlist/general/active')) {
+            $this->norouteAction();
+            return;
         }
     }
 
@@ -60,6 +65,9 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
     {
         $this->_getWishlist();
         $this->loadLayout();
+        if ($block = $this->getLayout()->getBlock('customer.wishlist')) {
+            $block->setRefererUrl($this->_getRefererUrl());
+        }
         $this->_initLayoutMessages('customer/session');
         $this->_initLayoutMessages('checkout/session');
         $this->renderLayout();
@@ -226,12 +234,17 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
 
         $wishlist = $this->_getWishlist();
         $wishlist->getItemCollection()->load();
+
+        $notSalableNames = array(); // Out of stock products message
+
         foreach ($wishlist->getItemCollection() as $item) {
              try {
                 $product = Mage::getModel('catalog/product')->load($item->getProductId())->setQty(1);
                 if ($product->isSalable()){
                     Mage::getSingleton('checkout/cart')->addProduct($product);
                     $item->delete();
+                } else {
+                    $notSalableNames[] = $product->getName();
                 }
             } catch(Exception $e) {
                 $url = Mage::getSingleton('checkout/session')->getRedirectUrl(true);
@@ -249,6 +262,12 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
                 }
             }
             Mage::getSingleton('checkout/cart')->save();
+        }
+
+        if (count($notSalableNames) > 0) {
+            Mage::getSingleton('checkout/session')
+                ->addNotice($this->__('This product(s) is currently out of stock:'));
+            array_map(array(Mage::getSingleton('checkout/session'), 'addNotice'), $notSalableNames);
         }
 
         if ($urls) {
@@ -296,7 +315,11 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
             return;
         }
 
-        try{
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
+        try {
             $customer = Mage::getSingleton('customer/session')->getCustomer();
             $wishlist = $this->_getWishlist();
 
@@ -318,6 +341,7 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
                     null,
                     array(
                         'customer'      => $customer,
+                        'salable'       => $wishlist->isSalable() ? 'yes' : '',
                         'items'         => &$wishlistBlock,
                         'addAllLink'    => Mage::getUrl('*/shared/allcart',array('code'=>$wishlist->getSharingCode())),
                         'viewOnSiteLink'=> Mage::getUrl('*/shared/index',array('code'=>$wishlist->getSharingCode())),
@@ -328,6 +352,8 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
             $wishlist->setShared(1);
             $wishlist->save();
 
+            $translate->setTranslateInline(true);
+
             Mage::dispatchEvent('wishlist_share', array('wishlist'=>$wishlist));
             Mage::getSingleton('customer/session')->addSuccess(
                 $this->__('Your Wishlist was successfully shared')
@@ -335,6 +361,8 @@ class Mage_Wishlist_IndexController extends Mage_Core_Controller_Front_Action
             $this->_redirect('*/*');
         }
         catch (Exception $e) {
+            $translate->setTranslateInline(true);
+
             Mage::getSingleton('wishlist/session')->addError($e->getMessage());
             Mage::getSingleton('wishlist/session')->setSharingForm($this->getRequest()->getPost());
             $this->_redirect('*/*/share');

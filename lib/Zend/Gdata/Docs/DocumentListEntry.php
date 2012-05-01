@@ -22,7 +22,7 @@
 /**
  * @see Zend_Gdata_EntryAtom
  */
-require_once 'Zend/Gdata/Entry.php';
+#require_once 'Zend/Gdata/Entry.php';
 
 /**
  * Represents a Documents List entry in the Documents List data API meta feed

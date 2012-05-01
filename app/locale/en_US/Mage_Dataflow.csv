@@ -7,6 +7,7 @@
 "Destination folder ""%s"" is not a directory","Destination folder ""%s"" is not a directory"
 "Destination folder ""%s"" is not a writeable","Destination folder ""%s"" is not a writeable"
 "Done","Done"
+"Dry run set, stopping execution","Dry run set, stopping execution"
 "ETA: %s","ETA: %s"
 "Error field mapping! Fields list for mapping is not defined","Error field mapping! Fields list for mapping is not defined"
 "Error occured during file opening: ""%s""","Error occured during file opening: ""%s"""

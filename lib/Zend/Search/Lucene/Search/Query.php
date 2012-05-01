@@ -20,7 +20,7 @@
  */
 
 /** Zend_Search_Lucene_Document_Html */
-require_once 'Zend/Search/Lucene/Document/Html.php';
+#require_once 'Zend/Search/Lucene/Document/Html.php';
 
 
 /**

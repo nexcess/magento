@@ -32,6 +32,7 @@
 ?>
 
 <script type="text/javascript">
+var profileImportOnly = ['profile_number_of_records', 'profile_decimal_separator'];
 function showOption(select)
 {
     select = $(select);
@@ -110,6 +111,12 @@ function changeDirection()
 {
     toggleSelectOption('remove', 'profile_direction', 'profile_data_transfer', 'export', 'interactive', '<?php echo $this->__('Interactive') ?>');
     //showOption('profile_data_transfer');
+    if ($('profile_direction').value == 'import') {
+        profileImportOnly.each(function(id){if ($(id))$(id).up(1).show();});
+    }
+    else {
+        profileImportOnly.each(function(id){if ($(id))$(id).up(1).hide();});
+    }
 }
 
 function updateRun(select)
@@ -184,6 +191,19 @@ Event.observe(window, 'load', function(){
 	                    <?php echo $this->__("(Products will be added/updated to this store if 'store' column is blank or missing in the import file.)") ?>
 	            </small>
 			</span>
+        </span>
+        <span class="field-row">
+            <label for="profile_number_of_records"><?php echo $this->__("Number of records:") ?></label>
+            <span class="with-tip">
+                <input class="required-entry validate-number input-text" id="profile_number_of_records" name="gui_data[import][number_of_records]" value="<?php echo (($numbers = $this->getValue('gui_data/import/number_of_records')) ? $numbers : 1) ?>"/>
+                <small><?php echo $this->__("(You have to increase php memory_limit before changing this value)") ?></small>
+            </span>
+        </span>
+        <span class="field-row">
+            <label for="profile_decimal_separator"><?php echo $this->__("Decimal separator:") ?></label>
+            <span class="with-tip">
+                <input class="required-entry input-text" id="profile_decimal_separator" name="gui_data[import][decimal_separator]" value="<?php echo (($separator = $this->getValue('gui_data/import/decimal_separator')) ? $separator : '.') ?>"/>
+            </span>
         </span>
     </fieldset>
 
@@ -282,7 +302,7 @@ Event.observe(window, 'load', function(){
             </span>
             <span class="field-row">
                 <label for="parse_enclose"><?php echo $this->__("Enclose Values In:") ?></label>
-                <input class="input-text" style="width:3em" id="parse_enclose" name="gui_data[parse][enclose]" value="<?php echo $this->getValue('gui_data/parse/enclose', '"') ?>"/>
+                <input class="input-text" style="width:3em" id="parse_enclose" name="gui_data[parse][enclose]" value="<?php echo $this->getValue('gui_data/parse/enclose', '') ?>"/>
             </span>
         </div>
         <span class="field-row">

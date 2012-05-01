@@ -20,15 +20,13 @@
 ?>
 
     <div class="page-head">
-            <h3><?php echo $this->__('Order #%s (%s)', $order->getOrderId(), $order->getStatus()) ?></h3>
-        </div>
-
+        <h3><?php echo $this->__('Order #%s (%s)', $order->getOrderId(), $order->getStatus()) ?></h3>
+    </div>
     <div class="col2-set">
             <div class="col-1">
                 <h4><?php echo $this->__('Billing Information') ?></h4>
                 <address>
-                        <?php echo $order->getAddressByType('billing')->toString('{{firstname}} {{lastname}}<br/>{{street}}<br/>{{city}}, {{regionName}} {{postcode}}<br/>T: 
-                        {{telephone}}') ?>
+                        <?php echo $order->getAddressByType('billing')->format('html') ?>
                 </address>
             </div>
             <div class="col-2">
@@ -36,20 +34,17 @@
         <?php echo $this->getChildHtml('payment') ?>
             </div>
         </div>
-    <p></p>
         <div class="col2-set">
             <div class="col-1">
                 <h4><?php echo $this->__('Shipping Information') ?></h4>
                 <address>
-                        <?php echo $order->getAddressByType('shipping')->toString('{{firstname}} {{lastname}}<br/>{{street}}<br/>{{city}}, {{regionName}} {{postcode}}<br/>T: 
-                        {{telephone}}') ?>
+                        <?php echo $order->getAddressByType('shipping')->format('html') ?>
                 </address></div>
             <div class="col-2">
                 <h4><?php echo $this->__('Shipping Method') ?></h4>
                 <?php echo $order->getShippingDescription() ?>
             </div>
         </div>
-    <p></p>
     <?php $_items = $order->getEntitiesByType('item') ?>
     <table cellspacing="0" width="100%" class="data-table" id="my-orders-table">
         <thead>

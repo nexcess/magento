@@ -21,9 +21,14 @@
 /**
  * Customer address helper
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Helper_Address extends Mage_Core_Helper_Abstract
 {
+    protected $_config;
+    protected $_streetLines;
+    protected $_formatTemplate = array();
+
     /**
      * Addresses url
      */
@@ -54,5 +59,28 @@ class Mage_Customer_Helper_Address extends Mage_Core_Helper_Abstract
         } else {
             return $renderer;
         }
+    }
+
+    public function getConfig($key, $store=null)
+    {
+        if (is_null($this->_config)) {
+            $this->_config = Mage::getStoreConfig('customer/address');
+        }
+        return isset($this->_config[$key]) ? $this->_config[$key] : null;
+    }
+
+    public function getStreetLines($store=null)
+    {
+        if (is_null($this->_streetLines)) {
+            $lines = $this->getConfig('street_lines', $store);
+            $this->_streetLines = min(4, max(1, (int)$lines));
+        }
+        return $this->_streetLines;
+    }
+
+    public function getFormat($code)
+    {
+        $format = Mage::getSingleton('customer/address_config')->getFormatByCode($code);
+        return $format->getRenderer() ? $format->getRenderer()->getFormat() : '';
     }
 }

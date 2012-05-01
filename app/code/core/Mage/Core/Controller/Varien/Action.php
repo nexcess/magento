@@ -26,6 +26,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Core_Controller_Varien_Action
 {
@@ -34,6 +35,7 @@ abstract class Mage_Core_Controller_Varien_Action
     const FLAG_NO_DISPATCH              = 'no-dispatch';
     const FLAG_NO_PRE_DISPATCH          = 'no-preDispatch';
     const FLAG_NO_POST_DISPATCH         = 'no-postDispatch';
+    const FLAG_NO_START_SESSION         = 'no-startSession';
     const FLAG_NO_DISPATCH_BLOCK_EVENT  = 'no-beforeGenerateLayoutBlocksDispatch';
 
     const PARAM_NAME_SUCCESS_URL        = 'success_url';
@@ -168,7 +170,7 @@ abstract class Mage_Core_Controller_Varien_Action
      */
     public function getFullActionName($delimiter='_')
     {
-        return $this->getRequest()->getModuleName().$delimiter.
+        return $this->getRequest()->getRouteName().$delimiter.
             $this->getRequest()->getControllerName().$delimiter.
             $this->getRequest()->getActionName();
     }
@@ -364,7 +366,14 @@ abstract class Mage_Core_Controller_Varien_Action
             }
         }
 
-        Mage::getSingleton('core/session', array('name'=>$this->getLayout()->getArea()))->start();
+        if ($this->_rewrite()) {
+            return;
+        }
+
+        if (!$this->getFlag('', self::FLAG_NO_START_SESSION)) {
+            Mage::getSingleton('core/session', array('name'=>$this->getLayout()->getArea()))->start();
+        }
+
         Mage::app()->loadArea($this->getLayout()->getArea());
 
         if ($this->getFlag('', self::FLAG_NO_PRE_DISPATCH)) {
@@ -374,7 +383,7 @@ abstract class Mage_Core_Controller_Varien_Action
         $_profilerKey = 'ctrl/dispatch/'.$this->getFullActionName().'/pre';
         Varien_Profiler::start($_profilerKey);
         Mage::dispatchEvent('controller_action_predispatch', array('controller_action'=>$this));
-        Mage::dispatchEvent('controller_action_predispatch_'.$this->getRequest()->getModuleName(), array('controller_action'=>$this));
+        Mage::dispatchEvent('controller_action_predispatch_'.$this->getRequest()->getRouteName(), array('controller_action'=>$this));
         Mage::dispatchEvent('controller_action_predispatch_'.$this->getFullActionName(), array('controller_action'=>$this));
         Varien_Profiler::stop($_profilerKey);
     }
@@ -391,7 +400,7 @@ abstract class Mage_Core_Controller_Varien_Action
         Varien_Profiler::start($_profilerKey);
 
         Mage::dispatchEvent('controller_action_postdispatch_'.$this->getFullActionName(), array('controller_action'=>$this));
-        Mage::dispatchEvent('controller_action_postdispatch_'.$this->getRequest()->getModuleName(), array('controller_action'=>$this));
+        Mage::dispatchEvent('controller_action_postdispatch_'.$this->getRequest()->getRouteName(), array('controller_action'=>$this));
         Mage::dispatchEvent('controller_action_postdispatch', array('controller_action'=>$this));
 
         Varien_Profiler::stop($_profilerKey);
@@ -559,4 +568,60 @@ abstract class Mage_Core_Controller_Varien_Action
         return $this->_realModuleName;
     }
 
+    /**
+     * Support for controllers rewrites
+     *
+     * Example of configuration:
+     * <global>
+     *   <routers>
+     *     <core_module>
+     *       <rewrite>
+     *         <core_controller>
+     *           <to>new_route/new_controller</to>
+     *           <override_actions>true</override_actions>
+     *           <actions>
+     *             <core_action><to>new_module/new_controller/new_action</core_action>
+     *           </actions>
+     *         <core_controller>
+     *       </rewrite>
+     *     </core_module>
+     *   </routers>
+     * </global>
+     *
+     * This will override:
+     * 1. core_module/core_controller/core_action to new_module/new_controller/new_action
+     * 2. all other actions of core_module/core_controller to new_module/new_controller
+     *
+     * @return boolean true if rewrite happened
+     */
+    protected function _rewrite()
+    {
+        $route = $this->getRequest()->getRouteName();
+        $controller = $this->getRequest()->getControllerName();
+        $action = $this->getRequest()->getActionName();
+
+        $rewrite = Mage::getConfig()->getNode('global/routers/'.$route.'/rewrite/'.$controller);
+        if (!$rewrite) {
+            return false;
+        }
+
+        if (!($rewrite->actions && $rewrite->actions->$action) || $rewrite->is('override_actions')) {
+            $t = explode('/', (string)$rewrite->to);
+            if (sizeof($t)!==2 || empty($t[0]) || empty($t[1])) {
+                return false;
+            }
+            $t[2] = $action;
+        } else {
+            $t = explode('/', (string)$rewrite->actions->$action->to);
+            if (sizeof($t)!==3 || empty($t[0]) || empty($t[1]) || empty($t[2])) {
+                return false;
+            }
+        }
+
+        $this->_forward($t[2]==='*' ? $action : $t[2],
+            $t[1]==='*' ? $controller : $t[1],
+            $t[0]==='*' ? $route : $t[0]);
+
+        return true;
+    }
 }

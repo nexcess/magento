@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Tax_Rule_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
@@ -56,10 +57,6 @@ class Mage_Adminhtml_Block_Tax_Rule_Edit_Form extends Mage_Adminhtml_Block_Widge
             'legend'    => Mage::helper('tax')->__('Tax Rule Information')
         ));
 
-        $rates  = Mage::getModel('tax/rate_type')
-            ->getCollection()
-            ->toOptionArray();
-
         $productClasses = Mage::getModel('tax/class')
             ->getCollection()
             ->setClassTypeFilter('PRODUCT')
@@ -70,49 +67,82 @@ class Mage_Adminhtml_Block_Tax_Rule_Edit_Form extends Mage_Adminhtml_Block_Widge
             ->setClassTypeFilter('CUSTOMER')
             ->toOptionArray();
 
-        $fieldset->addField('tax_customer_class_id', 'select',
+        $rates = Mage::getModel('tax/calculation_rate')
+            ->getCollection()
+            ->toOptionArray();
+
+        $fieldset->addField('code', 'text',
             array(
-                'name'      => 'tax_customer_class_id',
+                'name'      => 'code',
+                'label'     => Mage::helper('tax')->__('Name'),
+                'class'     => 'required-entry',
+                'required'  => true,
+            )
+        );
+
+        $fieldset->addField('tax_customer_class', 'multiselect',
+            array(
+                'name'      => 'tax_customer_class',
                 'label'     => Mage::helper('tax')->__('Customer Tax Class'),
                 'class'     => 'required-entry',
                 'values'    => $customerClasses,
-                'value'     => $model->getTaxCustomerClassId(),
+                'value'     => $model->getCustomerTaxClasses(),
                 'required'  => true,
             )
         );
 
-        $fieldset->addField('tax_product_class_id', 'select',
+        $fieldset->addField('tax_product_class', 'multiselect',
             array(
-                'name'      => 'tax_product_class_id',
+                'name'      => 'tax_product_class',
                 'label'     => Mage::helper('tax')->__('Product Tax Class'),
                 'class'     => 'required-entry',
                 'values'    => $productClasses,
-                'value'     => $model->getTaxProductClassId(),
+                'value'     => $model->getProductTaxClasses(),
                 'required'  => true,
             )
         );
 
-        $fieldset->addField('tax_rate_type_id', 'select',
+        $fieldset->addField('tax_rate', 'multiselect',
             array(
-                'name'      => 'tax_rate_type_id',
+                'name'      => 'tax_rate',
                 'label'     => Mage::helper('tax')->__('Tax Rate'),
                 'class'     => 'required-entry',
                 'values'    => $rates,
-                'value'     => $model->getTaxRateTypeId(),
+                'value'     => $model->getRates(),
+                'required'  => true,
+            )
+        );
+        $fieldset->addField('priority', 'text',
+            array(
+                'name'      => 'priority',
+                'label'     => Mage::helper('tax')->__('Priority'),
+                'class'     => 'validate-not-negative-number',
+                'value'     => (int) $model->getPriority(),
+                'required'  => true,
+                'note'      => Mage::helper('tax')->__('Tax rates at the same priority are added, others are compounded.'),
+            )
+        );
+        $fieldset->addField('position', 'text',
+            array(
+                'name'      => 'position',
+                'label'     => Mage::helper('tax')->__('Sort Order'),
+                'class'     => 'validate-not-negative-number',
+                'value'     => (int) $model->getPosition(),
                 'required'  => true,
             )
         );
 
         if ($model->getId() > 0 ) {
-            $fieldset->addField('tax_rule_id', 'hidden',
+            $fieldset->addField('tax_calculation_rule_id', 'hidden',
                 array(
-                    'name'      => 'tax_rule_id',
+                    'name'      => 'tax_calculation_rule_id',
                     'value'     => $model->getId(),
                     'no_span'   => true
                 )
             );
         }
 
+        $form->addValues($model->getData());
         $form->setAction($this->getUrl('*/tax_rule/save'));
         $form->setUseContainer(true);
         $this->setForm($form);

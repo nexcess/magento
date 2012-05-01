@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Template for Mage_Block_Adminhtml_Widget_Grid
  *
@@ -110,57 +110,60 @@ $numColumns = sizeof($this->getColumns());
 <?php echo $this->getMassactionBlockHtml() ?>
 <?php endif ?>
 <div class="grid">
-<table cellspacing="0" class="data" id="<?php echo $this->getId() ?>_table">
-    <?php foreach ($this->getColumns() as $_column): ?>
-    <col <?php echo $_column->getHtmlProperty() ?> />
-    <?php endforeach; ?>
-    <?php if ($this->getHeadersVisibility() || $this->getFilterVisibility()): ?>
-        <thead>
-            <?php if ($this->getHeadersVisibility()): ?>
-                <tr class="headings">
-                <?php foreach ($this->getColumns() as $_column): ?>
-                    <th <?php echo $_column->getHeaderHtmlProperty() ?>><span class="nobr"><?php echo $_column->getHeaderHtml() ?></span></th>
-                <?php endforeach; ?>
-                </tr>
-            <?php endif; ?>
-            <?php if ($this->getFilterVisibility()): ?>
-                <tr class="filter">
-                <?php $i=0;foreach ($this->getColumns() as $_column): ?>
-                    <th <?php echo $_column->getHeaderHtmlProperty() ?>><?php echo $_column->getFilterHtml() ?></th>
-                <?php endforeach; ?>
-                </tr>
-            <?php endif ?>
-        </thead>
-    <?php endif; ?>
-    <?php if ($this->getCountTotals()): ?>
-        <tfoot>
-            <tr>
-            <?php foreach ($this->getColumns() as $_column): ?>
-                <th class="<?php echo $_column->getCssProperty() ?>"><?php echo $_column->getRowField($_column->getGrid()->getTotals()) ?>&nbsp;</th>
-            <?php endforeach; ?>
-            </tr>
-         </tfoot>
-    <?php endif; ?>
-    <tbody>
-    <?php if (($this->getCollection()->getSize()>0) && (!$this->getIsCollapsed())): ?>
-    <?php foreach ($this->getCollection() as $_index=>$_item): ?>
-        <tr id="<?php echo $this->getRowId($_item) ?>">
-        <?php $i=0;foreach ($this->getColumns() as $_column): ?>
-            <td class="<?php echo $_column->getCssProperty() ?> <?php echo ++$i==$numColumns?'last':'' ?>"><?php echo (($_html = $_column->getRowField($_item)) != '' ? $_html : '&nbsp;') ?></td>
-        <?php endforeach; ?>
-        </tr>
-    <?php endforeach; ?>
-    <?php elseif ($this->getEmptyText()): ?>
-    	<tr>
-    		<td class="empty-text <?php echo $this->getEmptyTextClass() ?>" colspan="100"><?php echo $this->getEmptyText() ?></td>
-    	</tr>
-    <?php endif; ?>
-    </tbody>
-</table>
+	<div class="hor-scroll">
+	<table cellspacing="0" class="data" id="<?php echo $this->getId() ?>_table">
+	    <?php foreach ($this->getColumns() as $_column): ?>
+	    <col <?php echo $_column->getHtmlProperty() ?> />
+	    <?php endforeach; ?>
+	    <?php if ($this->getHeadersVisibility() || $this->getFilterVisibility()): ?>
+	        <thead>
+	            <?php if ($this->getHeadersVisibility()): ?>
+	                <tr class="headings">
+	                <?php foreach ($this->getColumns() as $_column): ?>
+	                    <th <?php echo $_column->getHeaderHtmlProperty() ?>><span class="nobr"><?php echo $_column->getHeaderHtml() ?></span></th>
+	                <?php endforeach; ?>
+	                </tr>
+	            <?php endif; ?>
+	            <?php if ($this->getFilterVisibility()): ?>
+	                <tr class="filter">
+	                <?php $i=0;foreach ($this->getColumns() as $_column): ?>
+	                    <th <?php echo $_column->getHeaderHtmlProperty() ?>><?php echo $_column->getFilterHtml() ?></th>
+	                <?php endforeach; ?>
+	                </tr>
+	            <?php endif ?>
+	        </thead>
+	    <?php endif; ?>
+	    <?php if ($this->getCountTotals()): ?>
+	        <tfoot>
+	            <tr>
+	            <?php foreach ($this->getColumns() as $_column): ?>
+	                <th class="<?php echo $_column->getCssProperty() ?>"><?php echo $_column->getRowField($_column->getGrid()->getTotals()) ?>&nbsp;</th>
+	            <?php endforeach; ?>
+	            </tr>
+	         </tfoot>
+	    <?php endif; ?>
+	    <tbody>
+	    <?php if (($this->getCollection()->getSize()>0) && (!$this->getIsCollapsed())): ?>
+	    <?php foreach ($this->getCollection() as $_index=>$_item): ?>
+	        <tr id="<?php echo $this->getRowId($_item) ?>"<?php if ($_class = $this->getRowClass($_item)):?> class="<?php echo $_class; ?>"<?php endif;?> >
+	        <?php $i=0;foreach ($this->getColumns() as $_column): ?>
+	            <td class="<?php echo $_column->getCssProperty() ?> <?php echo ++$i==$numColumns?'last':'' ?>"><?php echo (($_html = $_column->getRowField($_item)) != '' ? $_html : '&nbsp;') ?></td>
+	        <?php endforeach; ?>
+	        </tr>
+	    <?php endforeach; ?>
+	    <?php elseif ($this->getEmptyText()): ?>
+	    	<tr>
+	    		<td class="empty-text <?php echo $this->getEmptyTextClass() ?>" colspan="100"><?php echo $this->getEmptyText() ?></td>
+	    	</tr>
+	    <?php endif; ?>
+	    </tbody>
+	</table>
+	</div>
 </div>
 <?php if($this->canDisplayContainer()): ?>
 </div>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
+//<![CDATA[
     <?php echo $this->getJsObjectName() ?> = new varienGrid('<?php echo $this->getId() ?>', '<?php echo $this->getGridUrl() ?>', '<?php echo $this->getVarNamePage() ?>', '<?php echo $this->getVarNameSort() ?>', '<?php echo $this->getVarNameDir() ?>', '<?php echo $this->getVarNameFilter() ?>');
     <?php echo $this->getJsObjectName() ?>.useAjax = '<?php echo $this->getUseAjax() ?>';
     <?php if($this->getRowClickCallback()): ?>
@@ -176,6 +179,7 @@ $numColumns = sizeof($this->getColumns());
     <?php if($this->getMassactionBlock()->isAvailable()): ?>
     <?php echo $this->getMassactionBlock()->getJavaScript() ?>
     <?php endif ?>
+//]]>
 </script>
 <?php endif; ?>
 <?php endif ?>

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Backup
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Backup_Model_Backup extends Varien_Object
 {
@@ -32,8 +33,8 @@ class Mage_Backup_Model_Backup extends Varien_Object
     const BACKUP_MEDIA  = 'media';
 
     /* internal constants */
-    const BACKUP_EXTENSION  = 'backup';
-    const COMPRESS_RATE     = 7;
+    const BACKUP_EXTENSION  = 'gz';
+    const COMPRESS_RATE     = 9;
 
     /**
      * Type of backup file
@@ -41,6 +42,13 @@ class Mage_Backup_Model_Backup extends Varien_Object
      * @var string db|media|view
      */
     private $_type  = 'db';
+
+    /**
+     * Gz file pointer
+     *
+     * @var resource
+     */
+    protected $_handler = null;
 
     /**
      * Load backup file info
@@ -204,4 +212,137 @@ class Mage_Backup_Model_Backup extends Varien_Object
         return $this;
     }
 
+    /**
+     * Open backup file (write or read mode)
+     *
+     * @param bool $write
+     * @return Mage_Backup_Model_Backup
+     */
+    public function open($write = false)
+    {
+        if (is_null($this->getPath())) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Backup file path don\'t specify'));
+        }
+
+        $ioAdapter = new Varien_Io_File();
+        try {
+            $path = $ioAdapter->getCleanPath($this->getPath());
+            $ioAdapter->checkAndCreateFolder($path);
+            $filePath = $path . DS . $this->getFileName();
+        }
+        catch (Exception $e) {
+            Mage::exception('Mage_Backup', $e->getMessage());
+        }
+
+        if ($write && $ioAdapter->fileExists($filePath)) {
+            $ioAdapter->rm($filePath);
+        }
+        if (!$write && !$ioAdapter->fileExists($filePath)) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Backup file "%s" doesn\'t exist', $this->getFileName()));
+        }
+
+        $mode = $write ? 'wb' . self::COMPRESS_RATE : 'rb';
+
+        try {
+            $this->_handler = gzopen($filePath, $mode);
+        }
+        catch (Exception $e) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Backup file "%s" can\'t read or write', $this->getFileName()));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Read backup uncomressed data
+     *
+     * @param int $length
+     * @return string
+     */
+    public function read($length)
+    {
+        if (is_null($this->_handler)) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Backup file handler don\'t specify'));
+        }
+
+        return gzread($this->_handler, $length);
+    }
+
+    public function eof()
+    {
+        if (is_null($this->_handler)) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Backup file handler don\'t specify'));
+        }
+
+        return gzeof($this->_handler);
+    }
+
+    /**
+     * Write to backup file
+     *
+     * @param string $string
+     * @return Mage_Backup_Model_Backup
+     */
+    public function write($string)
+    {
+        if (is_null($this->_handler)) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Backup file handler don\'t specify'));
+        }
+
+        try {
+            gzwrite($this->_handler, $string);
+        }
+        catch (Exception $e) {
+            Mage::exception('Mage_Backup', Mage::helper('backup')->__('Error write to Backup file "%s"', $this->getFileName()));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Close open backup file
+     *
+     * @return Mage_Backup_Model_Backup
+     */
+    public function close()
+    {
+        @gzclose($this->_handler);
+        $this->_handler = null;
+
+        return $this;
+    }
+
+    /**
+     * Print output
+     *
+     */
+    public function output()
+    {
+        if (!$this->exists()) {
+            return ;
+        }
+
+        $ioAdapter = new Varien_Io_File();
+        $ioAdapter->open(array('path' => $this->getPath()));
+
+        $ioAdapter->streamOpen($this->getFileName(), 'r');
+        while ($buffer = $ioAdapter->streamRead()) {
+            echo $buffer;
+        }
+        $ioAdapter->streamClose();
+    }
+
+    public function getSize()
+    {
+        if (!is_null($this->getData('size'))) {
+            return $this->getData('size');
+        }
+
+        if ($this->exists()) {
+            $this->setData('size', filesize($this->getPath() . DS . $this->getFileName()));
+            return $this->getData('size');
+        }
+
+        return 0;
+    }
 }

@@ -40,16 +40,13 @@ class Mage_Catalog_Model_Convert_Parser_Product
         'virtual'=>'Virtual',
     );
 
-    protected $_inventoryFields = array(
-        'qty', 'min_qty', 'use_config_min_qty',
-        'is_qty_decimal', 'backorders', 'use_config_backorders',
-        'min_sale_qty','use_config_min_sale_qty','max_sale_qty',
-        'use_config_max_sale_qty','is_in_stock','notify_stock_qty','use_config_notify_stock_qty'
-    );
+    protected $_inventoryFields = array();
 
-    protected $_imageFields = array(
-        'image', 'small_image', 'thumbnail'
-    );
+    protected $_imageFields = array();
+
+    protected $_systemFields = array();
+    protected $_internalFields = array();
+    protected $_externalFields = array();
 
     protected $_inventoryItems = array();
 
@@ -60,6 +57,30 @@ class Mage_Catalog_Model_Convert_Parser_Product
     protected $_store;
     protected $_storeId;
     protected $_attributes = array();
+
+    public function __construct()
+    {
+        foreach (Mage::getConfig()->getFieldset('catalog_product_dataflow', 'admin') as $code=>$node) {
+            if ($node->is('inventory')) {
+                $this->_inventoryFields[] = $code;
+                if ($node->is('use_config')) {
+                    $this->_inventoryFields[] = 'use_config_'.$code;
+                }
+            }
+            if ($node->is('internal')) {
+                $this->_internalFields[] = $code;
+            }
+            if ($node->is('system')) {
+                $this->_systemFields[] = $code;
+            }
+            if ($node->is('external')) {
+                $this->_externalFields[$code] = $code;
+            }
+            if ($node->is('img')) {
+                $this->_imageFields[] = $code;
+            }
+        }
+    }
 
     /**
      * @return Mage_Catalog_Model_Mysql4_Convert
@@ -104,9 +125,9 @@ class Mage_Catalog_Model_Convert_Parser_Product
     {
         if (is_null($this->_productModel)) {
             $productModel = Mage::getModel('catalog/product');
-            $this->_productModel = Varien_Object_Cache::singleton()->save($productModel);
+            $this->_productModel = Mage::objects()->save($productModel);
         }
-        return Varien_Object_Cache::singleton()->load($this->_productModel);
+        return Mage::objects()->load($this->_productModel);
     }
 
     /**
@@ -169,6 +190,9 @@ class Mage_Catalog_Model_Convert_Parser_Product
         return $this->_attributes[$code];
     }
 
+    /**
+     * @deprecated not used anymore
+     */
     public function parse()
     {
         $data = $this->getData();
@@ -291,27 +315,16 @@ class Mage_Catalog_Model_Convert_Parser_Product
         return $this->_inventoryItems;
     }
 
-
+    /**
+     * Unparse (prepare data) loaded products
+     *
+     * @return Mage_Catalog_Model_Convert_Parser_Product
+     */
     public function unparse()
     {
-        $systemFields = array(
-            'entity_id',
-            'entity_type_id',
-            'attribute_set_id',
-            'type_id',
-            'created_at',
-            'updated_at',
-            'item_id',
-            'product_id',
-            'stock_id',
-        );
-
         $entityIds = $this->getData();
 
         foreach ($entityIds as $i => $entityId) {
-
-//            print memory_get_usage() . "<br />";
-
             $product = $this->getProductModel()
                 ->setData(array())
                 ->setStoreId($this->getStoreId())
@@ -324,12 +337,25 @@ class Mage_Catalog_Model_Convert_Parser_Product
 
             $row = array(
                 'store'         => $this->getStore()->getCode(),
+                'websites'      => '',
                 'attribute_set' => $this->getAttributeSetName($product->getEntityTypeId(), $product->getAttributeSetId()),
-                'type'          => $this->getProductTypeName($product->getTypeId()),
+                'type'          => $product->getTypeId(),
             );
 
+            if ($this->getStore()->getCode() == Mage_Core_Model_Store::ADMIN_CODE) {
+                $websiteCodes = array();
+                foreach ($product->getWebsiteIds() as $websiteId) {
+                    $websiteCode = Mage::app()->getWebsite($websiteId)->getCode();
+                    $websiteCodes[$websiteCode] = $websiteCode;
+                }
+                $row['websites'] = join(',', $websiteCodes);
+            }
+            else {
+                $row['websites'] = $this->getStore()->getWebsite()->getCode();
+            }
+
             foreach ($product->getData() as $field => $value) {
-                if (in_array($field, $systemFields) || is_object($value)) {
+                if (in_array($field, $this->_systemFields) || is_object($value)) {
                     continue;
                 }
 
@@ -361,7 +387,7 @@ class Mage_Catalog_Model_Convert_Parser_Product
 
             if ($stockItem = $product->getStockItem()) {
                 foreach ($stockItem->getData() as $field => $value) {
-                    if (in_array($field, $systemFields) || is_object($value)) {
+                    if (in_array($field, $this->_systemFields) || is_object($value)) {
                         continue;
                     }
                     $row[$field] = $value;
@@ -382,117 +408,37 @@ class Mage_Catalog_Model_Convert_Parser_Product
                 ->save();
         }
 
-        //print '<pre>' . memory_get_usage() .' byte(s)</pre>';
-
-//        $collections = $this->getData();
-//        if ($collections instanceof Mage_Eav_Model_Entity_Collection_Abstract) {
-//            $collections = array($collections->getStoreId()=>$collections);
-//        } elseif (!is_array($collections)) {
-//            $this->addException(Mage::helper('catalog')->__("Array of Entity collections is expected"), Mage_Dataflow_Model_Convert_Exception::FATAL);
-//        }
-//
-//        $stockItem = Mage::getModel('cataloginventory/stock_item');
-
-
-
-//        foreach ($collections as $storeId=>$collection) {
-//            if (!$collection instanceof Mage_Eav_Model_Entity_Collection_Abstract) {
-//                $this->addException(Mage::helper('catalog')->__("Entity collection is expected"), Mage_Dataflow_Model_Convert_Exception::FATAL);
-//            }
-//
-//            $data = array();
-//            foreach ($collection->getIterator() as $i=>$model) {
-//                /**
-//                 * @var $model Mage_Catalog_Model_Product
-//                 */
-//                $productId = $model->getId();
-//                $this->setPosition('Line: '.($i+1).', SKU: '.$model->getSku());
-//
-//                $row = array(
-//                    'store'=>$this->getStoreCode($this->getVar('store') ? $this->getVar('store') : $storeId),
-//                    'attribute_set'=>$this->getAttributeSetName($model->getEntityTypeId(), $model->getAttributeSetId()),
-//                    'type'=>$this->getProductTypeName($model->getTypeId()),
-//                );
-//
-//                foreach ($model->getData() as $field=>$value) {
-//                    if (in_array($field, $systemFields)) {
-//                        continue;
-//                    }
-//                    $attribute = $model->getResource()->getAttribute($field);
-//                    if (!$attribute) {
-//                        continue;
-//                    }
-//
-//                    if ($attribute->usesSource()) {
-//                        $option = $attribute->getSource()->getOptionText($value);
-//                        if ($value && empty($option)) {
-//                            $this->addException(Mage::helper('catalog')->__("Invalid option id specified for %s (%s), skipping the record", $field, $value), Mage_Dataflow_Model_Convert_Exception::ERROR);
-//                            continue;
-//                        }
-//                        if (is_array($option)) {
-//                            $value = join(',', $option);
-//                        } else {
-//                            $value = $option;
-//                        }
-//                    }
-//                    $row[$field] = $value;
-//                }
-//
-//                $stockItem->unsetData();
-//                if ($stockItem) {
-//                    $stockItem->loadByProduct($productId);
-//                    if ($stockItem->getId()) foreach ($stockItem->getData() as $field=>$value) {
-//                        if (in_array($field, $this->_inventoryFields)) {
-//                            $row[$field] = $value;
-//                        }
-//                    }
-//                }
-//
-//                $data[] = $row;
-//                //var_dump($row);
-//            }
-//        }
-
-//        $this->setData($data);
         return $this;
     }
 
+    /**
+     * Retrieve accessible external product attributes
+     *
+     * @return array
+     */
     public function getExternalAttributes()
     {
-        $internal = array(
-            'entity_id',
-            'old_id',
-            'tier_price',
-            'media_gallery'
-        );
-
         $entityTypeId = Mage::getSingleton('eav/config')->getEntityType('catalog_product')->getId();
         $productAttributes = Mage::getResourceModel('eav/entity_attribute_collection')
             ->setEntityTypeFilter($entityTypeId)
-            ->load()->getIterator();
+            ->load();
 
-        $attributes = array(
-            'store'             => 'store',
-            'sku'               => 'sku',
-            'attribute_set'     => 'attribute_set',
-            'type'              => 'type',
-            'name'              => 'name',
-            'description'       => 'description',
-            'short_description' => 'short_description',
-            'weight'            => 'weight',
-            'price'             => 'price'
-        );
+            var_dump($this->_externalFields);
+
+        $attributes = $this->_externalFields;
+
         foreach ($productAttributes as $attr) {
             $code = $attr->getAttributeCode();
-            if (in_array($code, $internal) || $attr->getFrontendInput()=='hidden') {
+            if (in_array($code, $this->_internalFields) || $attr->getFrontendInput() == 'hidden') {
                 continue;
             }
             $attributes[$code] = $code;
         }
+
         foreach ($this->_inventoryFields as $field) {
             $attributes[$field] = $field;
         }
+
         return $attributes;
     }
-
 }

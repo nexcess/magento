@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Payment
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Payment_Exception extends Exception
 {

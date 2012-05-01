@@ -23,8 +23,9 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-abstract class Mage_Catalog_Block_Product_View_Abstract extends Mage_Core_Block_Template
+abstract class Mage_Catalog_Block_Product_View_Abstract extends Mage_Catalog_Block_Product_Abstract
 {
     /**
      * Retrieve currently viewed product object
@@ -33,13 +34,19 @@ abstract class Mage_Catalog_Block_Product_View_Abstract extends Mage_Core_Block_
      */
     public function getProduct()
     {
-        return Mage::registry('current_product');
+        if (!$this->hasData('product')) {
+            $this->setData('product', Mage::registry('current_product'));
+        }
+        return $this->getData('product');
     }
 
-    public function getTierPrices()
+    public function getTierPrices($product = null)
     {
-        $product = $this->getProduct();
+        if (is_null($product)) {
+            $product = $this->getProduct();
+        }
         $prices  = $product->getFormatedTierPrice();
+
         $res = array();
         if (is_array($prices)) {
             foreach ($prices as $price) {
@@ -47,17 +54,22 @@ abstract class Mage_Catalog_Block_Product_View_Abstract extends Mage_Core_Block_
                 if ($product->getPrice() != $product->getFinalPrice()) {
                     if ($price['price']<$product->getFinalPrice()) {
                         $price['savePercent'] = ceil(100 - (( 100/$product->getFinalPrice() ) * $price['price'] ));
+                        $price['formated_price'] = Mage::app()->getStore()->formatPrice(Mage::app()->getStore()->convertPrice(Mage::helper('tax')->getPrice($product, $price['website_price'])));
+                        $price['formated_price_incl_tax'] = Mage::app()->getStore()->formatPrice(Mage::app()->getStore()->convertPrice(Mage::helper('tax')->getPrice($product, $price['website_price'], true)));
                         $res[] = $price;
                     }
                 }
                 else {
                     if ($price['price']<$product->getPrice()) {
                         $price['savePercent'] = ceil(100 - (( 100/$product->getPrice() ) * $price['price'] ));
+                        $price['formated_price'] = Mage::app()->getStore()->formatPrice(Mage::app()->getStore()->convertPrice(Mage::helper('tax')->getPrice($product, $price['website_price'])));
+                        $price['formated_price_incl_tax'] = Mage::app()->getStore()->formatPrice(Mage::app()->getStore()->convertPrice(Mage::helper('tax')->getPrice($product, $price['website_price'], true)));
                         $res[] = $price;
                     }
                 }
             }
         }
+
         return $res;
     }
 }

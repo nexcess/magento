@@ -21,6 +21,7 @@
 /**
  * Adminhtml sales order create block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Create_Customer_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -37,8 +38,7 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Customer_Grid extends Mage_Adminht
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel('customer/customer_collection')
-            ->addAttributeToSelect('firstname')
-            ->addAttributeToSelect('lastname')
+            ->addNameToSelect()
             ->addAttributeToSelect('email')
             ->addAttributeToSelect('created_at')
             ->joinAttribute('billing_postcode', 'customer_address/postcode', 'default_billing', null, 'left')
@@ -61,13 +61,9 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Customer_Grid extends Mage_Adminht
             'index'     =>'entity_id',
             'align'     => 'right',
         ));
-        $this->addColumn('firstname', array(
-            'header'    =>Mage::helper('sales')->__('First Name'),
-            'index'     =>'firstname'
-        ));
-        $this->addColumn('lastname', array(
-            'header'    =>Mage::helper('sales')->__('Last Name'),
-            'index'     =>'lastname'
+        $this->addColumn('name', array(
+            'header'    =>Mage::helper('sales')->__('Name'),
+            'index'     =>'name'
         ));
         $this->addColumn('email', array(
             'header'    =>Mage::helper('sales')->__('Email'),

@@ -23,9 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Tag
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
-class Mage_Tag_Block_Product_Result extends Mage_Core_Block_Template
+class Mage_Tag_Block_Product_Result extends Mage_Catalog_Block_Product_Abstract
 {
     protected $_productCollection;
 
@@ -43,14 +44,25 @@ class Mage_Tag_Block_Product_Result extends Mage_Core_Block_Template
         return parent::_prepareLayout();
     }
 
-    public function initList($template)
-    {
-        $resultBlock = $this->getLayout()->createBlock('catalog/product_list', 'product_list')
-            ->setTemplate($template)
-            ->setAvailableOrders(array('name'=>Mage::helper('tag')->__('Name'), 'price'=>Mage::helper('tag')->__('Price')))
-            ->setModes(array('list' => Mage::helper('tag')->__('List'), 'grid' => Mage::helper('tag')->__('Grid')))
-            ->setCollection($this->_getProductCollection());
-        $this->setChild('search_result_list', $resultBlock);
+    public function setListOrders() {
+        $this->getChild('search_result_list')
+            ->setAvailableOrders(array(
+                'name' => Mage::helper('tag')->__('Name'),
+                'price'=>Mage::helper('tag')->__('Price'))
+            );
+    }
+
+    public function setListModes() {
+        $this->getChild('search_result_list')
+            ->setModes(array(
+                'grid' => Mage::helper('tag')->__('Grid'),
+                'list' => Mage::helper('tag')->__('List'))
+            );
+    }
+
+    public function setListCollection() {
+        $this->getChild('search_result_list')
+           ->setCollection($this->_getProductCollection());
     }
 
     public function getProductListHtml()
@@ -63,13 +75,14 @@ class Mage_Tag_Block_Product_Result extends Mage_Core_Block_Template
         if(is_null($this->_productCollection)) {
             $tagModel = Mage::getModel('tag/tag');
             $this->_productCollection = $tagModel->getEntityCollection()
+                ->addAttributeToSelect(Mage::getSingleton('catalog/config')->getProductAttributes())
                 ->addTagFilter($this->getTag()->getId())
                 ->addStoreFilter()
                 ->addUrlRewrite();
             Mage::getSingleton('catalog/product_status')->addSaleableFilterToCollection($this->_productCollection);
             Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($this->_productCollection);
         }
-        
+
         return $this->_productCollection;
     }
 

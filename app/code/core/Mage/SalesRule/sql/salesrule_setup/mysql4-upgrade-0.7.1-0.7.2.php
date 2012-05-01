@@ -24,8 +24,9 @@ $installer = $this;
 $installer->startSetup();
 
 $installer->run("
-alter table {$this->getTable('salesrule')}
-    ,add column `times_used` int (11)UNSIGNED  DEFAULT '0' NOT NULL  after `simple_free_shipping`;
+ALTER TABLE `{$this->getTable('salesrule')}`
+    ADD COLUMN `times_used` int (11) unsigned DEFAULT '0' NOT NULL
+        AFTER `simple_free_shipping`;
 ");
 
 $installer->endSetup();

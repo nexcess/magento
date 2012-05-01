@@ -24,57 +24,76 @@
  *
  * @category   Mage
  * @package    Mage_Reports
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Reports_Model_Mysql4_Quote_Collection extends Mage_Sales_Model_Entity_Quote_Collection
+class Mage_Reports_Model_Mysql4_Quote_Collection extends Mage_Sales_Model_Mysql4_Quote_Collection
 {
-    public function setActiveFilter()
+
+    public function prepareForAbandonedReport($storeIds)
     {
-        $this->addAttributeToFilter('is_active', '1');
+        $this->addFieldToFilter('items_count', array('neq' => '0'))
+            ->addFieldToFilter('main_table.is_active', '1')
+            ->addSubtotal($storeIds)
+            ->addCustomerData()
+            ->setOrder('updated_at');
+        if (is_array($storeIds)) {
+            $collection->addFieldToFilter('store_id', array('in' => $storeIds));
+        }
         return $this;
     }
 
-    public function addCustomerName()
+    public function addCustomerData()
     {
-        $this->joinAttribute('customer_firstname', 'customer/firstname', 'customer_id')
-            ->joinAttribute('customer_lastname', 'customer/lastname', 'customer_id')
-            ->addExpressionAttributeToSelect(
-                'customer_name',
-                'IFNULL(CONCAT({{customer_firstname}}, " ", {{customer_lastname}}),"'.Mage::helper('reports')->__('Guest').'")',
-                array('customer_firstname', 'customer_lastname'));
+        $customerEntity = Mage::getResourceSingleton('customer/customer');
+        $attrFirstname = $customerEntity->getAttribute('firstname');
+        $attrFirstnameId = $attrFirstname->getAttributeId();
+        $attrFirstnameTableName = $attrFirstname->getBackend()->getTable();
 
-        return $this;
-    }
+        $attrLastname = $customerEntity->getAttribute('lastname');
+        $attrLastnameId = $attrLastname->getAttributeId();
+        $attrLastnameTableName = $attrLastname->getBackend()->getTable();
 
-    public function addCustomerEmail()
-    {
-        $this->joinAttribute('customer_email', 'customer/email', 'customer_id');
+        $attrEmail = $customerEntity->getAttribute('email');
+        $attrEmailTableName = $attrEmail->getBackend()->getTable();
+
+        $this->getSelect()
+            ->joinInner(
+                array('cust_email'=>$attrEmailTableName),
+                'cust_email.entity_id=main_table.customer_id',
+                array('email'=>'cust_email.email')
+            )
+            ->joinInner(
+                array('cust_fname'=>$attrFirstnameTableName),
+                'cust_fname.entity_id=main_table.customer_id and cust_fname.attribute_id='.$attrFirstnameId,
+                array('firstname'=>'cust_fname.value')
+            )
+            ->joinInner(
+                array('cust_lname'=>$attrLastnameTableName),
+                'cust_lname.entity_id=main_table.customer_id and cust_lname.attribute_id='.$attrFirstnameId,
+                array(
+                    'lastname'=>'cust_lname.value',
+                    'customer_name' => new Zend_Db_Expr('CONCAT(cust_fname.value, " ", cust_lname.value)')
+                )
+            );
+
         return $this;
     }
 
     public function addSubtotal($storeIds = '')
     {
-        $quoteAddress = Mage::getResourceSingleton('sales/quote_address');
-        /* @var $quoteItem Mage_Sales_Model_Entity_Quote_Address */
-
         $this->getSelect()
-            ->joinInner(array('quote_addr' => $quoteAddress->getEntityTable()),
-                "quote_addr.parent_id=e.entity_id AND quote_addr.entity_type_id=".$quoteAddress->getTypeId(),
-                array());
-
-        $attr = $quoteAddress->getAttribute('base_subtotal_with_discount');
-        $attrId = $attr->getAttributeId();
-        $attrTableName = $attr->getBackend()->getTable();
-        $attrFieldName = $attr->getBackend()->isStatic() ? 'base_subtotal_with_discount' : 'value';
-
-        $this->getSelect()
-            ->joinInner(array('quote_addr_subtotal' => $attrTableName),
-                "quote_addr_subtotal.entity_id=quote_addr.entity_id",
+            ->joinInner(array('quote_addr' => $this->getTable('sales/quote_address')),
+                "quote_addr.quote_id=main_table.entity_id",
+                array())
+            ->joinInner(array('quote_addr_subtotal' => $this->getTable('sales/quote_address')),
+                "quote_addr_subtotal.quote_id=quote_addr.quote_id",
                  array());
         if ($storeIds == '') {
-            $this->getSelect()->from("", array("subtotal" => "SUM(IFNULL(quote_addr_subtotal.{$attrFieldName}/e.store_to_base_rate, 0))"));
+            $this->getSelect()->from("", array("subtotal" => "SUM(IFNULL(quote_addr_subtotal.base_subtotal_with_discount/main_table.store_to_base_rate, 0))"));
         } else {
-            $this->getSelect()->from("", array("subtotal" => "SUM(IFNULL(quote_addr_subtotal.{$attrFieldName}, 0))"));
+            $this->getSelect()->from("", array("subtotal" => "SUM(IFNULL(quote_addr_subtotal.base_subtotal_with_discount, 0))"));
         }
+        $this->getSelect()->group('main_table.entity_id');
 
         return $this;
     }
@@ -87,7 +106,7 @@ class Mage_Reports_Model_Mysql4_Quote_Collection extends Mage_Sales_Model_Entity
         $countSelect->reset(Zend_Db_Select::LIMIT_OFFSET);
         $countSelect->reset(Zend_Db_Select::COLUMNS);
         $countSelect->reset(Zend_Db_Select::GROUP);
-        $countSelect->from("", "count(DISTINCT e.entity_id)");
+        $countSelect->from("", "count(DISTINCT main_table.entity_id)");
         $sql = $countSelect->__toString();
         return $sql;
     }

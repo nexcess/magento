@@ -22,7 +22,7 @@
 <config>
     <modules>
         <Mage_Core>
-             <version>0.8.5</version>
+             <version>0.8.8</version>
         </Mage_Core>
     </modules>
 
@@ -62,7 +62,6 @@
                 <layout><label>Layouts</label></layout>
                 <block_html><label>Blocks HTML output</label></block_html>
                 <translate><label>Translations</label></translate>
-                <pear><label>PEAR Channels and Packages</label></pear>
                 <collections><label>Collections Data</label></collections>
             </types>
         </cache>
@@ -172,12 +171,20 @@
         </trans_email>
 
         <web>
+            <routers> <!-- declare default routers-->
+                <admin><area>admin</area><class>Mage_Core_Controller_Varien_Router_Admin</class></admin>
+                <standard><area>frontend</area><class>Mage_Core_Controller_Varien_Router_Standard</class></standard>
+            </routers>
+            <url>
+                <use_store>0</use_store>
+            </url>
             <seo>
                 <use_rewrites>0</use_rewrites>
             </seo>
 
             <unsecure>
                 <base_url>{{base_url}}</base_url>
+                <base_web_url>{{unsecure_base_url}}</base_web_url>
                 <base_link_url>{{unsecure_base_url}}</base_link_url>
                 <base_js_url>{{unsecure_base_url}}js/</base_js_url>
                 <base_skin_url>{{unsecure_base_url}}skin/</base_skin_url>
@@ -186,6 +193,7 @@
 
             <secure>
                 <base_url>{{base_url}}</base_url>
+                <base_web_url>{{secure_base_url}}</base_web_url>
                 <base_link_url>{{secure_base_url}}</base_link_url>
                 <base_js_url>{{secure_base_url}}js/</base_js_url>
                 <base_skin_url>{{secure_base_url}}skin/</base_skin_url>
@@ -198,5 +206,25 @@
                 <cookie_lifetime>3600</cookie_lifetime>
             </cookie>
         </web>
+
+        <admin>
+            <startup>
+                <page>dashboard</page>
+            </startup>
+            <url>
+                <use_custom>0</use_custom>
+                <custom></custom>
+            </url>
+        </admin>
     </default>
+    <stores> <!-- declare routers for installation process -->
+        <default>
+            <web>
+                <routers>
+                    <admin><area>admin</area><class>Mage_Core_Controller_Varien_Router_Admin</class></admin>
+                    <standard><area>frontend</area><class>Mage_Core_Controller_Varien_Router_Standard</class></standard>
+                </routers>
+            </web>
+        </default>
+    </stores>
 </config>

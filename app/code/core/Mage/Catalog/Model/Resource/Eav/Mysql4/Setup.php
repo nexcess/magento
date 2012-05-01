@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author     Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity_Setup
 {
@@ -61,7 +62,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'unique'            => false,
                     ),
                     'is_active' => array(
-                        'type'              => 'static',
+                        'type'              => 'int',
                         'backend'           => '',
                         'frontend'          => '',
                         'label'             => 'Is Active',
@@ -473,7 +474,25 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'visible_on_front'  => false,
                         'unique'            => false,
                     ),
-
+                    'level' => array(
+                        'type'              => 'static',
+                        'backend'           => '',
+                        'frontend'          => '',
+                        'label'             => 'Level',
+                        'input'             => '',
+                        'class'             => '',
+                        'source'            => '',
+                        'global'            => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL,
+                        'visible'           => false,
+                        'required'          => false,
+                        'user_defined'      => false,
+                        'default'           => '',
+                        'searchable'        => false,
+                        'filterable'        => false,
+                        'comparable'        => false,
+                        'visible_on_front'  => false,
+                        'unique'            => false,
+                    ),
                 ),
             ),
             'catalog_product' => array(
@@ -581,7 +600,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'visible_on_front'  => false,
                         'visible_in_advanced_search' => true,
                         'unique'            => false,
-                        'apply_to'          => 'simple,configurable',
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
                     'special_price' => array(
                         'group'             => 'Prices',
@@ -602,7 +621,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'comparable'        => false,
                         'visible_on_front'  => false,
                         'unique'            => false,
-                        'apply_to'          => 'simple,configurable',
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
                     'special_from_date' => array(
                         'group'             => 'Prices',
@@ -623,7 +642,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'comparable'        => false,
                         'visible_on_front'  => false,
                         'unique'            => false,
-                        'apply_to'          => 'simple,configurable',
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
                     'special_to_date' => array(
                         'group'             => 'Prices',
@@ -644,7 +663,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'comparable'        => false,
                         'visible_on_front'  => false,
                         'unique'            => false,
-                        'apply_to'          => 'simple,configurable',
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
                     'cost' => array(
                         'group'             => 'Prices',
@@ -665,7 +684,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'comparable'        => false,
                         'visible_on_front'  => false,
                         'unique'            => false,
-                        'apply_to'          => 'simple,configurable',
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
                     'weight' => array(
                         'type'              => 'decimal',
@@ -884,7 +903,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'comparable'        => false,
                         'visible_on_front'  => false,
                         'unique'            => false,
-                        'apply_to'          => 'simple,configurable',
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
                     'color' => array(
                         'type'              => 'int',
@@ -1008,6 +1027,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'visible_on_front'  => false,
                         'visible_in_advanced_search' => true,
                         'unique'            => false,
+                        'apply_to'          => 'simple,configurable,virtual',
                     ),
 //                    'price_includes_tax' => array(
 //                        'group'             => 'Prices',
@@ -1220,6 +1240,27 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
                         'visible_on_front'  => false,
                         'unique'            => false,
                     ),
+                    'options_container' => array(
+                        'group'             => 'Design',
+                        'type'              => 'varchar',
+                        'backend'           => '',
+                        'frontend'          => '',
+                        'label'             => 'Display product options in',
+                        'input'             => 'select',
+                        'class'             => '',
+                        'source'            => 'catalog/entity_product_attribute_design_options_container',
+                        'global'            => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+                        'visible'           => true,
+                        'required'          => false,
+                        'user_defined'      => false,
+                        'default'           => 'container2',
+                        'searchable'        => false,
+                        'filterable'        => false,
+                        'comparable'        => false,
+                        'visible_on_front'  => false,
+                        'visible_in_advanced_search' => false,
+                        'unique'            => false,
+                    )
                 ),
             ),
         );
@@ -1298,6 +1339,31 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Setup extends Mage_Eav_Model_Entity
         }
 
         return $path;
+    }
+
+    /**
+     * Creates level values for categories and saves them
+     *
+     * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Setup
+     */
+    public function rebuildCategoryLevels()
+    {
+        $select = $this->getConnection()->select()
+            ->from($this->getTable('catalog/category_entity'));
+
+        $categories = $this->getConnection()->fetchAll($select);
+
+        foreach ($categories as $category) {
+            $level = count(explode('/', $category['path']))-1;
+            $this
+                ->getConnection()
+                ->update(
+                    $this->getTable('catalog/category_entity'),
+                    array('level' => $level),
+                    "entity_id = {$category['entity_id']}"
+                );
+        }
+        return $this;
     }
 
 }

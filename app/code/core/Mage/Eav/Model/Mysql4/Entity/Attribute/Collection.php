@@ -27,6 +27,12 @@
  */
 class Mage_Eav_Model_Mysql4_Entity_Attribute_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
 {
+    /**
+     * Add attribute set info flag
+     *
+     * @var boolean
+     */
+    protected $_addSetInfoFlag = false;
 
     /**
      * Enter description here...
@@ -254,6 +260,63 @@ class Mage_Eav_Model_Mysql4_Entity_Attribute_Collection extends Mage_Core_Model_
         $this->getSelect()
             ->where('main_table.frontend_input = ?', $frontendInputType);
         return $this;
+    }
+
+    public function addSetInfo($flag=true)
+    {
+        $this->_addSetInfoFlag = $flag;
+        return $this;
+    }
+
+    protected function _addSetInfo()
+    {
+        if ($this->_addSetInfoFlag) {
+            $attributeIds = array_keys($this->_items);
+            $attributeToSetInfo = array();
+
+            if (count($attributeIds) > 0) {
+                $select = $this->getConnection()->select()
+                    ->from(
+                        array('entity' => $this->getTable('entity_attribute')),
+                        array('attribute_id','attribute_set_id', 'attribute_group_id', 'sort_order')
+                    )
+                    ->joinLeft(
+                        array('group' => $this->getTable('attribute_group')),
+                        'entity.attribute_group_id=group.attribute_group_id',
+                        array('group_sort_order' => 'sort_order')
+                    )
+                    ->where('attribute_id IN (?)', $attributeIds);
+                $result = $this->getConnection()->fetchAll($select);
+
+                foreach ($result as $row) {
+                    $data = array(
+                        'group_id'      => $row['attribute_group_id'],
+                        'group_sort'    => $row['group_sort_order'],
+                        'sort'          => $row['sort_order']
+                    );
+                    $attributeToSetInfo[$row['attribute_id']][$row['attribute_set_id']] = $data;
+                }
+            }
+
+            foreach ($this->getItems() as $attribute) {
+                if (isset($attributeToSetInfo[$attribute->getId()])) {
+                    $setInfo = $attributeToSetInfo[$attribute->getId()];
+                } else {
+                    $setInfo = array();
+                }
+
+                $attribute->setAttributeSetInfo($setInfo);
+            }
+
+            unset($attributeToSetInfo);
+            unset($attributeIds);
+        }
+    }
+
+    protected function _afterLoad()
+    {
+        $this->_addSetInfo();
+        return parent::_afterLoad();
     }
 
 }

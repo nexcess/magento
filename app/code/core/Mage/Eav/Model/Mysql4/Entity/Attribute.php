@@ -289,7 +289,7 @@ class Mage_Eav_Model_Mysql4_Entity_Attribute extends Mage_Core_Model_Mysql4_Abst
 
                     $write->delete($optionValueTable, $write->quoteInto('option_id=?', $intOptionId));
                     foreach ($stores as $store) {
-                        if (!empty($values[$store->getId()])) {
+                        if (!empty($values[$store->getId()]) || $values[$store->getId()] == "0") {
                             $data = array(
                                 'option_id' => $intOptionId,
                                 'store_id'  => $store->getId(),
@@ -325,5 +325,23 @@ class Mage_Eav_Model_Mysql4_Entity_Attribute extends Mage_Core_Model_Mysql4_Abst
         }
         $valueCount = $read->fetchOne($select);
         return $valueCount;
+    }
+
+    /**
+     * Return attribute id
+     *
+     * @param string $entityType
+     * @param string $code
+     * @return int
+     */
+    public function getIdByCode($entityType, $code)
+    {
+        $select = $this->_getReadAdapter()->select()
+            ->from(array('a'=>$this->getTable('eav/attribute')), array('a.attribute_id'))
+            ->join(array('t'=>$this->getTable('eav/entity_type')), 'a.entity_type_id = t.entity_type_id', array())
+            ->where('t.entity_type_code = ?', $entityType)
+            ->where('a.attribute_code = ?', $code);
+
+        return $this->_getReadAdapter()->fetchOne($select);
     }
 }

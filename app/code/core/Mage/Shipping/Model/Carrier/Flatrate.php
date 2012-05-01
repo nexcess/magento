@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Shipping
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Shipping_Model_Carrier_Flatrate
     extends Mage_Shipping_Model_Carrier_Abstract
@@ -49,13 +50,21 @@ class Mage_Shipping_Model_Carrier_Flatrate
             $shippingPrice = $this->getConfigData('price');
         } elseif ($this->getConfigData('type') == 'I') { // per item
             $shippingPrice = $request->getPackageQty() * $this->getConfigData('price');
+
+            foreach ($request->getAllItems() as $item) {
+                if ($item->getFreeShipping()) {
+                    $shippingPrice -= $item->getQty() * $this->getConfigData('price');
+                }
+            }
         } else {
             $shippingPrice = false;
         }
 
+
+
         $shippingPrice = $this->getFinalPriceWithHandlingFee($shippingPrice);
 
-        if ($shippingPrice) {
+        if ($shippingPrice !== false) {
             $method = Mage::getModel('shipping/rate_result_method');
 
             $method->setCarrier('flatrate');
@@ -63,6 +72,10 @@ class Mage_Shipping_Model_Carrier_Flatrate
 
             $method->setMethod('flatrate');
             $method->setMethodTitle($this->getConfigData('name'));
+
+            if ($request->getFreeShipping() === true) {
+                $shippingPrice = '0.00';
+            }
 
             $method->setPrice($shippingPrice);
             $method->setCost($shippingPrice);

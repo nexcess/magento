@@ -22,12 +22,12 @@
 /**
  * @see Zend_Gdata_Extension
  */
-require_once 'Zend/Gdata/Extension.php';
+#require_once 'Zend/Gdata/Extension.php';
 
 /**
  * @see Zend_Gdata_Gapps
  */
-require_once 'Zend/Gdata/Gapps.php';
+#require_once 'Zend/Gdata/Gapps.php';
 
 /**
  * Represents the apps:login element used by the Apps data API. This 
@@ -208,7 +208,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
                 $this->_admin = false;
             }
             else {
-                require_once('Zend/Gdata/App/InvalidArgumentException.php');
+                #require_once('Zend/Gdata/App/InvalidArgumentException.php');
                 throw new Zend_Gdata_App_InvalidArgumentException("Expected 'true' or 'false' for apps:login#admin.");
             }
             break;
@@ -220,7 +220,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
                 $this->_agreedToTerms = false;
             }
             else {
-                require_once('Zend/Gdata/App/InvalidArgumentException.php');
+                #require_once('Zend/Gdata/App/InvalidArgumentException.php');
                 throw new Zend_Gdata_App_InvalidArgumentException("Expected 'true' or 'false' for apps:login#agreedToTerms.");
             }
             break;
@@ -232,7 +232,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
                 $this->_suspended = false;
             }
             else {
-                require_once('Zend/Gdata/App/InvalidArgumentException.php');
+                #require_once('Zend/Gdata/App/InvalidArgumentException.php');
                 throw new Zend_Gdata_App_InvalidArgumentException("Expected 'true' or 'false' for apps:login#suspended.");
             }
             break;
@@ -244,7 +244,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
                 $this->_changePasswordAtNextLogin = false;
             }
             else {
-                require_once('Zend/Gdata/App/InvalidArgumentException.php');
+                #require_once('Zend/Gdata/App/InvalidArgumentException.php');
                 throw new Zend_Gdata_App_InvalidArgumentException("Expected 'true' or 'false' for apps:login#changePasswordAtNextLogin.");
             }
             break;
@@ -341,7 +341,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function getAdmin()
     {
         if (!(is_bool($this->_admin))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for admin.');
         }
         return $this->_admin;
@@ -358,7 +358,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function setAdmin($value)
     {
         if (!(is_bool($value))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for $value.');
         }
         $this->_admin = $value;
@@ -375,7 +375,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function getAgreedToTerms()
     {
         if (!(is_bool($this->_agreedToTerms))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for agreedToTerms.');
         }
         return $this->_agreedToTerms;
@@ -392,7 +392,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function setAgreedToTerms($value)
     {
         if (!(is_bool($value))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for $value.');
         }
         $this->_agreedToTerms = $value;
@@ -409,7 +409,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function getSuspended()
     {
         if (!(is_bool($this->_suspended))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for suspended.');
         }
         return $this->_suspended;
@@ -426,7 +426,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function setSuspended($value)
     {
         if (!(is_bool($value))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for $value.');
         }
         $this->_suspended = $value;
@@ -443,7 +443,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function getChangePasswordAtNextLogin()
     {
         if (!(is_bool($this->_changePasswordAtNextLogin))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for changePasswordAtNextLogin.');
         }
         return $this->_changePasswordAtNextLogin;
@@ -461,7 +461,7 @@ class Zend_Gdata_Gapps_Extension_Login extends Zend_Gdata_Extension
     public function setChangePasswordAtNextLogin($value)
     {
         if (!(is_bool($value))) {
-            require_once('Zend/Gdata/App/InvalidArgumentException.php');
+            #require_once('Zend/Gdata/App/InvalidArgumentException.php');
             throw new Zend_Gdata_App_InvalidArgumentException('Expected boolean for $value.');
         }
         $this->_changePasswordAtNextLogin = $value;

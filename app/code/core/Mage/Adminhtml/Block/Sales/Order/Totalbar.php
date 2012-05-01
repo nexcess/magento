@@ -23,16 +23,30 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Sales_Order_Totalbar extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
     protected $_totals = array();
 
-    protected function _construct()
+    /**
+     * Retrieve required options from parent
+     */
+    protected function _beforeToHtml()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/totalbar.phtml');
+        if (!$this->getParentBlock()) {
+            Mage::throwException(Mage::helper('adminhtml')->__('Invalid parrent block for this block'));
+        }
+        $this->setOrder($this->getParentBlock()->getOrder());
+        $this->setSource($this->getParentBlock()->getSource());
+        $this->setCurrency($this->getParentBlock()->getOrder()->getOrderCurrency());
+
+        foreach ($this->getParentBlock()->getOrderTotalbarData() as $v) {
+            $this->addTotal($v[0], $v[1], $v[2]);
+        }
+
+        parent::_beforeToHtml();
     }
 
     protected function getTotals()
@@ -40,7 +54,7 @@ class Mage_Adminhtml_Block_Sales_Order_Totalbar extends Mage_Adminhtml_Block_Sal
         return $this->_totals;
     }
 
-    public function addTotal($label, $value, $grand=false)
+    public function addTotal($label, $value, $grand = false)
     {
         $this->_totals[] = array(
             'label' => $label,

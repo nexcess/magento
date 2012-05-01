@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Sales_Block_Reorder_Sidebar extends Mage_Core_Block_Template
 {
@@ -31,7 +32,7 @@ class Mage_Sales_Block_Reorder_Sidebar extends Mage_Core_Block_Template
     {
         parent::__construct();
 
-        if (Mage::getSingleton('customer/session')->getCustomer()->getId()) {
+        if (Mage::getSingleton('customer/session')->isLoggedIn()) {
     	    $this->setTemplate('sales/order/history.phtml');
 
             $orders = Mage::getResourceModel('sales/order_collection')
@@ -45,43 +46,17 @@ class Mage_Sales_Block_Reorder_Sidebar extends Mage_Core_Block_Template
         }
     }
 
-    public function _prepareLayout()
-    {
-        parent::_prepareLayout();
-//        $this->getLayout()->getBlock('root')
-//            ->setHeaderTitle(Mage::helper('sales')->__('My Orders'));
-    }
-
     public function getLastOrder()
     {
         foreach ($this->getOrders() as $order) {
-//            $order =  Mage::getModel('sales/order')->load($order->getId());
-//
-//            $collection = Mage::getModel('sales/order_item')->getCollection()
-//                ->setOrderFilter($order->getId())
-//                ->setPageSize(2)
-//                ->load();
-//            var_dump($collection->getItems());
-//            foreach ($order->getItemsCollection() as $item) {
-//                $products[] = $item->getProductId();
-//            }
-//            $productsCollection = Mage::getModel('catalog/product')
-//                ->getCollection()
-//                ->addIdFilter($products)
-//                ->load();
-//            foreach ($order->getItemsCollection() as $item) {
-//                $item->setProduct($productsCollection->getItemById($item->getProductId()));
-//            }
             return $order;
         }
         return false;
     }
-//    public function loadItem($item){
-//        return Mage::getModel('catalog/product')->load($item->getId());
-//    }
+
     protected function _toHtml()
     {
-        if (Mage::helper('sales/reorder')->isAllow() && Mage::getSingleton('customer/session')->getCustomer()->getId()) {
+        if (Mage::helper('sales/reorder')->isAllow() && Mage::getSingleton('customer/session')->isLoggedIn()) {
             return parent::_toHtml();
         }
         return '';

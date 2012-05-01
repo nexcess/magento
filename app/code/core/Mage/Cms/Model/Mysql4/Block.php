@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Cms
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Cms_Model_Mysql4_Block extends Mage_Core_Model_Mysql4_Abstract
@@ -45,9 +46,9 @@ class Mage_Cms_Model_Mysql4_Block extends Mage_Core_Model_Mysql4_Abstract
         }
 
         if (! $object->getId()) {
-            $object->setCreationTime(now());
+            $object->setCreationTime(Mage::getSingleton('core/date')->gmtDate());
         }
-        $object->setUpdateTime(now());
+        $object->setUpdateTime(Mage::getSingleton('core/date')->gmtDate());
         return $this;
     }
 

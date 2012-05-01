@@ -23,19 +23,15 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_View_History extends Mage_Adminhtml_Block_Template
 {
-    protected function _construct()
-    {
-        $this->setTemplate('sales/order/view/history.phtml');
-    }
-
     protected function _prepareLayout()
     {
         $onclick = "submitAndReloadArea($('order_history_block').parentNode, '".$this->getSubmitUrl()."')";
         $button = $this->getLayout()->createBlock('adminhtml/widget_button')
-            ->addData(array(
+            ->setData(array(
                 'label'   => Mage::helper('sales')->__('Submit Comment'),
                 'class'   => 'save',
                 'onclick' => $onclick

@@ -38,28 +38,46 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <backorders translate="label">
-                            <label>Backorders</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>cataloginventory/source_backorders</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>0</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </backorders>
-                        <can_subtract translate="label">
-                            <label>Decrease Stock When Order is Placed</label>
+                        <manage_stock translate="label">
+                            <label>Manage Stock</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
+                        </manage_stock>
+                        <can_subtract translate="label">
+                            <label>Decrease Stock When Order is Placed</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
                         </can_subtract>
+                        <can_back_in_stock translate="label">
+                            <label>Set Items' Status to be In Stock When Order is Cancelled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </can_back_in_stock>
+                        <backorders translate="label">
+                            <label>Backorders</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>cataloginventory/source_backorders</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </backorders>
                         <max_sale_qty translate="label">
                             <label>Maximum Qty Allowed in Shopping Cart</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -67,7 +85,7 @@
                         <min_qty translate="label">
                             <label>Minimum Qty for Items' Status to be In Stock</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -75,7 +93,7 @@
                         <min_sale_qty translate="label">
                             <label>Minimum Qty Allowed in Shopping Cart</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -83,7 +101,7 @@
                        <notify_stock_qty translate="label">
                             <label>Notify for Quantity Below</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>

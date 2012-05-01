@@ -151,6 +151,7 @@ class Mage_Paygate_Model_Authorizenet extends Mage_Payment_Model_Method_Cc
     /**
      * void
      *
+ * @author      Magento Core Team <core@magentocommerce.com>
      * @access public
      * @param string $payment Varien_Object object
      * @return Mage_Payment_Model_Abstract
@@ -158,9 +159,10 @@ class Mage_Paygate_Model_Authorizenet extends Mage_Payment_Model_Method_Cc
     public function void(Varien_Object $payment)
     {
         $error = false;
-        if($payment->getCcTransId()){
+        if($payment->getVoidTransactionId()){
             $payment->setAnetTransType(self::REQUEST_TYPE_VOID);
             $request = $this->_buildRequest($payment);
+						$request->setXTransId($payment->getVoidTransactionId());
             $result = $this->_postRequest($request);
             if($result->getResponseCode()==self::RESPONSE_CODE_APPROVED){
                  $payment->setStatus(self::STATUS_SUCCESS );
@@ -230,7 +232,8 @@ class Mage_Paygate_Model_Authorizenet extends Mage_Payment_Model_Method_Cc
             ->setXVersion(3.1)
             ->setXDelimData('True')
             ->setXDelimChar(self::RESPONSE_DELIM_CHAR)
-            ->setXRelayResponse('False');
+            ->setXRelayResponse('False')
+            ->setXInvoiceNum($order->getId());
 
         $request->setXTestRequest($this->getConfigData('test') ? 'TRUE' : 'FALSE');
 
@@ -291,8 +294,8 @@ class Mage_Paygate_Model_Authorizenet extends Mage_Payment_Model_Method_Cc
             }
 
             $request->setXPoNum($payment->getPoNumber())
-                ->setXTax($shipping->getTaxAmount())
-                ->setXFreight($shipping->getShippingAmount());
+                ->setXTax($order->getTaxAmount())
+                ->setXFreight($order->getShippingAmount());
         }
 
         switch ($payment->getAnetTransMethod()) {
@@ -369,21 +372,27 @@ class Mage_Paygate_Model_Authorizenet extends Mage_Payment_Model_Method_Cc
 
         $r = explode(self::RESPONSE_DELIM_CHAR, $responseBody);
 
-        $result->setResponseCode((int)str_replace('"','',$r[0]))
-            ->setResponseSubcode((int)str_replace('"','',$r[1]))
-            ->setResponseReasonCode((int)str_replace('"','',$r[2]))
-            ->setResponseReasonText($r[3])
-            ->setApprovalCode($r[4])
-            ->setAvsResultCode($r[5])
-            ->setTransactionId($r[6])
-            ->setInvoiceNumber($r[7])
-            ->setDescription($r[8])
-            ->setAmount($r[9])
-            ->setMethod($r[10])
-            ->setTransactionType($r[11])
-            ->setCustomerId($r[12])
-            ->setMd5Hash($r[37])
-            ->setCardCodeResponseCode($r[39]);
+        if ($r) {
+            $result->setResponseCode((int)str_replace('"','',$r[0]))
+                ->setResponseSubcode((int)str_replace('"','',$r[1]))
+                ->setResponseReasonCode((int)str_replace('"','',$r[2]))
+                ->setResponseReasonText($r[3])
+                ->setApprovalCode($r[4])
+                ->setAvsResultCode($r[5])
+                ->setTransactionId($r[6])
+                ->setInvoiceNumber($r[7])
+                ->setDescription($r[8])
+                ->setAmount($r[9])
+                ->setMethod($r[10])
+                ->setTransactionType($r[11])
+                ->setCustomerId($r[12])
+                ->setMd5Hash($r[37])
+                ->setCardCodeResponseCode($r[39]);
+        } else {
+             Mage::throwException(
+                Mage::helper('paygate')->__('Error in payment gateway')
+            );
+        }
 
         if (!empty($debug)) {
             $debug

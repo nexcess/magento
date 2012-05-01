@@ -21,7 +21,7 @@
 
 
 /** Zend_Controller_Router_Interface */
-require_once 'Zend/Controller/Router/Interface.php';
+#require_once 'Zend/Controller/Router/Interface.php';
 
 /**
  * Simple first implementation of a router, to be replaced
@@ -150,13 +150,13 @@ abstract class Zend_Controller_Router_Abstract implements Zend_Controller_Router
         }
 
         if (class_exists('Zend_Controller_Front', false)) {
-            require_once 'Zend/Controller/Front.php';
+            #require_once 'Zend/Controller/Front.php';
             $this->_frontController = Zend_Controller_Front::getInstance();
             return $this->_frontController;
         }
 
         // Throw exception in all other cases
-        require_once 'Zend/Controller/Router/Exception.php';
+        #require_once 'Zend/Controller/Router/Exception.php';
         throw new Zend_Controller_Router_Exception('Front controller class has not been loaded');
     }
 

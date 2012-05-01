@@ -42,5 +42,6 @@
                 </connection>
             </default_setup>
          </resources>
+         <session_save>{{session_save}}</session_save>
      </global>
 </config>

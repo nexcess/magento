@@ -18,10 +18,10 @@
  */
 
 /** Zend_Memory_Exception */
-require_once 'Zend/Memory/Exception.php';
+#require_once 'Zend/Memory/Exception.php';
 
 /** Zend_Memory_Container */
-require_once 'Zend/Memory/Container.php';
+#require_once 'Zend/Memory/Container.php';
 
 
 /**

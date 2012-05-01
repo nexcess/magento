@@ -22,7 +22,7 @@
 <config>
     <report>
         <!--
-            "action" can be set to "print" to show exception on scrip and "email"
+            "action" can be set to "print" to show exception on screen and "email"
             to send exception on specified email
         -->
         <action>print</action>

@@ -23,6 +23,7 @@
  *
  * @category   Varien
  * @package    Varien_Image
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Image
 {
@@ -117,15 +118,41 @@ class Varien_Image
     /**
      * Resize an image
      *
-     * @param int $width. Default value is NULL
-     * @param int $height. Default value is NULL
+     * @param int $width
+     * @param int $height
      * @access public
      * @return void
      */
-    public function resize($width=null, $height=null)
+    public function resize($width, $height = null)
     {
         $this->_getAdapter()->resize($width, $height);
     }
+
+    public function keepAspectRatio($value)
+    {
+        return $this->_getAdapter()->keepAspectRatio($value);
+    }
+
+    public function keepFrame($value)
+    {
+        return $this->_getAdapter()->keepFrame($value);
+    }
+
+    public function keepTransparency($value)
+    {
+        return $this->_getAdapter()->keepTransparency($value);
+    }
+
+    public function constrainOnly($value)
+    {
+        return $this->_getAdapter()->constrainOnly($value);
+    }
+
+    public function backgroundColor($value)
+    {
+        return $this->_getAdapter()->backgroundColor($value);
+    }
+
 
     /**
      * Adds watermark to our image.

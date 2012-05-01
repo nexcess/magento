@@ -68,6 +68,8 @@ EOT;
 EOT;
         $weightUnit = 'LB';
         foreach ($this->getQuote()->getAllItems() as $item) {
+            $taxClass = ($item->getTaxClassId() == 0 ? 'none' : $item->getTaxClassId());
+            $weight = (float) $item->getWeight();
             $digital = $item->getIsVirtual() ? 'true' : 'false';
             $xml .= <<<EOT
             <item>
@@ -76,8 +78,8 @@ EOT;
                 <item-description><![CDATA[{$item->getDescription()}]]></item-description>
                 <unit-price currency="{$this->getCurrency()}">{$item->getBaseCalculationPrice()}</unit-price>
                 <quantity>{$item->getQty()}</quantity>
-                <item-weight unit="{$weightUnit}" value="{$item->getWeight()}" />
-                <tax-table-selector>{$item->getTaxClassId()}</tax-table-selector>
+                <item-weight unit="{$weightUnit}" value="{$weight}" />
+                <tax-table-selector>{$taxClass}</tax-table-selector>
                 {$this->_getDigitalContentXml($item)}
                 {$this->_getMerchantPrivateItemDataXml($item)}
             </item>
@@ -85,7 +87,9 @@ EOT;
 EOT;
         }
 
-        if ($discount = (float)$this->getQuote()->getShippingAddress()->getBaseDiscountAmount()) {
+        $shippingDiscount = (float)$this->getQuote()->getShippingAddress()->getBaseDiscountAmount();
+        $billingDiscount = (float)$this->getQuote()->getBillingAddress()->getBaseDiscountAmount();
+        if ($discount = $billingDiscount + $shippingDiscount) {
             $discount = -$discount;
             $xml .= <<<EOT
             <item>
@@ -94,7 +98,7 @@ EOT;
                 <item-description>{$this->__('Virtual item to reflect discount total')}</item-description>
                 <unit-price currency="{$this->getCurrency()}">{$discount}</unit-price>
                 <quantity>1</quantity>
-                <item-weight unit="{$weightUnit}" value="0.01" />
+                <item-weight unit="{$weightUnit}" value="0.00" />
                 <tax-table-selector>none</tax-table-selector>
             </item>
 
@@ -108,8 +112,12 @@ EOT;
 
     protected function _getDigitalContentXml($item)
     {
-        $xml = <<<EOT
-EOT;
+        return '';
+        if (!$item->getIsVirtual()) {
+            return '';
+        }
+        $xml = '<digital-content><email-delivery>true</email-delivery></digital-content>';
+
         return $xml;
     }
 
@@ -117,7 +125,7 @@ EOT;
     {
         $xml = <<<EOT
             <merchant-private-item-data>
-                <quote-item-id>{$item->getEntityId()}</quote-item-id>
+                <quote-item-id>{$item->getId()}</quote-item-id>
             </merchant-private-item-data>
 EOT;
         return $xml;
@@ -148,7 +156,7 @@ EOT;
             {$this->_getRequestBuyerPhoneNumberXml()}
             {$this->_getMerchantCalculationsXml()}
             {$this->_getShippingMethodsXml()}
-            {$this->_getTaxTablesXml()}
+            {$this->_getAllTaxTablesXml()}
             {$this->_getParameterizedUrlsXml()}
             {$this->_getPlatformIdXml()}
             {$this->_getAnalyticsDataXml()}
@@ -178,6 +186,10 @@ EOT;
 
     protected function _getShippingMethodsXml()
     {
+        if ($this->_isOrderVirtual()) {
+            return '';
+        }
+
         $xml = <<<EOT
             <shipping-methods>
                 {$this->_getCarrierCalculatedShippingXml()}
@@ -216,6 +228,8 @@ EOT;
         $length = Mage::getStoreConfig('google/checkout_shipping_carrier/default_length');
 
         $addressCategory = Mage::getStoreConfig('google/checkout_shipping_carrier/address_category');
+
+        $defPrice = Mage::helper('tax')->getShippingPrice($defPrice, false, false);
 
 //      $taxRate = $this->_getShippingTaxRate();
 //      <additional-variable-charge-percent>{$taxRate}</additional-variable-charge-percent>
@@ -274,8 +288,10 @@ EOT;
         for ($xml='', $i=1; $i<=3; $i++) {
             $title = Mage::getStoreConfig('google/checkout_shipping_flatrate/title_'.$i);
             $price = Mage::getStoreConfig('google/checkout_shipping_flatrate/price_'.$i);
+            $price = number_format($price, 2, '.','');
+            $price = Mage::helper('tax')->getShippingPrice($price, false, false);
 
-            if (empty($title) || empty($price) && '0'!==$price) {
+            if (empty($title) || $price <= 0) {
                 continue;
             }
 
@@ -323,6 +339,7 @@ EOT;
                 }
 
                 $defaultPrice = $methods['price'][$i];
+                $defaultPrice = Mage::helper('tax')->getShippingPrice($defaultPrice, false, false);
 
                 $xml .= <<<EOT
                     <merchant-calculated-shipping name="{$method}">
@@ -343,6 +360,7 @@ EOT;
 
         $title = Mage::getStoreConfig('google/checkout_shipping_pickup/title');
         $price = Mage::getStoreConfig('google/checkout_shipping_pickup/price');
+        $price = Mage::helper('tax')->getShippingPrice($price, false, false);
 
         $xml = <<<EOT
                 <pickup name="{$title}">
@@ -352,38 +370,144 @@ EOT;
         return $xml;
     }
 
-    protected function _getShippingTaxRate()
+    protected function _getTaxTableXml($rules, $type)
     {
-        $shippingTaxRate = 0;
-        if ($shippingTaxClass = Mage::getStoreConfig('sales/tax/shipping_tax_class')) {
-            if (Mage::getStoreConfig('sales/tax/based_on')==='origin') {
-                $shippingTaxRate = Mage::helper('tax')->getCatalogTaxRate($shippingTaxClass);
-                $shippingTaxed = 'true';
+        $xml = '';
+        if (is_array($rules)) {
+            foreach ($rules as $group=>$taxRates) {
+                if ($type != 'default') {
+                    $nameAttribute = "name=\"{$group}\"";
+                    $standaloneAttribute = "standalone=\"true\"";
+                    $rulesTag = "{$type}-tax-rules";
+                    $shippingTaxed = false;
+                } else {
+                    $nameAttribute = '';
+                    $standaloneAttribute = '';
+                    $rulesTag = "tax-rules";
+                    $shippingTaxed = true;
+                }
+
+
+                $xml .= <<<EOT
+                        <{$type}-tax-table {$nameAttribute} {$standaloneAttribute}>
+                            <{$rulesTag}>
+EOT;
+                if (is_array($taxRates)) {
+                    foreach ($taxRates as $rate) {
+                        $xml .= <<<EOT
+                                    <{$type}-tax-rule>
+                                        <tax-area>
+
+EOT;
+                        if ($rate['country']==='US') {
+                            if (!empty($rate['postcode']) && $rate['postcode']!=='*') {
+                                $xml .= <<<EOT
+                                            <us-zip-area>
+                                                <zip-pattern>{$rate['postcode']}</zip-pattern>
+                                            </us-zip-area>
+
+EOT;
+                            } elseif (!empty($rate['state'])) {
+                                $xml .= <<<EOT
+                                            <us-state-area>
+                                                <state>{$rate['state']}</state>
+                                            </us-state-area>
+
+EOT;
+                            } else {
+                                $xml .= <<<EOT
+                                            <us-zip-area>
+                                                <zip-pattern>*</zip-pattern>
+                                            </us-zip-area>
+
+EOT;
+                            }
+                        } else {
+                            if (!empty($rate['postcode'])) {
+                                $xml .= <<<EOT
+                                            <postal-area>
+                                                <country-code>{$rate['country']}</country-code>
+EOT;
+                                if (!empty($rate['postcode']) && $rate['postcode']!=='*') {
+                                    $xml .= <<<EOT
+                                                <postal-code-pattern>{$rate['postcode']}</postal-code-pattern>
+
+EOT;
+                                }
+                                $xml .= <<<EOT
+                                            </postal-area>
+
+EOT;
+                            }
+                        }
+                        $xml .= <<<EOT
+                                        </tax-area>
+                                        <rate>{$rate['value']}</rate>
+EOT;
+                        if ($shippingTaxed) {
+                            $xml .= '<shipping-taxed>true</shipping-taxed>';
+                        }
+                        $xml .= "</{$type}-tax-rule>";
+                    }
+
+                } else {
+                    $taxRate = $taxRates/100;
+                    $xml .= <<<EOT
+                                <{$type}-tax-rule>
+                                    <tax-area>
+                                        <world-area/>
+                                    </tax-area>
+                                    <rate>{$taxRate}</rate>
+EOT;
+                        if ($shippingTaxed) {
+                            $xml .= '<shipping-taxed>true</shipping-taxed>';
+                        }
+                    $xml .= "</{$type}-tax-rule>";
+                }
+
+                $xml .= <<<EOT
+                            </$rulesTag>
+                        </{$type}-tax-table>
+EOT;
+            }
+        } else {
+            if (is_numeric($rules)) {
+                $taxRate = $rules/100;
+
+                $xml .= <<<EOT
+                        <{$type}-tax-table>
+                            <{$type}-tax-rules>
+                                <{$type}-tax-rule>
+                                    <tax-area>
+                                        <world-area/>
+                                    </tax-area>
+                                    <rate>{$taxRate}</rate>
+                                    <shipping-taxed>true</shipping-taxed>
+                                </{$type}-tax-rule>
+                            </{$type}-tax-rules>
+                        </{$type}-tax-table>
+EOT;
             }
         }
-        return $shippingTaxRate;
+
+        return $xml;
     }
 
-    protected function _getTaxTablesXml()
+    protected function _getAllTaxTablesXml()
     {
-        $shippingTaxRate = $this->_getShippingTaxRate()/100;
-        $shippingTaxed = $shippingTaxRate>0 ? 'true' : 'false';
-
         $xml = <<<EOT
             <tax-tables merchant-calculated="true">
-                <default-tax-table>
+                {$this->_getTaxTableXml($this->_getShippingTaxRules(), 'default')}
+
+                <!-- default-tax-table>
                     <tax-rules>
                         <default-tax-rule>
-                            <tax-area>
-                                <world-area/>
-                            </tax-area>
-                            <rate>{$shippingTaxRate}</rate>
-                            <shipping-taxed>{$shippingTaxed}</shipping-taxed>
                         </default-tax-rule>
                     </tax-rules>
-                </default-tax-table>
+                </default-tax-table -->
+
                 <alternate-tax-tables>
-                    <alternate-tax-table name="none" standalone="false">
+                    <alternate-tax-table name="none" standalone="true">
                         <alternate-tax-rules>
                             <alternate-tax-rule>
                                 <tax-area>
@@ -393,102 +517,59 @@ EOT;
                             </alternate-tax-rule>
                         </alternate-tax-rules>
                     </alternate-tax-table>
-
-EOT;
-        foreach ($this->_getTaxRules() as $group=>$taxRates) {
-            $xml .= <<<EOT
-                    <alternate-tax-table name="{$group}" standalone="false">
-                        <alternate-tax-rules>
-
-EOT;
-            foreach ($taxRates as $rate) {
-                $shipping = !empty($rate['tax_shipping']) ? 'true' : 'false';
-
-                $xml .= <<<EOT
-                            <alternate-tax-rule>
-                                <tax-area>
-
-EOT;
-                if ($rate['country']==='US') {
-                    if (!empty($rate['postcode']) && $rate['postcode']!=='*') {
-                        $xml .= <<<EOT
-                                    <us-zip-area>
-                                        <zip-pattern>{$rate['postcode']}</zip-pattern>
-                                    </us-zip-area>
-
-EOT;
-                    } elseif (!empty($rate['state'])) {
-                        $xml .= <<<EOT
-                                    <us-state-area>
-                                        <state>{$rate['state']}</state>
-                                    </us-state-area>
-
-EOT;
-                    } else {
-                        $xml .= <<<EOT
-                                    <us-zip-area>
-                                        <zip-pattern>*</zip-pattern>
-                                    </us-zip-area>
-
-EOT;
-                    }
-                } else {
-                    if (!empty($rate['postcode'])) {
-                        $xml .= <<<EOT
-                                    <postal-area>
-                                        <country-code>{$rate['country']}</country-code>
-EOT;
-                        if (!empty($rate['postcode']) && $rate['postcode']!=='*') {
-                            $xml .= <<<EOT
-                                        <postal-code-pattern>{$rate['postcode']}</postal-code-pattern>
-
-EOT;
-                        }
-                        $xml .= <<<EOT
-                                    </postal-area>
-
-EOT;
-                    }
-                }
-                $xml .= <<<EOT
-                                </tax-area>
-                                <rate>{$rate['value']}</rate>
-                            </alternate-tax-rule>
-
-EOT;
-            }
-            $xml .= <<<EOT
-                        </alternate-tax-rules>
-                    </alternate-tax-table>
-
-EOT;
-        }
-
-        $xml .= <<<EOT
+                    {$this->_getTaxTableXml($this->_getTaxRules(), 'alternate')}
                 </alternate-tax-tables>
             </tax-tables>
-
 EOT;
         return $xml;
     }
 
-    protected function _getTaxRules()
+    protected function _getCustomerTaxClass()
     {
         $customerGroup = $this->getQuote()->getCustomerGroupId();
         if (!$customerGroup) {
             $customerGroup = Mage::getStoreConfig('customer/create_account/default_group', $this->getQuote()->getStoreId());
         }
-        $customerTaxClass = Mage::getModel('customer/group')->load($customerGroup)->getTaxClassId();
+        return Mage::getModel('customer/group')->load($customerGroup)->getTaxClassId();
+    }
 
-        $rulesArr = Mage::getResourceModel('googlecheckout/tax')
-            ->fetchRuleRatesForCustomerTaxClass($customerTaxClass);
+    protected function _getShippingTaxRules()
+    {
+        $customerTaxClass = $this->_getCustomerTaxClass();
+        if ($shippingTaxClass = Mage::getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_SHIPPING_TAX_CLASS)) {
+            if (Mage::helper('tax')->getTaxBasedOn() == 'origin') {
+                $request = Mage::getSingleton('tax/calculation')->getRateRequest();
+                $request
+                    ->setCustomerClassId($customerTaxClass)
+                    ->setProductClassId($shippingTaxClass);
 
-        $rules = array();
-        foreach ($rulesArr as $rule) {
-            $rules[$rule['tax_product_class_id']][] = $rule;
+                return Mage::getSingleton('tax/calculation')->getRate($request);
+            }
+            $customerRules = Mage::getSingleton('tax/calculation')->getRatesByCustomerAndProductTaxClasses($customerTaxClass, $shippingTaxClass);
+            $rules = array();
+            foreach ($customerRules as $rule) {
+                $rules[$rule['product_class']][] = $rule;
+            }
+            return $rules;
+        } else {
+            return array();
         }
+    }
 
-        return $rules;
+    protected function _getTaxRules()
+    {
+        $customerTaxClass = $this->_getCustomerTaxClass();
+        if (Mage::helper('tax')->getTaxBasedOn() == 'origin') {
+            $request = Mage::getSingleton('tax/calculation')->getRateRequest();
+            return Mage::getSingleton('tax/calculation')->getRatesForAllProductTaxClasses($request->setCustomerClassId($customerTaxClass));
+        } else {
+            $customerRules = Mage::getSingleton('tax/calculation')->getRatesByCustomerTaxClass($customerTaxClass);
+            $rules = array();
+            foreach ($customerRules as $rule) {
+                $rules[$rule['product_class']][] = $rule;
+            }
+            return $rules;
+        }
     }
 
     protected function _getRequestInitialAuthDetailsXml()
@@ -552,5 +633,17 @@ EOT;
     protected function _getParameterizedUrl()
     {
         return Mage::getUrl('googlecheckout/api/beacon');
+    }
+
+    protected function _isOrderVirtual()
+    {
+        $orderIsVirual = true;
+        foreach ($this->getQuote()->getAllItems() as $item) {
+            if (!$item->getIsVirtual()) {
+                $orderIsVirual = false;
+                break;
+            }
+        }
+        return $orderIsVirual;
     }
 }

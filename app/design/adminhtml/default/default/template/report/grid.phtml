@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Template for Mage_Block_Adminhtml_Report_Grid
  *
@@ -53,15 +53,25 @@ $numColumns = sizeof($this->getColumns());
             <tr>
         <?php if($this->getDateFilterVisibility()): ?>
             <td class="a-left filter">
-                <?php echo $this->__('From') ?>:&nbsp;<input class="input-text no-changes" type="text" id="period_date_from" name="report_from" value="<?php echo $this->getFilter('report_from') ?>" style="width:5em" /> <img title="<?php echo $this->__('Select Date') ?>" id="period_date_from_trig" alt="<?php echo $this->__('Select Date') ?>" src="<?php echo $this->getSkinUrl('images/grid-cal.gif') ?>" class="v-middle"/>
-                &nbsp;<?php echo $this->__('To') ?>:&nbsp;<input  class="input-text no-changes" type="text" id="period_date_to" name="report_to"  value="<?php echo $this->getFilter('report_to') ?>" style="width:5em" /> <img class="v-middle" title="<?php echo $this->__('Select Date') ?>"id="period_date_to_trig" alt="<?php echo $this->__('Select Date') ?>" src="<?php echo $this->getSkinUrl('images/grid-cal.gif') ?>"/>
-                &nbsp;<?php echo $this->__('Show by') ?>:
-                <select name="report_period" id="report_period" style="width:6em;">
-                <?php foreach ($this->getPeriods() as $_value=>$_label): ?>
-                    <option value="<?php echo $_value ?>" <?php if($this->getFilter('report_period')==$_value): ?> selected<?php endif; ?>><?php echo $_label ?></option>
-                <?php endforeach; ?>
-                </select>
-                <?php echo $this->getRefreshButtonHtml() ?>
+                <div class="f-left">
+                    <div><?php echo $this->__('From') ?>:&nbsp;<input class="input-text no-changes required-entry validate-date" type="text" id="period_date_from" name="report_from" value="<?php echo $this->getFilter('report_from') ?>" style="width:5em" /> <img title="<?php echo $this->__('Select Date') ?>" id="period_date_from_trig" alt="<?php echo $this->__('Select Date') ?>" src="<?php echo $this->getSkinUrl('images/grid-cal.gif') ?>" class="v-middle"/>&nbsp;&nbsp;</div>
+                    <div id="period_date_from_advaice"></div>
+                </div>
+
+                <div class="f-left">
+                    <div><?php echo $this->__('To') ?>:&nbsp;<input  class="input-text no-changes required-entry validate-date" type="text" id="period_date_to" name="report_to"  value="<?php echo $this->getFilter('report_to') ?>" style="width:5em" /> <img class="v-middle" title="<?php echo $this->__('Select Date') ?>"id="period_date_to_trig" alt="<?php echo $this->__('Select Date') ?>" src="<?php echo $this->getSkinUrl('images/grid-cal.gif') ?>"/>&nbsp;&nbsp;</div>
+                    <div id="period_date_to_advaice"></div>
+                </div>
+
+                <div class="f-left">
+                    <?php echo $this->__('Show by') ?>:
+                    <select name="report_period" id="report_period" style="width:6em;">
+                    <?php foreach ($this->getPeriods() as $_value=>$_label): ?>
+                        <option value="<?php echo $_value ?>" <?php if($this->getFilter('report_period')==$_value): ?> selected<?php endif; ?>><?php echo $_label ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <?php echo $this->getRefreshButtonHtml() ?>
+                </div>
                 <script type="text/javascript">
                 <!--
                 Calendar.setup({
@@ -169,9 +179,28 @@ $numColumns = sizeof($this->getColumns());
     </div>
 <?php if($this->canDisplayContainer()): ?>
 </div>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
+//<![CDATA[
     <?php echo $this->getJsObjectName() ?> = new varienGrid('<?php echo $this->getId() ?>', '<?php echo $this->getGridUrl() ?>', '<?php echo $this->getVarNamePage() ?>', '<?php echo $this->getVarNameSort() ?>', '<?php echo $this->getVarNameDir() ?>', '<?php echo $this->getVarNameFilter() ?>');
     <?php echo $this->getJsObjectName() ?>.useAjax = '<?php echo $this->getUseAjax() ?>';
+    <?php if($this->getDateFilterVisibility()):?>
+    <?php echo $this->getJsObjectName() ?>.doFilterCallback = validateFilterDate;
+    var period_date_from = $('period_date_from');
+    var period_date_to   = $('period_date_to');
+    period_date_from.advaiceContainer = $('period_date_from_advaice');
+    period_date_to.advaiceContainer = $('period_date_to_advaice');
+
+    function validateFilterDate()
+    {
+        if (period_date_from && period_date_to) {
+            return Validation.validate(period_date_from) && Validation.validate(period_date_to);
+        }
+        else {
+            return true;
+        }
+    }
+    <?php endif;?>
+//]]>
 </script>
 <?php endif; ?>
 <?php endif; ?>

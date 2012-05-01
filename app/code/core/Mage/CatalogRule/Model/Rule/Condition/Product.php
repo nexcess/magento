@@ -21,6 +21,11 @@
 
 class Mage_CatalogRule_Model_Rule_Condition_Product extends Mage_Rule_Model_Condition_Abstract
 {
+    /**
+     * Retrieve attribute object
+     *
+     * @return Mage_Catalog_Model_Resource_Eav_Attribute
+     */
     public function getAttributeObject()
     {
         $obj = Mage::getSingleton('eav/config')
@@ -44,7 +49,7 @@ class Mage_CatalogRule_Model_Rule_Condition_Product extends Mage_Rule_Model_Cond
 
         $attributes = array();
         foreach ($productAttributes as $attr) {
-            if (!$attr->isAllowedForRuleCondition()) {
+            if (!$attr->isAllowedForRuleCondition() || !$attr->getIsUsedForPriceRules()) {
                 continue;
             }
             $attributes[$attr->getAttributeCode()] = $attr->getFrontend()->getLabel();
@@ -130,7 +135,7 @@ class Mage_CatalogRule_Model_Rule_Condition_Product extends Mage_Rule_Model_Cond
         $attributes = $this->getRule()->getCollectedAttributes();
         $attributes[$this->getAttribute()] = true;
         $this->getRule()->setCollectedAttributes($attributes);
-        $productCollection->addAttributeToSelect($this->getAttribute());
+        $productCollection->addAttributeToSelect($this->getAttribute(), 'left');
         return $this;
     }
 
@@ -216,5 +221,30 @@ class Mage_CatalogRule_Model_Rule_Condition_Product extends Mage_Rule_Model_Cond
             }
         }
         return false;
+    }
+
+    public function loadArray($arr)
+    {
+        $this->setAttribute(isset($arr['attribute']) ? $arr['attribute'] : false);
+        $attribute = $this->getAttributeObject();
+
+        if ($attribute && $attribute->getBackendType() == 'decimal') {
+            $arr['value'] = isset($arr['value']) ? Mage::app()->getLocale()->getNumber($arr['value']) : false;
+            $arr['is_value_parsed'] = isset($arr['is_value_parsed']) ? Mage::app()->getLocale()->getNumber($arr['is_value_parsed']) : false;
+        }
+
+        return parent::loadArray($arr);
+    }
+
+    public function validate(Varien_Object $object)
+    {
+        $attr = $object->getResource()->getAttribute($this->getAttribute());
+        if ($attr && $attr->getBackendType()=='datetime' && !is_int($this->getValue())) {
+            $this->setValue(strtotime($this->getValue()));
+            $value = strtotime($object->getData($this->getAttribute()));
+            return $this->validateAttribute($value);
+        }
+
+        return parent::validate($object);
     }
 }

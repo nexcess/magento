@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_System_CurrencyController extends Mage_Adminhtml_Controller_Action
 {
@@ -91,7 +92,8 @@ class Mage_Adminhtml_System_CurrencyController extends Mage_Adminhtml_Controller
             try {
                 foreach ($data as $currencyCode => $rate) {
                     foreach( $rate as $currencyTo => $value ) {
-                        $value = abs($value);
+                        $value = abs(Mage::getSingleton('core/locale')->getNumber($value));
+                        $data[$currencyCode][$currencyTo] = $value;
                         if( $value == 0 ) {
                             Mage::getSingleton('adminhtml/session')->addWarning(Mage::helper('adminhtml')->__('Invalid input data for %s => %s rate', $currencyCode, $currencyTo));
                         }

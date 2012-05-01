@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Customer_Edit_Tab_Reviews extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -37,8 +38,7 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Reviews extends Mage_Adminhtml_Bloc
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel('customer/customer_collection')
-            ->addAttributeToSelect('firstname')
-            ->addAttributeToSelect('lastname')
+            ->addNameToSelect()
             ->addAttributeToSelect('email')
             ->addAttributeToSelect('created_at')
             ->joinAttribute('billing_postcode', 'customer_address/postcode', 'default_billing')
@@ -61,14 +61,9 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Reviews extends Mage_Adminhtml_Bloc
             'index'     => 'entity_id'
         ));
 
-        $this->addColumn('firstname', array(
-            'header'    => Mage::helper('customer')->__('First Name'),
-            'index'     => 'firstname'
-        ));
-
-        $this->addColumn('lastname', array(
-            'header'    => Mage::helper('customer')->__('Last Name'),
-            'index'     => 'lastname'
+        $this->addColumn('name', array(
+            'header'    => Mage::helper('customer')->__('Name'),
+            'index'     => 'name'
         ));
 
         $this->addColumn('email', array(
@@ -123,8 +118,7 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Reviews extends Mage_Adminhtml_Bloc
 
         $this->setColumnFilter('id')
             ->setColumnFilter('email')
-            ->setColumnFilter('firstname')
-            ->setColumnFilter('lastname');
+            ->setColumnFilter('name');
 
         $this->addExportType('*/*/exportCsv', Mage::helper('customer')->__('CSV'));
         $this->addExportType('*/*/exportXml', Mage::helper('customer')->__('XML'));

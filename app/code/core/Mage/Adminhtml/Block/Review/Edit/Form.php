@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Review_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
@@ -92,7 +93,7 @@ class Mage_Adminhtml_Block_Review_Edit_Form extends Mage_Adminhtml_Block_Widget_
          */
         if (!Mage::app()->isSingleStoreMode()) {
             $fieldset->addField('select_stores', 'multiselect', array(
-                'label'     => Mage::helper('review')->__('Visible Ins'),
+                'label'     => Mage::helper('review')->__('Visible In'),
                 'required'  => true,
                 'name'      => 'stores[]',
                 'values'    => Mage::getSingleton('adminhtml/system_store')->getStoreValuesForForm()

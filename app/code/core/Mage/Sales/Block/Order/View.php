@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Sales_Block_Order_View extends Mage_Core_Block_Template
 {
@@ -77,4 +78,5 @@ class Mage_Sales_Block_Order_View extends Mage_Core_Block_Template
     {
         return Mage::getUrl('*/*/creditmemo', array('order_id' => $order->getId()));
     }
+
 }

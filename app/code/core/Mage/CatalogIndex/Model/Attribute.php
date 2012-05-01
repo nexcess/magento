@@ -22,6 +22,7 @@
 /**
  * Attribute index model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogIndex_Model_Attribute extends Mage_Core_Model_Abstract
 {
@@ -33,11 +34,11 @@ class Mage_CatalogIndex_Model_Attribute extends Mage_Core_Model_Abstract
 
     public function getFilteredEntities($attribute, $filter, $entityFilter)
     {
-        return $this->_getResource()->getFilteredEntities($attribute, $filter, new Zend_Db_Expr($entityFilter));
+        return $this->_getResource()->getFilteredEntities($attribute, $filter, $entityFilter);
     }
 
     public function getCount($attribute, $entityFilter)
     {
-        return $this->_getResource()->getCount($attribute, new Zend_Db_Expr($entityFilter));
+        return $this->_getResource()->getCount($attribute, $entityFilter);
     }
 }

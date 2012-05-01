@@ -121,7 +121,7 @@ class Zend_Locale {
             self::$_browser     = $this->getDefault(self::BROWSER, false);
             self::$_environment = $this->getDefault(self::ENVIRONMENT, false);
             if (empty($locale) and empty(self::$_auto) and empty(self::$_Default)) {
-                require_once 'Zend/Locale/Exception.php';
+                #require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception('Autodetection of Locale has been failed!');
             }
         }
@@ -234,7 +234,7 @@ class Zend_Locale {
     {
         if (($locale == "auto") or ($locale == "root") or 
             ($locale == "environment") or ($locale == "browser")) {
-            require_once 'Zend/Locale/Exception.php';
+            #require_once 'Zend/Locale/Exception.php';
             throw new Zend_Locale_Exception('Only full qualified locales can be used as default!');
         }
         if (array_key_exists($locale, self::$_localeData)) {
@@ -247,7 +247,7 @@ class Zend_Locale {
                 return true;
             }
         }
-        require_once 'Zend/Locale/Exception.php';
+        #require_once 'Zend/Locale/Exception.php';
         throw new Zend_Locale_Exception("Unknown locale '$locale' can not be set as default!");
     }
 
@@ -263,7 +263,7 @@ class Zend_Locale {
      */
     public function getEnvironment()
     {
-        require_once 'Zend/Locale/Data/Translation.php';
+        #require_once 'Zend/Locale/Data/Translation.php';
 
         $language = setlocale(LC_ALL, 0);
         $languages = explode(';', $language);
@@ -504,8 +504,8 @@ class Zend_Locale {
     public function getTranslationList($path = null, $locale = null, $value = null)
     {
         // load class within method for speed
-        require_once 'Zend/Locale/Data.php';
-        require_once 'Zend/Locale/Exception.php';
+        #require_once 'Zend/Locale/Data.php';
+        #require_once 'Zend/Locale/Exception.php';
 
         if ($locale === null) {
             $locale = $this->_Locale;
@@ -592,8 +592,8 @@ class Zend_Locale {
     public function getTranslation($value = null, $path = null, $locale = null)
     {
         // load class within method for speed
-        require_once 'Zend/Locale/Data.php';
-        require_once 'Zend/Locale/Exception.php';
+        #require_once 'Zend/Locale/Data.php';
+        #require_once 'Zend/Locale/Exception.php';
 
         if ($locale === null) {
             $locale = $this->_Locale;
@@ -681,7 +681,7 @@ class Zend_Locale {
     public function getQuestion($locale = null)
     {
         // load class within method for speed
-        require_once 'Zend/Locale/Data.php';
+        #require_once 'Zend/Locale/Data.php';
 
         if ($locale === null) {
             $locale = $this->_Locale;
@@ -831,7 +831,7 @@ class Zend_Locale {
     public static function setCache(Zend_Cache_Core $cache)
     {
         // load class within method for speed
-        require_once 'Zend/Locale/Data.php';
+        #require_once 'Zend/Locale/Data.php';
         Zend_Locale_Data::setCache($cache);
     }
 }

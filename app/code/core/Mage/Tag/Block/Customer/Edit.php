@@ -23,6 +23,7 @@
  *
  * @category    Mage
  * @package     Mage_Tag
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Tag_Block_Customer_Edit extends Mage_Core_Block_Template

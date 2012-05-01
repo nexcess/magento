@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Sitemap
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Sitemap_Model_Observer
 {
@@ -81,6 +82,10 @@ class Mage_Sitemap_Model_Observer
         }
 
         if ($errors && Mage::getStoreConfig(self::XML_PATH_ERROR_RECIPIENT)) {
+            $translate = Mage::getSingleton('core/translate');
+            /* @var $translate Mage_Core_Model_Translate */
+            $translate->setTranslateInline(false);
+
             $emailTemplate = Mage::getModel('core/email_template');
             /* @var $emailTemplate Mage_Core_Model_Email_Template */
             $emailTemplate->setDesignConfig(array('area' => 'backend'))
@@ -91,6 +96,8 @@ class Mage_Sitemap_Model_Observer
                     null,
                     array('warnings' => join("\n", $errors))
                 );
+
+            $translate->setTranslateInline(true);
         }
     }
 }

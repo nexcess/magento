@@ -23,12 +23,12 @@
 /**
  * @see Zend_OpenId_Exception
  */
-require_once "Zend/OpenId/Exception.php";
+#require_once "Zend/OpenId/Exception.php";
 
 /**
  * @see Zend_Controller_Response_Abstract
  */
-require_once "Zend/Controller/Response/Abstract.php";
+#require_once "Zend/Controller/Response/Abstract.php";
 
 /**
  * Static class that contains common utility functions for
@@ -407,7 +407,7 @@ class Zend_OpenId
         $url = Zend_OpenId::absoluteUrl($url);
         $body = "";
         if (null === $response) {
-            require_once "Zend/Controller/Response/Http.php";
+            #require_once "Zend/Controller/Response/Http.php";
             $response = new Zend_Controller_Response_Http();
         }
 
@@ -502,7 +502,7 @@ class Zend_OpenId
      */
     static public function hashHmac($macFunc, $data, $secret)
     {
-//        require_once "Zend/Crypt/Hmac.php";
+//        #require_once "Zend/Crypt/Hmac.php";
 //        return Zend_Crypt_Hmac::compute($secret, $macFunc, $data, Zend_Crypt_Hmac::BINARY);
         if (function_exists('hash_hmac')) {
             return hash_hmac($macFunc, $data, $secret, 1);

@@ -32,15 +32,17 @@
         <span><?php echo $this->__('Enter a New Address') ?></span>
     </button>
 </div>
+<div class="multi-address-checkout-description"><?php echo $this->__('Please select shipping address for applicable items') ?></div>
+
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 <fieldset>
     <input type="hidden" name="continue" value="0" id="can_continue_flag"/>
-    <input type="hidden" name="new_address" value="0" id="add_new_address_flag"/>
+    <input type="hidden" name="new_address" value="0" id="add_new_address_flag" />
     <table cellspacing="0" id="multiship-addresses-table" class="data-table box-table">
-        <col width="300"/>
-        <col width="30"/>
-        <col/>
-        <col width="30"/>
+        <col width="300" />
+        <col width="30" />
+        <col />
+        <col width="30" />
         <thead>
             <tr>
                 <th><?php echo $this->__('Product') ?></th>
@@ -58,14 +60,11 @@
         <?php foreach ($this->getItems() as $_index => $_item): ?>
             <tr>
                 <td class="attributes-col">
-                    <a href="<?php echo $this->helper('checkout')->getQuoteItemProductUrl($_item) ?>">
-                        <strong><?php echo $this->helper('checkout')->getQuoteItemProductName($_item) ?></strong>
-                    </a>
-                    <?php echo $this->helper('checkout')->getQuoteItemProductDescription($_item) ?>
+                    <?php echo $this->getItemHtml($_item->getQuoteItem())?>
                 </td>
-                <td class="a-center"><input name="ship[<?php echo $_index ?>][<?php echo $_item->getQuoteItemId() ?>][qty]" value="<?php echo $this->htmlEscape($_item->getQty()) ?>" size="2" class="input-text qty"/></td>
-                <td><?php echo $this->getAddressesHtmlSelect($_item, $_index) ?></td>
-                <td class="a-center"><a href="<?php echo $this->getItemDeleteUrl($_item) ?>"><img src="<?php echo $this->getSkinUrl('images/btn_trash.gif') ?>" width="16" height="16" alt="<?php echo $this->__('Remove Item') ?>"/></a></td>
+                <td class="a-center"><input name="ship[<?php echo $_index ?>][<?php echo $_item->getQuoteItemId() ?>][qty]" value="<?php echo $this->htmlEscape($_item->getQty()) ?>" size="2" class="input-text qty" /></td>
+                <td><?php if ($_item->getProduct()->getIsVirtual()): echo $this->__('Shipping selection is not applicable'); else: echo $this->getAddressesHtmlSelect($_item, $_index); endif; ?></td>
+                <td class="a-center"><a href="<?php echo $this->getItemDeleteUrl($_item) ?>"><img src="<?php echo $this->getSkinUrl('images/btn_trash.gif') ?>" width="16" height="16" alt="<?php echo $this->__('Remove Item') ?>" /></a></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
@@ -73,7 +72,7 @@
     <script type="text/javascript">decorateTable('multiship-addresses-table')</script>
 <div class="button-set">
     <a href="<?php echo $this->getBackUrl() ?>" class="left"><?php echo $this->__('&laquo; Back to Shopping Cart') ?></a>
-    <button  class="form-button" type="submit" onclick="$('can_continue_flag').value=1"><span><?php echo $this->__('Continue to Shipping Information') ?></span></button>
+    <button class="form-button" type="submit" onclick="$('can_continue_flag').value=1" <?php if ($this->isContinueDisabled()):?>disabled="disabled" style="border-color:#999; background-color:#ccc;"<?php endif ?>><span><?php echo $this->__('Continue to Shipping Information') ?></span></button>
 </div>
 </fieldset>
 </form>

@@ -25,15 +25,7 @@ class Mage_Checkout_Block_Cart_Shipping extends Mage_Checkout_Block_Cart_Abstrac
     {
         if (empty($this->_rates)) {
             $groups = $this->getAddress()->getGroupedAllShippingRates();
-            if (!empty($groups)) {
-                $ratesFilter = new Varien_Filter_Object_Grid();
-                $ratesFilter->addFilter(Mage::app()->getStore()->getPriceFilter(), 'price');
-
-                foreach ($groups as $code => $groupItems) {
-                	$groups[$code] = $ratesFilter->filter($groupItems);
-                }
-            }
-            return $this->_rates = $groups;
+            $this->_rates = $groups;
         }
         return $this->_rates;
     }
@@ -92,5 +84,15 @@ class Mage_Checkout_Block_Cart_Shipping extends Mage_Checkout_Block_Cart_Abstrac
     public function getStateActive()
     {
         return (bool)Mage::getStoreConfig('carriers/dhl/active') || (bool)Mage::getStoreConfig('carriers/tablerate/active');
+    }
+
+    public function formatPrice($price)
+    {
+        return $this->getQuote()->getStore()->convertPrice($price, true);
+    }
+
+    public function getShippingPrice($price, $flag)
+    {
+        return $this->formatPrice($this->helper('tax')->getShippingPrice($price, $flag, $this->getAddress()));
     }
 }

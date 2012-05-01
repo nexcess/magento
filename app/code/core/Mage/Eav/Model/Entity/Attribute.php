@@ -66,6 +66,17 @@ class Mage_Eav_Model_Entity_Attribute extends Mage_Eav_Model_Entity_Attribute_Ab
 
     protected function _beforeSave()
     {
+        // prevent changing attribute scope, if used in configurable products
+        if (isset($this->_origData['is_global'])) {
+            if (!isset($this->_data['is_global'])) {
+                Mage::throwException('0_o');
+            }
+            if (($this->_data['is_global'] != $this->_origData['is_global'])
+                && $this->_getResource()->isUsedBySuperProducts($this)) {
+                Mage::throwException(Mage::helper('eav')->__('Scope must not be changed, because the attribute is used in configurable products.'));
+            }
+        }
+
         if ($this->getBackendType() == 'datetime') {
             if (!$this->getBackendModel()) {
                 $this->setBackendModel('eav/entity_attribute_backend_datetime');

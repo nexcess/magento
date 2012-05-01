@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Attribute_Backend_Media extends Mage_Core_Model_Mysql4_Abstract
 {
@@ -154,4 +155,48 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Attribute_Backend_Media ext
         return $this;
     }
 
+    /**
+     * Duplicates gallery db values
+     *
+     * @param Mage_Catalog_Model_Product_Attribute_Backend_Media $object
+     * @param array $newFiles
+     * @param int $originalProductId
+     * @param int $newProductId
+     * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Attribute_Backend_Media
+     */
+    public function duplicate($object, $newFiles, $originalProductId, $newProductId)
+    {
+        $select = $this->_getReadAdapter()->select()
+            ->from($this->getMainTable(), array('value_id', 'value'))
+            ->where('attribute_id = ?', $object->getAttribute()->getId())
+            ->where('entity_id = ?', $originalProductId);
+
+        $valueIdMap = array();
+        // Duplicate main entries of gallery
+        foreach ($this->_getReadAdapter()->fetchAll($select) as $row) {
+            $data = array(
+                'attribute_id' => $object->getAttribute()->getId(),
+                'entity_id'    => $newProductId,
+                'value'        => (isset($newFiles[$row['value_id']]) ? $newFiles[$row['value_id']] : $row['value'])
+            );
+
+            $valueIdMap[$row['value_id']] = $this->insertGallery($data);
+        }
+
+        if (count($valueIdMap) == 0) {
+            return $this;
+        }
+
+        // Duplicate per store gallery values
+        $select = $this->_getReadAdapter()->select()
+            ->from($this->getTable(self::GALLERY_VALUE_TABLE))
+            ->where('value_id IN(?)', array_keys($valueIdMap));
+
+        foreach ($this->_getReadAdapter()->fetchAll($select) as $row) {
+            $row['value_id'] = $valueIdMap[$row['value_id']];
+            $this->insertGalleryValueInStore($row);
+        }
+
+        return $this;
+    }
 } // Class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Attribute_Backend_Media End

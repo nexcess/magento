@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Report_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -45,6 +46,8 @@ class Mage_Adminhtml_Block_Report_Grid extends Mage_Adminhtml_Block_Widget_Grid
     protected $_subReportSize = 5;
 
     protected $_grandTotals;
+
+    protected $_errors = array();
 
     public function __construct()
     {
@@ -122,11 +125,19 @@ class Mage_Adminhtml_Block_Report_Grid extends Mage_Adminhtml_Block_Widget_Grid
 
         $collection->setPeriod($this->getFilter('report_period'));
 
-        if ($this->getFilter('report_from') && $this->getFilter('report_from')) {
-            $collection->setInterval(
-                $this->getLocale()->date($this->getFilter('report_from'), Zend_Date::DATE_SHORT, null, false),
-                $this->getLocale()->date($this->getFilter('report_to'), Zend_Date::DATE_SHORT, null, false)
-                );
+        if ($this->getFilter('report_from') && $this->getFilter('report_to')) {
+            /**
+             * Validate from and to date
+             */
+            try {
+                $from = $this->getLocale()->date($this->getFilter('report_from'), Zend_Date::DATE_SHORT, null, false);
+                $to   = $this->getLocale()->date($this->getFilter('report_to'), Zend_Date::DATE_SHORT, null, false);
+
+                $collection->setInterval($from, $to);
+            }
+            catch (Exception $e) {
+                $this->_errors[] = Mage::helper('reports')->__('Invalid date specified');
+            }
         }
 
         /**
@@ -531,6 +542,17 @@ class Mage_Adminhtml_Block_Report_Grid extends Mage_Adminhtml_Block_Widget_Grid
      */
     public function getRefreshButtonCallback()
     {
+        return "{$this->getJsObjectName()}.doFilter();";
         return "if ($('period_date_to').value == '' && $('period_date_from').value == '') {alert('".$this->__('Please specify at least start or end date.')."'); return false;}else {$this->getJsObjectName()}.doFilter();";
+    }
+
+    /**
+     * Retrieve errors
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->_errors;
     }
 }

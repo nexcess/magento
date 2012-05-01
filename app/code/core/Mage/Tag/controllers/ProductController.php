@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Tag
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Tag_ProductController extends Mage_Core_Controller_Front_Action
@@ -39,6 +40,7 @@ class Mage_Tag_ProductController extends Mage_Core_Controller_Front_Action
         Mage::register('current_tag', $tag);
 
         $this->loadLayout();
+        $this->_initLayoutMessages('checkout/session');
         $this->_initLayoutMessages('tag/session');
         $this->renderLayout();
     }

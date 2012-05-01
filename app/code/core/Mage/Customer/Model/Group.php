@@ -21,6 +21,7 @@
 /**
  * Customer group model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Model_Group extends Mage_Core_Model_Abstract
 {

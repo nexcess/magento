@@ -22,6 +22,7 @@
  *
  * PayPal Payment Action Dropdown source
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Paypal_Model_Source_StandardAction
 {

@@ -21,6 +21,7 @@
 /**
  * Product inventory data
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Inventory extends Mage_Adminhtml_Block_Widget
 {
@@ -55,7 +56,24 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Inventory extends Mage_Admin
         if ($this->getStockItem()) {
             return $this->getStockItem()->getData($field);
         }
-        return null;
+
+        return Mage::getStoreConfig('cataloginventory/options/'.$field);
+    }
+
+    public function getConfigFieldValue($field)
+    {
+        if ($this->getStockItem()) {
+            if ($this->getStockItem()->getData('use_config_' . $field) == 0) {
+                return $this->getStockItem()->getData($field);
+            }
+        }
+
+        return Mage::getStoreConfig('cataloginventory/options/'.$field);
+    }
+
+    public function getDefaultConfigValue($field)
+    {
+        return Mage::getStoreConfig('cataloginventory/options/'.$field);
     }
 
     public function isNew()

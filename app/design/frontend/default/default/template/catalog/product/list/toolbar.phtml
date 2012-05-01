@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Product list toolbar
  *
@@ -36,13 +36,11 @@
             <?php endif; ?>
             </td>
             <?php if($this->getLastPageNum()>1): ?>
-            <td>
+            <td class="pages">
                 <strong><?php echo $this->__('Page:') ?></strong>
                 <ol>
                 <?php if (!$this->isFirstPage()): ?>
-                    <li>
-                        <a href="<?php echo $this->getPreviousPageUrl() ?>"><img src="<?php echo $this->getSkinUrl('images/pager_arrow_left.gif') ?>" alt="<?php echo $this->__('Previous') ?>"/></a>
-                    </li>
+                    <li><a href="<?php echo $this->getPreviousPageUrl() ?>"><img src="<?php echo $this->getSkinUrl('images/pager_arrow_left.gif') ?>" alt="<?php echo $this->__('Previous') ?>" /></a></li>
                 <?php endif ?>
                 <?php foreach ($this->getPages() as $_page): ?>
                     <?php if ($this->isPageCurrent($_page)): ?>
@@ -52,9 +50,7 @@
                     <?php endif ?>
                 <?php endforeach;; ?>
                 <?php if (!$this->isLastPage()): ?>
-                    <li>
-                        <a href="<?php echo $this->getNextPageUrl() ?>"><img src="<?php echo $this->getSkinUrl('images/pager_arrow_right.gif') ?>" alt="<?php echo $this->__('Next') ?>"/></a>
-                    </li>
+                    <li><a href="<?php echo $this->getNextPageUrl() ?>"><img src="<?php echo $this->getSkinUrl('images/pager_arrow_right.gif') ?>" alt="<?php echo $this->__('Next') ?>" /></a></li>
                 <?php endif ?>
                 </ol>
             </td>
@@ -97,13 +93,13 @@
                 <?php endforeach; ?>
                 </select>
                 <?php if($this->getCurrentDirection() == 'desc'): ?>
-                    <a href="<?php echo $this->getOrderUrl(null, 'asc') ?>"><img src="<?php echo $this->getSkinUrl('images/sort_desc_arrow.gif') ?>" alt="<?php echo $this->__('Set Ascending Direction') ?>" class="v-middle"/></a>
+                    <a href="<?php echo $this->getOrderUrl(null, 'asc') ?>"><img src="<?php echo $this->getSkinUrl('images/sort_desc_arrow.gif') ?>" alt="<?php echo $this->__('Set Ascending Direction') ?>" class="v-middle" /></a>
                 <?php else: ?>
-                    <a href="<?php echo $this->getOrderUrl(null, 'desc') ?>"><img src="<?php echo $this->getSkinUrl('images/sort_asc_arrow.gif') ?>" alt="<?php echo $this->__('Set Descending Direction') ?>" class="v-middle"/></a>
+                    <a href="<?php echo $this->getOrderUrl(null, 'desc') ?>"><img src="<?php echo $this->getSkinUrl('images/sort_asc_arrow.gif') ?>" alt="<?php echo $this->__('Set Descending Direction') ?>" class="v-middle" /></a>
                 <?php endif; ?>
             </td>
             <?php if ($this->helper('rss/catalog')->getTagFeedUrl()): ?>
-            <td class="a-right"><a href="<?php echo $this->helper('rss/catalog')->getTagFeedUrl() ?>" class="no-wrap link-feed"><?php echo $this->__('Subscribe to Feed') ?></a></td>
+            <td class="a-right"><a href="<?php echo $this->helper('rss/catalog')->getTagFeedUrl() ?>" class="nobr link-feed"><?php echo $this->__('Subscribe to Feed') ?></a></td>
             <?php endif; ?>
         </tr>
     </table>

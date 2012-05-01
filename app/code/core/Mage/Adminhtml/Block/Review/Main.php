@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Review_Main extends Mage_Adminhtml_Block_Widget_Grid_Container
@@ -34,11 +35,19 @@ class Mage_Adminhtml_Block_Review_Main extends Mage_Adminhtml_Block_Widget_Grid_
 
         $this->_controller = 'review';
 
+        // lookup customer, if id is specified
+        $customerId = $this->getRequest()->getParam('customerId', false);
+        $customerName = '';
+        if ($customerId) {
+            $customer = Mage::getModel('customer/customer')->load($customerId);
+            $customerName = $customer->getFirstname() . ' ' . $customer->getLastname();
+        }
+
         if( Mage::registry('usePendingFilter') === true ) {
-            $this->_headerText = Mage::helper('review')->__('Pending Reviews');
+            $this->_headerText = Mage::helper('review')->__(($customerName ? 'Pending reviews of customer `%s`' : 'Pending reviews'), $customerName);
             $this->_removeButton('add');
         } else {
-            $this->_headerText = Mage::helper('review')->__('All Reviews');
+            $this->_headerText = Mage::helper('review')->__(($customerName ? 'All reviews of customer `%s`' : 'All Reviews'), $customerName);
         }
     }
 }

@@ -23,15 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Invoice_Create_Tracking extends Mage_Adminhtml_Block_Template
 {
-    protected function _construct()
-    {
-        parent::_construct();
-        $this->setTemplate('sales/order/shipment/create/tracking.phtml');
-    }
-
     /**
      * Prepares layout of block
      *
@@ -46,9 +41,7 @@ class Mage_Adminhtml_Block_Sales_Order_Invoice_Create_Tracking extends Mage_Admi
                     'class'   => '',
                     'onclick' => 'trackingControl.add()'
                 ))
-
         );
-
     }
 
     /**
@@ -61,7 +54,7 @@ class Mage_Adminhtml_Block_Sales_Order_Invoice_Create_Tracking extends Mage_Admi
         return Mage::registry('current_shipment');
     }
 
-     /**
+    /**
      * Retrieve shipment model instance
      *
      * @return Mage_Sales_Model_Order_Shipment

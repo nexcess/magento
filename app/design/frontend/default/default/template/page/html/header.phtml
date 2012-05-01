@@ -21,13 +21,13 @@
 
 <div class="header-top-container">
     <div class="header-top">
-        <h1 id="logo"><a href="<?php echo $this->getUrl('') ?>"><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>"/></a></h1>
+        <h1 id="logo"><a href="<?php echo $this->getUrl('') ?>"><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>" /></a></h1>
         <p class="no-display"><a href="#main"><strong><?php echo $this->__('Skip to Main Content') ?> &raquo;</strong></a></p>
 
         <?php echo $this->getChildHtml('topSearch') ?>
 
         <div class="quick-access">
-            <strong><?php echo $this->htmlEscape($this->getWelcome()) ?></strong><br/>
+            <strong><?php echo $this->htmlEscape($this->getWelcome()) ?></strong><br />
             <div class="shop-access">
                 <?php echo $this->getChildHtml('topLinks') ?>
             </div>

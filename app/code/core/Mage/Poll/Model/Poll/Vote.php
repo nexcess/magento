@@ -19,31 +19,29 @@
  */
 
 /**
- * Vote model
+ * Pool vote model
  *
- * @category   Mage
- * @package    Mage_Poll
+ * @category    Mage
+ * @package     Mage_Poll
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Poll_Model_Poll_Vote extends Varien_Object
+class Mage_Poll_Model_Poll_Vote extends Mage_Core_Model_Abstract
 {
-    protected $_pollId;
-    protected $_resource;
-
-    public function getId()
+    protected function _construct()
     {
-        return $this->getPollId();
+        $this->_init('poll/poll_vote');
     }
 
-    public function addVote()
+    /**
+     * Processing object before save data
+     *
+     * @return Mage_Core_Model_Abstract
+     */
+    protected function _beforeSave()
     {
-        $this->_getResource()->add($this);
-    }
-
-    protected function _getResource()
-    {
-        if (!$this->_resource) {
-        	$this->_resource = Mage::getResourceSingleton('poll/poll_answer_vote');
+        if (!$this->getVoteTime()) {
+            $this->setVoteTime(Mage::getSingleton('core/date')->gmtDate());
         }
-        return $this->_resource;
+        return parent::_beforeSave();
     }
 }

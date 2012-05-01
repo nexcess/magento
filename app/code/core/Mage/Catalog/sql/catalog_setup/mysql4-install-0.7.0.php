@@ -19,11 +19,11 @@
  */
 
 $installer = $this;
-/* @var $installer Mage_Catalog_Model_Entity_Setup */
+/* @var $installer Mage_Catalog_Model_Resource_Eav_Mysql4_Setup */
 
 $installer->startSetup();
 
-if (!$installer->tableExists('catalog_category_entity')) {
+if (!$installer->tableExists($installer->getTable('catalog_category_entity'))) {
 
 $installer->run("
 
@@ -496,7 +496,10 @@ insert  into {$this->getTable('catalog_product_visibility')}(`visibility_id`,`vi
 
 insert  into {$this->getTable('core_email_template')}(`template_id`,`template_code`,`template_text`,`template_type`,`template_subject`,`template_sender_name`,`template_sender_email`,`added_at`,`modified_at`) values (NULL,'Send product to a friend','Welcome, {{var name}}<br /><br />Please look at <a href=\"{{var product.getProductUrl()}}\">{{var product.name}}</a><br /><br />Here is message: <br />{{var message}}<br /><br />',2,'Welcome, {{var name}}',NULL,NULL,NOW(),NOW());
 
-ALTER TABLE `{$this->getTable('catalog/category_entity')}` ADD `path` VARCHAR( 255 ) NOT NULL, ADD `position` INT NOT NULL;
+ALTER TABLE `{$this->getTable('catalog_category_entity')}` ADD `path` VARCHAR( 255 ) NOT NULL, ADD `position` INT NOT NULL;
+
+ALTER TABLE `{$installer->getTable('catalog_category_entity')}` ADD `level` INT NOT NULL;
+ALTER TABLE `{$installer->getTable('catalog_category_entity')}` ADD INDEX `IDX_LEVEL` ( `level` );
 ");
 
 }

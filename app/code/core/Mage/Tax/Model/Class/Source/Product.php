@@ -21,7 +21,7 @@
 
 class Mage_Tax_Model_Class_Source_Product extends Mage_Eav_Model_Entity_Attribute_Source_Abstract
 {
-	public function getAllOptions($withEmpty = true)
+	public function getAllOptions($withEmpty = false)
 	{
 		if (is_null($this->_options)) {
 			$this->_options = Mage::getResourceModel('tax/class_collection')
@@ -31,6 +31,7 @@ class Mage_Tax_Model_Class_Source_Product extends Mage_Eav_Model_Entity_Attribut
 		}
 
 		$options = $this->_options;
+        array_unshift($options, array('value'=>'0', 'label'=>Mage::helper('tax')->__('None')));
         if ($withEmpty) {
             array_unshift($options, array('value'=>'', 'label'=>Mage::helper('tax')->__('-- Please Select --')));
         }

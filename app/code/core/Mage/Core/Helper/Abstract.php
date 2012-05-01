@@ -21,6 +21,7 @@
 /**
  * Abstract helper
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Core_Helper_Abstract
 {
@@ -148,6 +149,23 @@ abstract class Mage_Core_Helper_Abstract
             }
         }
         return htmlspecialchars($data);
+    }
+
+    /**
+     * Escape quotes in java script
+     *
+     * @param moxed $data
+     * @param string $quote
+     * @return mixed
+     */
+    public function jsQuoteEscape($data, $quote='\'')
+    {
+        if (is_array($data)) {
+            foreach ($data as $item) {
+                return $this->jsEscape($item, $quote);
+            }
+        }
+        return str_replace($quote, '\\'.$quote, $data);
     }
 
     /**

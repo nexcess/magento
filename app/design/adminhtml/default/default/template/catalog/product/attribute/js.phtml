@@ -181,13 +181,11 @@ function checkIsConfigurableVisibility()
 
 function updateRequriedOptions()
 {
-<?php if ($this->getIsPopup()):?>
     if ($F('frontend_input')=='select' && $F('is_required')==1) {
         $('option-count-check').addClassName('required-options-count');
     } else {
         $('option-count-check').removeClassName('required-options-count');
     }
-<?php endif;?>
 }
 
 if($('frontend_input')){

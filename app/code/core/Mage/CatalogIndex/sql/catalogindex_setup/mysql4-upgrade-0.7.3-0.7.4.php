@@ -28,6 +28,6 @@ TRUNCATE {$installer->getTable('catalogindex_price')};
 TRUNCATE {$installer->getTable('catalogindex_minimal_price')};
 ");
 
-Mage::getModel('catalogindex/indexer')->plainReindex();
+//Mage::getModel('catalogindex/indexer')->plainReindex();
 
 $installer->endSetup();

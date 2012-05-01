@@ -23,9 +23,6 @@
     <modules>
         <Mage_Backup>
             <version>0.7.0</version>
-            <depends>
-                <Mage_Core />
-            </depends>
         </Mage_Backup>
     </modules>
     <global>

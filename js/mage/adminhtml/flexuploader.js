@@ -128,9 +128,10 @@ if(!window.Flex) {
             this.getInnerElement('upload').show();
         },
         handleProgress: function (event) {
-            this.updateFile(event.getData().file);
+            var file = event.getData().file;
+            this.updateFile();
             if (this.onFileProgress) {
-                this.onFileProgress(event.getData().file);
+                this.onFileProgress(file);
             }
         },
         handleError: function (event) {
@@ -159,6 +160,23 @@ if(!window.Flex) {
                     this.fileRowTemplate.evaluate(this.getFileVars(file))
                 );
             }
+
+            if (file.status == 'full_complete' && file.response.isJSON()) {
+                var response = file.response.evalJSON();
+                if (typeof response == 'object') {
+                    if (typeof response.cookie == 'object') {
+                        var date = new Date();
+                        date.setTime(date.getTime()+(parseInt(response.cookie.lifetime)*1000));
+
+                        document.cookie = escape(response.cookie.name) + "="
+                            + escape(response.cookie.value)
+                            + "; expires=" + date.toGMTString()
+                            + (response.cookie.path.blank() ? "" : "; path=" + response.cookie.path)
+                            + (response.cookie.domain.blank() ? "" : "; domain=" + response.cookie.domain);
+                    }
+                }
+            }
+
             var progress = $(this.getFileId(file)).getElementsByClassName('progress-text')[0];
             if ((file.status=='progress') || (file.status=='complete')) {
                 $(this.getFileId(file)).addClassName('progress');
@@ -241,8 +259,8 @@ if(!window.Flex) {
                 case 4: // Security error
                     error = 'Upload Security Error';
                     break;
-                case 5: // SSL self-signed sertificate
-                    error = 'SSL Error: Invalid or self-signed sertificate';
+                case 5: // SSL self-signed certificate
+                    error = 'SSL Error: Invalid or self-signed certificate';
                     break;
             }
 

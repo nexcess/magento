@@ -23,34 +23,29 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
-class Mage_Adminhtml_Block_Sales_Order_Shipment_Create_Items extends Mage_Adminhtml_Block_Template
+class Mage_Adminhtml_Block_Sales_Order_Shipment_Create_Items extends Mage_Adminhtml_Block_Sales_Items_Abstract
 {
     /**
-     * Initialize template
+     * Retrieve invoice order
+     *
+     * @return Mage_Sales_Model_Order
      */
-    protected function _construct()
+    public function getOrder()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/shipment/create/items.phtml');
+        return $this->getShipment()->getOrder();
     }
 
     /**
-     * Prepare child blocks
+     * Retrieve source
+     *
+     * @return Mage_Sales_Model_Order_Invoice
      */
-    protected function _prepareLayout()
+    public function getSource()
     {
-        $this->setChild(
-            'submit_button',
-            $this->getLayout()->createBlock('adminhtml/widget_button')->setData(array(
-                'label'     => Mage::helper('sales')->__('Submit Shipment'),
-                'class'     => 'save submit-button',
-                'onclick'   => '$(\'edit_form\').submit()',
-            ))
-        );
-
-        return parent::_prepareLayout();
+        return $this->getShipment();
     }
 
     /**
@@ -61,6 +56,23 @@ class Mage_Adminhtml_Block_Sales_Order_Shipment_Create_Items extends Mage_Adminh
     public function getShipment()
     {
         return Mage::registry('current_shipment');
+    }
+
+    /**
+     * Prepare child blocks
+     */
+    protected function _beforeToHtml()
+    {
+        $this->setChild(
+            'submit_button',
+            $this->getLayout()->createBlock('adminhtml/widget_button')->setData(array(
+                'label'     => Mage::helper('sales')->__('Submit Shipment'),
+                'class'     => 'save submit-button',
+                'onclick'   => '$(\'edit_form\').submit()',
+            ))
+        );
+
+        return parent::_beforeToHtml();
     }
 
     public function formatPrice($price)
@@ -76,23 +88,5 @@ class Mage_Adminhtml_Block_Sales_Order_Shipment_Create_Items extends Mage_Adminh
     public function getUpdateUrl()
     {
         return $this->getUrl('*/*/updateQty', array('order_id'=>$this->getShipment()->getOrderId()));
-    }
-
-    protected function _getQtyBlock()
-    {
-        $block = $this->getData('_qty_block');
-        if (is_null($block)) {
-            $block = $this->getLayout()->createBlock('adminhtml/sales_order_item_qty');
-            $this->setData('_qty_block', $block);
-        }
-        return $block;
-    }
-
-    public function getQtyHtml($item)
-    {
-        $html = $this->_getQtyBlock()
-            ->setItem($item)
-            ->toHtml();
-        return $html;
     }
 }

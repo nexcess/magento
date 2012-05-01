@@ -24,8 +24,9 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
- class Mage_Catalog_Block_Product_Compare_Sidebar extends Mage_Core_Block_Template
+ class Mage_Catalog_Block_Product_Compare_Sidebar extends Mage_Catalog_Block_Product_Abstract
  {
      protected function _construct()
      {

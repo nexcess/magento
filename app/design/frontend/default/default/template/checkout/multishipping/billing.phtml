@@ -53,10 +53,10 @@
                 </div>
                 <div class="tool-tip" id="payment-tool-tip" style="left:0;position:absolute;display:none;padding-top:15px;">
                     <a href="#" id="payment-tool-tip-close" class="btn-close">
-                        <img src="<?php echo $this->getSkinUrl('images/btn_window_close.gif') ?>" alt="<?php echo $this->__('Close') ?>"/>
+                        <img src="<?php echo $this->getSkinUrl('images/btn_window_close.gif') ?>" alt="<?php echo $this->__('Close') ?>" />
                     </a>
                     <div class="block-content">
-                    <img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>"/>
+                    <img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>" />
                     </div>
                 </div>
 
@@ -69,10 +69,10 @@
                 <?php foreach ($_methods as $_method): $_code = $_method->getCode() ?>
                     <dt>
                         <?php if ($_methodsCount > 1): ?>
-                        <input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" title="<?php echo $this->htmlEscape($_method->getTitle()) ?>" onclick="payment.switchMethod('<?php echo $_code ?>')"<?php if($this->getSelectedMethodCode()==$_code): ?> checked="checked"<?php endif; ?>/>
+                        <input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" title="<?php echo $this->htmlEscape($_method->getTitle()) ?>" onclick="payment.switchMethod('<?php echo $_code ?>')"<?php if($this->getSelectedMethodCode()==$_code): ?> checked="checked"<?php endif; ?> />
                         <?php else :?>
                         <span class="no-display"><input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" checked="checked" /></span>
-                        <?endif;?>
+                        <?php endif;?>
                         <label for="p_method_<?php echo $_code ?>"><?php echo $_method->getTitle() ?></label>
                     </dt>
                     <dd>
@@ -83,6 +83,7 @@
             </div>
         </div>
       </div>
+    <?php echo $this->getChildHtml('checkout_billing_items') ?>
 </div>
 <div class="button-set">
     <a href="<?php echo $this->getBackUrl() ?>" class="left">&laquo;<?php echo $this->__('Back to Shipping Information') ?></a>

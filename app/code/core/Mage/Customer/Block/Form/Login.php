@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Block_Form_Login extends Mage_Core_Block_Template
 {

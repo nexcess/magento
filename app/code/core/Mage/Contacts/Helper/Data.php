@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Contacts
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Contacts_Helper_Data extends Mage_Core_Helper_Abstract
 {
@@ -36,12 +37,18 @@ class Mage_Contacts_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getUserName()
     {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
+            return '';
+        }
         $customer = Mage::getSingleton('customer/session')->getCustomer();
-        return "{$customer->getFirstname()} {$customer->getLastname()}";
+        return trim($customer->getName());
     }
 
     public function getUserEmail()
     {
+        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
+            return '';
+        }
         $customer = Mage::getSingleton('customer/session')->getCustomer();
         return $customer->getEmail();
     }

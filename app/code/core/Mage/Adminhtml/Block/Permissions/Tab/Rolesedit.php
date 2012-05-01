@@ -95,6 +95,9 @@ class Mage_Adminhtml_Block_Permissions_Tab_Rolesedit extends Mage_Adminhtml_Bloc
             //$item['cls'] = 'fiche-node';
             foreach ($children as $child) {
                 if ($child->getName()!='title' && $child->getName()!='sort_order') {
+                    if (!(string)$child->title) {
+                        continue;
+                    }
                     if ($level != 0) {
                         $item['children'][] = $this->_getNodeJson($child, $level+1);
                     } else {

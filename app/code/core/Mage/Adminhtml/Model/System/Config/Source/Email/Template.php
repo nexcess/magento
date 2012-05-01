@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Model_System_Config_Source_Email_Template extends Varien_Object
 {
@@ -41,7 +42,7 @@ class Mage_Adminhtml_Model_System_Config_Source_Email_Template extends Varien_Ob
             $options,
             array(
                 'value'=> str_replace('/', '_', $this->getPath()),
-                'label' => Mage::helper('adminhtml')->__('Default')
+                'label' => Mage::helper('adminhtml')->__('Default Template from Locale')
             )
         );
         return $options;

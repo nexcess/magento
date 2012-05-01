@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Block_Product_View_Abstract
 {
@@ -47,6 +48,20 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
     public function getAllowAttributes()
     {
         return $this->getProduct()->getTypeInstance()->getConfigurableAttributes();
+    }
+
+    public function hasOptions()
+    {
+        $attributes = $this->getAllowAttributes();
+        if (count($attributes)) {
+            foreach ($attributes as $key => $attribute) {
+                /** @var Mage_Catalog_Model_Product_Type_Configurable_Attribute $attribute */
+                if ($attribute->getData('prices')) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public function getAllowProducts()
@@ -115,7 +130,7 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
                         'products'   => isset($options[$attributeId][$value['value_index']]) ? $options[$attributeId][$value['value_index']] : array(),
                     );
                     $optionPrices[] = $this->_preparePrice($value['pricing_value'], $value['is_percent']);
-                    $this->_registerAdditionalJsPrice($value['pricing_value'], $value['is_percent']);
+                    //$this->_registerAdditionalJsPrice($value['pricing_value'], $value['is_percent']);
                 }
             }
             /**
@@ -136,7 +151,7 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
         $config = array(
             'attributes'=> $attributes,
             'template'  => str_replace('%s', '#{price}', $store->getCurrentCurrency()->getOutputFormat()),
-            'prices'    => $this->_prices,
+//            'prices'    => $this->_prices,
             'basePrice' => $this->_registerJsPrice($this->_convertPrice($this->getProduct()->getFinalPrice())),
             'oldPrice'  => $this->_registerJsPrice($this->_convertPrice($this->getProduct()->getPrice())),
             'productId' => $this->getProduct()->getId(),
@@ -190,9 +205,9 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
     {
         $jsPrice            = str_replace(',', '.', $price);
 
-        if (!isset($this->_prices[$jsPrice])) {
-            $this->_prices[$jsPrice] = strip_tags(Mage::app()->getStore()->formatPrice($price));
-        }
+//        if (!isset($this->_prices[$jsPrice])) {
+//            $this->_prices[$jsPrice] = strip_tags(Mage::app()->getStore()->formatPrice($price));
+//        }
         return $jsPrice;
     }
 
@@ -211,28 +226,28 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
         return $price;
     }
 
-    protected function _registerAdditionalJsPrice($price, $isPercent=false)
-    {
-        if (empty($price) && isset($this->_prices[0])) {
-            return $this;
-        }
-
-        $basePrice = $this->getProduct()->getFinalPrice();
-        if ($isPercent) {
-            $price = $basePrice*$price/100;
-        }
-        else {
-            $price = $price;
-        }
-
-        $price = $this->_convertPrice($price);
-
-        foreach ($this->_resPrices as $prevPrice) {
-        	$additionalPrice = $prevPrice + $price;
-        	$this->_resPrices[] = $additionalPrice;
-        	$jsAdditionalPrice = str_replace(',', '.', $additionalPrice);
-        	$this->_prices[$jsAdditionalPrice] = strip_tags(Mage::app()->getStore()->formatPrice($additionalPrice));
-        }
-        return $this;
-    }
+//    protected function _registerAdditionalJsPrice($price, $isPercent=false)
+//    {
+//        if (empty($price) && isset($this->_prices[0])) {
+//            return $this;
+//        }
+//
+//        $basePrice = $this->getProduct()->getFinalPrice();
+//        if ($isPercent) {
+//            $price = $basePrice*$price/100;
+//        }
+//        else {
+//            $price = $price;
+//        }
+//
+//        $price = $this->_convertPrice($price);
+//
+//        foreach ($this->_resPrices as $prevPrice) {
+//        	$additionalPrice = $prevPrice + $price;
+//        	$this->_resPrices[] = $additionalPrice;
+//        	$jsAdditionalPrice = str_replace(',', '.', $additionalPrice);
+//        	$this->_prices[$jsAdditionalPrice] = strip_tags(Mage::app()->getStore()->formatPrice($additionalPrice));
+//        }
+//        return $this;
+//    }
 }

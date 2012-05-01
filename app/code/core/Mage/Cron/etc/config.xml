@@ -100,4 +100,16 @@
             </cron>
         </system>
     </default>
+    
+    <adminhtml>
+      <translate>
+        <modules>
+            <Mage_Cron>
+                <files>
+                    <default>Mage_Cron.csv</default>
+                </files>
+            </Mage_Cron>
+        </modules>
+      </translate>
+    </adminhtml>
 </config>

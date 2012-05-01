@@ -24,15 +24,16 @@
 <?php if(!empty($tabs)): ?>
 <ul id="<?php echo $this->getId() ?>" class="tabs">
 <?php foreach ($tabs as $_tab): ?>
-    <li <?php if($_tab->getIsHidden()): ?> style="display:none"<?php endif; ?>>
-        <a href="<?php echo $_tab->getUrl() ?>" id="<?php echo $this->getTabId($_tab) ?>" name="<?php echo $_tab->getId() ?>" title="<?php echo $_tab->getTitle() ?>" class="tab-item-link <?php echo $_tab->getClass() ?>">
-            <span><div class="changed" title="<?php echo $this->__('The information in this tab has been changed.') ?>"></div><div class="error" title="<?php echo $this->__('This tab contains invalid data. Please solve the problem before saving.') ?>"></div><?php echo $_tab->getLabel() ?></span>
+<?php if (!$this->canShowTab($_tab)): continue;  endif; ?>
+    <li <?php if($this->getTabIsHidden($_tab)): ?> style="display:none"<?php endif; ?>>
+        <a href="<?php echo $this->getTabUrl($_tab) ?>" id="<?php echo $this->getTabId($_tab) ?>" name="<?php echo $this->getTabId($_tab, false) ?>" title="<?php echo $this->getTabTitle($_tab) ?>" class="tab-item-link <?php echo $this->getTabClass($_tab) ?>">
+            <span><span class="changed" title="<?php echo $this->__('The information in this tab has been changed.') ?>"></span><span class="error" title="<?php echo $this->__('This tab contains invalid data. Please solve the problem before saving.') ?>"></span><?php echo $this->getTabLabel($_tab); ?></span>
         </a>
-        <div id="<?php echo $this->getId() ?>_<?php echo $_tab->getId() ?>_content" style="display:none"><?php echo $_tab->getContent() ?></div>
+        <div id="<?php echo $this->getTabId($_tab) ?>_content" style="display:none;"><?php echo $this->getTabContent($_tab) ?></div>
     </li>
 <?php endforeach; ?>
 </ul>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
     <?php echo $this->getJsObjectName() ?> = new varienTabs('<?php echo $this->getId() ?>', '<?php echo $this->getDestElementId() ?>', '<?php echo $this->getActiveTabId() ?>');
 </script>
 <?php endif; ?>

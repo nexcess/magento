@@ -21,6 +21,7 @@
 /**
  * Customer register form block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Block_Form_Register extends Mage_Directory_Block_Data
 {

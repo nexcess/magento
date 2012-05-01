@@ -23,14 +23,23 @@
  *
  * @category   Mage
  * @package    Mage_Backup
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
+
 class Mage_Backup_Model_Db
 {
-    public function __construct()
-    {
+    /**
+     * Buffer length for multi rows
+     * default 512 Kb
+     *
+     */
+    const BUFFER_LENGTH = 524288;
 
-    }
-
+    /**
+     * Retrieve resource model
+     *
+     * @return Mage_Backup_Model_Mysql4_Db
+     */
     public function getResource()
     {
         return Mage::getResourceSingleton('backup/db');
@@ -74,5 +83,62 @@ class Mage_Backup_Model_Db
 
         $sql.= $this->getFooter();
         return $sql;
+    }
+
+    /**
+     * Create backup and stream write to adapter
+     *
+     * @param Mage_Backup_Model_Backup $backup
+     * @return Mage_Backup_Model_Db
+     */
+    public function createBackup(Mage_Backup_Model_Backup $backup)
+    {
+        $backup->open(true);
+
+        $this->getResource()->beginTransaction();
+
+        $tables = $this->getResource()->getTables();
+
+        $backup->write($this->getResource()->getHeader());
+
+        foreach ($tables as $table) {
+            $backup->write("\n" . $this->getResource()->getTableDropSql($table) . "\n");
+            $backup->write($this->getResource()->getTableCreateSql($table, false) . "\n\n");
+
+            $tableStatus = $this->getResource()->getTableStatus($table);
+
+            if ($tableStatus->getRows()) {
+                $backup->write($this->getResource()->getTableDataBeforeSql($table));
+
+                if ($tableStatus->getDataLength() > self::BUFFER_LENGTH) {
+                    if ($tableStatus->getAvgRowLength() < self::BUFFER_LENGTH) {
+                        $limit = floor(self::BUFFER_LENGTH / $tableStatus->getAvgRowLength());
+                        $multiRowsLength = ceil($tableStatus->getRows() / $limit);
+                    }
+                    else {
+                        $limit = 1;
+                        $multiRowsLength = $tableStatus->getRows();
+                    }
+                }
+                else {
+                    $limit = $tableStatus->getRows();
+                    $multiRowsLength = 1;
+                }
+
+                for ($i = 0; $i < $multiRowsLength; $i ++) {
+                    $backup->write($this->getResource()->getTableDataSql($table, $limit, $i*$limit));
+                }
+
+                $backup->write($this->getResource()->getTableDataAfterSql($table));
+            }
+        }
+        $backup->write($this->getResource()->getTableForeignKeysSql());
+        $backup->write($this->getResource()->getFooter());
+
+        $this->getResource()->commitTransaction();
+
+        $backup->close();
+
+        return $this;
     }
 }

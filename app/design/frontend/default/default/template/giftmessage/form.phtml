@@ -23,18 +23,18 @@
 <div class="page-head button-level">
     <h3><?php echo $this->__('Gift Message') ?></h3>
 </div>
-<form action="<?php echo $this->getSaveUrl() ?>" id="message-form" method="post" >
+<form action="<?php echo $this->getSaveUrl() ?>" id="message-form" method="post">
     <ul class="form-list a-left">
         <li>
             <div class="input-box">
-                <label for="sender"><?php echo $this->__('From') ?> <span class="required">*</span></label><br/>
-                <input type="text" name="sender" value="<?php echo $this->getEscaped($this->getMessage()->getSender()) ?>" title="<?php echo $this->__('From') ?>"  class="required-entry input-text"/>
+                <label for="sender"><?php echo $this->__('From') ?> <span class="required">*</span></label><br />
+                <input type="text" name="sender" value="<?php echo $this->getEscaped($this->getMessage()->getSender()) ?>" title="<?php echo $this->__('From') ?>" class="required-entry input-text" />
             </div>
         </li>
         <li>
             <div class="input-box">
-                <label for="recipient"><?php echo $this->__('To') ?> <span class="required">*</span></label><br/>
-                <input type="text" name="recipient" value="<?php echo $this->getEscaped($this->getMessage()->getRecipient()) ?>" title="<?php echo $this->__('To') ?>"  class="required-entry input-text" />
+                <label for="recipient"><?php echo $this->__('To') ?> <span class="required">*</span></label><br />
+                <input type="text" name="recipient" value="<?php echo $this->getEscaped($this->getMessage()->getRecipient()) ?>" title="<?php echo $this->__('To') ?>" class="required-entry input-text" />
             </div>
         </li>
         <li>

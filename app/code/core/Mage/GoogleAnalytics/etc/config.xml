@@ -23,9 +23,6 @@
     <modules>
         <Mage_GoogleAnalytics>
             <version>0.7.0</version>
-            <depends>
-                <Mage_Core />
-            </depends>
         </Mage_GoogleAnalytics>
     </modules>
 

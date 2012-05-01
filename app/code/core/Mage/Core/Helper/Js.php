@@ -21,6 +21,7 @@
 /**
  * JavaScript helper
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Helper_Js extends Mage_Core_Helper_Abstract
 {
@@ -76,6 +77,14 @@ class Mage_Core_Helper_Js extends Mage_Core_Helper_Abstract
                 $this->__('Please enter a number greater than 0 in this field.'),
             'Please enter a valid credit card number.' => $this->__('Please enter a valid credit card number.'),
             'Please wait, loading...' => $this->__('Please wait, loading...'),
+            'Please choose to register or to checkout as a guest' => $this->__('Please choose to register or to checkout as a guest'),
+            'Error: Passwords do not match' => $this->__('Error: Passwords do not match'),
+            'Your order can not be completed at this time as there is no shipping methods available for it. Please make neccessary changes in your shipping address.' => 
+                $this->__('Your order can not be completed at this time as there is no shipping methods available for it. Please make neccessary changes in your shipping address.'),
+            'Please specify shipping method.' => $this->__('Please specify shipping method.'),
+            'Your order can not be completed at this time as there is no payment methods available for it.' => 
+                $this->__('Your order can not be completed at this time as there is no payment methods available for it.'),
+            'Please specify payment method.' => $this->__('Please specify payment method.'),
 
 //Mage_Rule
 

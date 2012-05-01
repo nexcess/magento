@@ -21,24 +21,24 @@
 <?php $_htmlId      = $this->getElement()->getHtmlId() ?>
 <?php $_htmlClass   = $this->getElement()->getClass() ?>
 <?php $_htmlName    = $this->getElement()->getName() ?>
-<?php $_multiWebsite= $this->getWebsiteCount()>1; ?>
+<?php $_multiWebsite= $this->isMultiWebsites(); ?>
 <tr>
     <td class="label"><?php echo $this->getElement()->getLabel() ?></td>
     <td colspan="10" class="grid tier">
-    <table cellspacing="0" class="data" id="tiers_table">
+    <table cellspacing="0" class="data border" id="tiers_table">
         <?php if ($_multiWebsite): ?>
-        <col width="120">
+        <col width="135" />
         <?php endif; ?>
-        <col width="100">
-        <col width="120">
-        <col>
-        <col width="50">
+        <col width="120" />
+        <col width="95" />
+        <col />
+        <col width="75" />
         <thead>
             <tr class="headings">
                 <th <?php if (!$_multiWebsite): ?>style="display:none"<?php endif; ?>><?php echo Mage::helper('sales')->__('Website') ?></th>
                 <th><?php echo Mage::helper('catalog')->__('Customer Group') ?></th>
                 <th><?php echo Mage::helper('catalog')->__('Qty') ?></th>
-                <th><?php echo Mage::helper('catalog')->__('Price') ?></th>
+                <th><?php echo $this->getPriceColumnHeader(Mage::helper('catalog')->__('Price')) ?></th>
                 <th class="last"><?php echo Mage::helper('catalog')->__('Action') ?></th>
             </tr>
             <tr id="<?php echo $_htmlId ?>_add_template" class="template no-display">
@@ -56,16 +56,13 @@
                     <?php endforeach ?>
                 </select>
                 </td>
-                <td class="no-br">
-                    <input disabled="no-template" class="<?php echo $_htmlClass ?> qty required-entry validate-greater-than-zero" type="text" name="<?php echo $_htmlName ?>[__index__][price_qty]" value="'#{qty}'"/> <?php echo Mage::helper('catalog')->__('and above')?>
+                <td class="nobr">
+                    <input disabled="no-template" class="<?php echo $_htmlClass ?> qty required-entry validate-greater-than-zero" type="text" name="<?php echo $_htmlName ?>[__index__][price_qty]" value="'#{qty}'"/> <small class="nobr"><?php echo Mage::helper('catalog')->__('and above')?></small>
                 </td>
                 <td>
                     <input disabled="no-template" class="<?php echo $_htmlClass ?> required-entry validate-greater-than-zero" type="text" name="<?php echo $_htmlName ?>[__index__][price]" value="'#{price}'"/>
                 </td>
-                <td class="last">
-                    <input type="hidden" name="<?php echo $_htmlName ?>[__index__][delete]" class="delete" disabled="no-template" value="">
-                    <a href="#" onclick="tierPriceControl.deleteItem(event);return false"><?php echo $this->__('Delete') ?></a>
-                </td>
+                <td class="last"><input type="hidden" name="<?php echo $_htmlName ?>[__index__][delete]" class="delete" disabled="no-template" value=""><button title="Delete Tier" class="scalable delete icon-btn delete-product-option" onclick="tierPriceControl.deleteItem(event);return false"><span>Delete</span></button></td>
             </tr>
         </thead>
         <tbody id="<?php echo $_htmlId ?>_container">
@@ -79,6 +76,7 @@
     </table>
 
 <script type="text/javascript">
+//<![CDATA[
     var tierPriceControl = {
         template : new Template('<tr>' + $('<?php echo $_htmlId ?>_add_template').innerHTML.replace(/__index__/g, '#{index}').replace(/ disabled="?no-template"?/g, '').replace(/ disabled/g, '').replace(/="'([^']*)'"/g, '="$1"') + '</tr>'),
         itemsCount : 0,
@@ -113,6 +111,7 @@
     <?php foreach ($this->getValues() as $_item): ?>
     tierPriceControl.addItem('<?php echo $_item['website_id'] ?>', '<?php echo $_item['cust_group'] ?>', '<?php echo $_item['price_qty']*1 ?>','<?php echo sprintf('%.2f', $_item['price']) ?>');
     <?php endforeach; ?>
+//]]>
 </script>
 </td>
 </tr>

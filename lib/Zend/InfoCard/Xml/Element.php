@@ -24,17 +24,17 @@
 /**
  * Zend_InfoCard_Xml_Exception
  */
-require_once 'Zend/InfoCard/Xml/Exception.php';
+#require_once 'Zend/InfoCard/Xml/Exception.php';
 
 /**
  * Zend_InfoCard_Xml_Element_Interface
  */
-require_once 'Zend/InfoCard/Xml/Element/Interface.php';
+#require_once 'Zend/InfoCard/Xml/Element/Interface.php';
 
 /**
  * Zend_Loader
  */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 /**
  * An abstract class representing a an XML data block

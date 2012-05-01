@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Newsletter
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Newsletter_ManageController extends Mage_Core_Controller_Front_Action
 {
@@ -43,6 +44,9 @@ class Mage_Newsletter_ManageController extends Mage_Core_Controller_Front_Action
     public function indexAction()
     {
         $this->loadLayout();
+        if ($block = $this->getLayout()->getBlock('customer_newsletter')) {
+            $block->setRefererUrl($this->_getRefererUrl());
+        }
         $this->renderLayout();
     }
 
@@ -50,6 +54,7 @@ class Mage_Newsletter_ManageController extends Mage_Core_Controller_Front_Action
     {
         try {
             Mage::getSingleton('customer/session')->getCustomer()
+                ->setStoreId(Mage::app()->getStore()->getId())
                 ->setIsSubscribed((boolean)$this->getRequest()->getParam('is_subscribed', false))
                 ->save();
             Mage::getSingleton('customer/session')->addSuccess($this->__('The subscription was successfully saved'));

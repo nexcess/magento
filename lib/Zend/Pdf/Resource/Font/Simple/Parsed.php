@@ -19,10 +19,10 @@
  */
 
 /** Zend_Pdf_Resource_Font_Simple */
-require_once 'Zend/Pdf/Resource/Font/Simple.php';
+#require_once 'Zend/Pdf/Resource/Font/Simple.php';
 
 /** Zend_Pdf_FileParser_Font_OpenType */
-require_once 'Zend/Pdf/FileParser/Font/OpenType.php';
+#require_once 'Zend/Pdf/FileParser/Font/OpenType.php';
 
 
 /**

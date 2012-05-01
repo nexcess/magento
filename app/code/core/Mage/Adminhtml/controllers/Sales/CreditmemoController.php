@@ -21,88 +21,9 @@
 /**
  * Adminhtml sales orders controller
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Sales_CreditmemoController extends Mage_Adminhtml_Controller_Action
+class Mage_Adminhtml_Sales_CreditmemoController extends Mage_Adminhtml_Controller_Sales_Creditmemo
 {
-    /**
-     * Additional initialization
-     *
-     */
-    protected function _construct()
-    {
-        $this->setUsedModuleName('Mage_Sales');
-    }
 
-    /**
-     * Init layout, menu and breadcrumb
-     *
-     * @return Mage_Adminhtml_Sales_CreditmemoController
-     */
-    protected function _initAction()
-    {
-        $this->loadLayout()
-            ->_setActiveMenu('sales/order')
-            ->_addBreadcrumb($this->__('Sales'), $this->__('Sales'))
-            ->_addBreadcrumb($this->__('Creditmemos'),$this->__('Creditmemos'));
-        return $this;
-    }
-
-    /**
-     * Creditmemos grid
-     */
-    public function indexAction()
-    {
-        $this->_initAction()
-            ->_addContent($this->getLayout()->createBlock('adminhtml/sales_creditmemo'))
-            ->renderLayout();
-    }
-
-    /**
-     * Creditmemo information page
-     */
-    public function viewAction()
-    {
-        if ($creditmemoId = $this->getRequest()->getParam('creditmemo_id')) {
-            $this->_forward('view', 'sales_order_creditmemo');
-        } else {
-            $this->_forward('noRoute');
-        }
-    }
-
-    public function pdfcreditmemosAction(){
-        $creditmemosIds = $this->getRequest()->getPost('creditmemo_ids');
-        if (!empty($creditmemosIds)) {
-            $invoices = Mage::getResourceModel('sales/order_Creditmemo_collection')
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter('entity_id', array('in' => $creditmemosIds))
-                ->load();
-            if (!isset($pdf)){
-                $pdf = Mage::getModel('sales/order_pdf_creditmemo')->getPdf($invoices);
-            } else {
-                $pages = Mage::getModel('sales/order_pdf_creditmemo')->getPdf($invoices);
-                $pdf->pages = array_merge ($pdf->pages, $pages->pages);
-            }
-
-            return $this->_prepareDownloadResponse('creditmemo'.Mage::getSingleton('core/date')->date('Y-m-d_H-i-s').'.pdf', $pdf->render(), 'application/pdf');
-        }
-        $this->_redirect('*/*/');
-    }
-
-    public function printAction()
-    {
-        if ($invoiceId = $this->getRequest()->getParam('invoice_id')) {
-            if ($invoice = Mage::getModel('sales/order_creditmemo')->load($invoiceId)) {
-                $pdf = Mage::getModel('sales/order_pdf_creditmemo')->getPdf(array($invoice));
-                $this->_prepareDownloadResponse('creditmemo'.Mage::getSingleton('core/date')->date('Y-m-d_H-i-s').'.pdf', $pdf->render(), 'application/pdf');
-            }
-        }
-        else {
-            $this->_forward('noRoute');
-        }
-    }
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('sales/creditmemo');
-    }
 }

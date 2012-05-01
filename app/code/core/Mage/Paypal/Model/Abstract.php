@@ -22,6 +22,7 @@
  *
  * PayPal Abstract Payment Module
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Paypal_Model_Abstract extends Mage_Payment_Model_Method_Abstract
 {

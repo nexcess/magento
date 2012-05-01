@@ -23,9 +23,6 @@
     <modules>
         <Mage_Tag>
             <version>0.7.1</version>
-            <depends>
-                <Mage_Core />
-            </depends>
         </Mage_Tag>
     </modules>
     <global>

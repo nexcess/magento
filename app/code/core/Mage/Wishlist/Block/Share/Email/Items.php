@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Wishlist
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Wishlist_Block_Share_Email_Items extends Mage_Core_Block_Template
 {

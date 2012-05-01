@@ -54,46 +54,55 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </list_mode>
-                        <grid_per_page translate="label">
-                            <label>Products per Page on Grid</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_catalog_gridPerPage</source_model>
+                        <grid_per_page_values>
+                            <label>Products per page on Grid allow values</label>
+                            <comment>comma separated</comment>
+                            <frontend_type>text</frontend_type>
+                            <!--<source_model>adminhtml/system_config_source_catalog_gridPerPage</source_model>-->
                             <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </grid_per_page>
-                        <list_per_page translate="label">
-                            <label>Products per Page on List</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_catalog_listPerPage</source_model>
+                        </grid_per_page_values>
+
+
+
+                        <grid_per_page translate="label">
+                            <label>Products per Page on Grid default value</label>
+                            <comment>must be accessibility in values list</comment>
+                            <frontend_type>text</frontend_type>
+                            <!--<source_model>adminhtml/system_config_source_catalog_gridPerPage</source_model>-->
                             <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </grid_per_page>
+
+                        <list_per_page_values>
+                            <label>Products per Page on List allow values</label>
+                            <comment>comma separated</comment>
+                            <frontend_type>text</frontend_type>
+                            <!--<source_model>adminhtml/system_config_source_catalog_gridPerPage</source_model>-->
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </list_per_page_values>
+
+                        <list_per_page translate="label">
+                            <label>Products per Page on List default value</label>
+                            <comment>must be accessibility in values list</comment>
+                            <frontend_type>text</frontend_type>
+                            <!--<source_model>adminhtml/system_config_source_catalog_listPerPage</source_model>-->
+                            <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </list_per_page>
                     </fields>
                 </frontend>
-                <product translate="label">
-                    <label>Product Options</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>200</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <default_tax_group translate="label">
-                            <label>Default Tax Class</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>tax/class_source_product</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </default_tax_group>
-                    </fields>
-                </product>
-                <placeholder>
+
+                <placeholder translate="label">
                     <label>Product Image Placeholders</label>
                     <clone_fields>1</clone_fields>
                     <clone_model>adminhtml/system_config_clone_media_image</clone_model>
@@ -123,19 +132,30 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <product_url_suffix translate="label">
-                            <label>Product URL Suffix (cache refresh needed)</label>
+                        <category_url_suffix translate="label">
+                            <label>Category URL Suffix</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>3</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comment>cache refresh needed</comment>
+                        </category_url_suffix>
+                        <product_url_suffix translate="label">
+                            <label>Product URL Suffix</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>cache refresh needed</comment>
                         </product_url_suffix>
                         <product_use_categories translate="label">
                             <label>Use categories path for product URLs</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <backend_model>adminhtml/system_config_backend_seo_product</backend_model>
+                            <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -143,7 +163,7 @@
                         <title_separator translate="label">
                             <label>Page Title Separator</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>1</sort_order>
+                            <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -170,11 +190,45 @@
                         </scope>
                     </fields>
                 </price>
+                <navigation translate="label">
+                    <label>Category Top Navigation</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>500</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <max_depth translate="label">
+                            <label>Maximal Depth</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </max_depth>
+                    </fields>
+                </navigation>
+<!--
+                <layer translate="label">
+                    <label>Layered Navigation</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>450</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <fields>
+                        <configurable_children translate="label">
+                            <label>Index configurable product's children</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <backend_model>adminhtml/system_config_backend_layer_children</backend_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </configurable_children>
+                    </fields>
+                </layer>
+-->
             </groups>
         </catalog>
         <design>
             <groups>
-                <watermark>
+                <watermark translate="label">
                     <label>Product Image Watermarks</label>
                     <clone_fields>1</clone_fields>
                     <clone_model>adminhtml/system_config_clone_media_image</clone_model>

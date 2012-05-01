@@ -23,14 +23,15 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_System_Cache_Edit extends Mage_Adminhtml_Block_Widget
 {
     public function __construct()
     {
         parent::__construct();
-        $this->setTemplate('system/config/edit.phtml');
-        $this->setTitle('Manage Cache');
+        $this->setTemplate('system/cache/edit.phtml');
+        $this->setTitle('Cache Management');
     }
 
     protected function _prepareLayout()
@@ -63,5 +64,26 @@ class Mage_Adminhtml_Block_System_Cache_Edit extends Mage_Adminhtml_Block_Widget
                 ->initForm()
         );
         return $this;
+    }
+
+    public function getCatalogData()
+    {
+        return array(
+            'refresh_catalog_rewrites'   => array(
+                'name'      => 'refresh_catalog_rewrites',
+                'label'     => Mage::helper('adminhtml')->__('Catalog Rewrites'),
+                'action'    => Mage::helper('adminhtml')->__('Refresh'),
+            ),
+            'clear_images_cache'         => array(
+                'name'      => 'clear_images_cache',
+                'label'     => Mage::helper('adminhtml')->__('Images Cache'),
+                'action'    => Mage::helper('adminhtml')->__('Clear'),
+            ),
+            'refresh_layered_navigation' => array(
+                'name'      => 'refresh_layered_navigation',
+                'label'     => Mage::helper('adminhtml')->__('Layered Navigation Indices'),
+                'action'    => Mage::helper('adminhtml')->__('Refresh'),
+            )
+        );
     }
 }

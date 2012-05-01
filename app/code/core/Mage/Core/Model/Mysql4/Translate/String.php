@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Mysql4_Translate_String extends Mage_Core_Model_Mysql4_Abstract
 {
@@ -34,10 +35,14 @@ class Mage_Core_Model_Mysql4_Translate_String extends Mage_Core_Model_Mysql4_Abs
     public function load(Mage_Core_Model_Abstract $object, $value, $field=null)
     {
         if (is_string($value)) {
-            $field = 'string';
+            $select = $this->_getReadAdapter()->select()
+                ->from($this->getMainTable())
+                ->where($this->getMainTable().'.string=:tr_string');
+            return $this->_getReadAdapter()->fetchRow($select, array('tr_string'=>$value));
         }
-
-        return parent::load($object, $value, $field);
+        else {
+        	return parent::load($object, $value, $field);
+        }
     }
 
     protected function _getLoadSelect($field, $value, $object)

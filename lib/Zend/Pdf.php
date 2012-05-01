@@ -20,62 +20,62 @@
 
 
 /** Zend_Pdf_Exception */
-require_once 'Zend/Pdf/Exception.php';
+#require_once 'Zend/Pdf/Exception.php';
 
 /** Zend_Pdf_Page */
-require_once 'Zend/Pdf/Page.php';
+#require_once 'Zend/Pdf/Page.php';
 
 /** Zend_Pdf_Cmap */
-require_once 'Zend/Pdf/Cmap.php';
+#require_once 'Zend/Pdf/Cmap.php';
 
 /** Zend_Pdf_Font */
-require_once 'Zend/Pdf/Font.php';
+#require_once 'Zend/Pdf/Font.php';
 
 /** Zend_Pdf_Style */
-require_once 'Zend/Pdf/Style.php';
+#require_once 'Zend/Pdf/Style.php';
 
 /** Zend_Pdf_Parser */
-require_once 'Zend/Pdf/Parser.php';
+#require_once 'Zend/Pdf/Parser.php';
 
 /** Zend_Pdf_Trailer */
-require_once 'Zend/Pdf/Trailer.php';
+#require_once 'Zend/Pdf/Trailer.php';
 
 /** Zend_Pdf_Trailer_Generator */
-require_once 'Zend/Pdf/Trailer/Generator.php';
+#require_once 'Zend/Pdf/Trailer/Generator.php';
 
 /** Zend_Pdf_Color */
-require_once 'Zend/Pdf/Color.php';
+#require_once 'Zend/Pdf/Color.php';
 
 /** Zend_Pdf_Color_GrayScale */
-require_once 'Zend/Pdf/Color/GrayScale.php';
+#require_once 'Zend/Pdf/Color/GrayScale.php';
 
 /** Zend_Pdf_Color_Rgb */
-require_once 'Zend/Pdf/Color/Rgb.php';
+#require_once 'Zend/Pdf/Color/Rgb.php';
 
 /** Zend_Pdf_Color_Cmyk */
-require_once 'Zend/Pdf/Color/Cmyk.php';
+#require_once 'Zend/Pdf/Color/Cmyk.php';
 
 /** Zend_Pdf_Color_Html */
-require_once 'Zend/Pdf/Color/Html.php';
+#require_once 'Zend/Pdf/Color/Html.php';
 
 /** Zend_Pdf_Image */
-require_once 'Zend/Pdf/Resource/Image.php';
+#require_once 'Zend/Pdf/Resource/Image.php';
 
 /** Zend_Pdf_Image */
-require_once 'Zend/Pdf/Image.php';
+#require_once 'Zend/Pdf/Image.php';
 
 /** Zend_Pdf_Image_Jpeg */
-require_once 'Zend/Pdf/Resource/Image/Jpeg.php';
+#require_once 'Zend/Pdf/Resource/Image/Jpeg.php';
 
 /** Zend_Pdf_Image_Tiff */
-require_once 'Zend/Pdf/Resource/Image/Tiff.php';
+#require_once 'Zend/Pdf/Resource/Image/Tiff.php';
 
 /** Zend_Pdf_Image_Png */
-require_once 'Zend/Pdf/Resource/Image/Png.php';
+#require_once 'Zend/Pdf/Resource/Image/Png.php';
 
 
 /** Zend_Memory */
-require_once 'Zend/Memory.php';
+#require_once 'Zend/Memory.php';
 
 
 /**

@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Multishipping checkout shipping template
  *
@@ -44,9 +44,9 @@
             <address>
                 <?php echo $_address->format('html') ?>
             </address>
-            <br/>
+            <br />
             <div class="shipping-method-pointer">
-                <img src="<?php echo $this->getSkinUrl('images/shipping_method_pointer.gif') ?>" class="pointer" alt=""/>
+                <img src="<?php echo $this->getSkinUrl('images/shipping_method_pointer.gif') ?>" class="pointer" alt="" />
                 <div class="head">
                     <h5><?php echo $this->__('Shipping Method') ?></h5>
                 </div>
@@ -63,8 +63,19 @@
                                    <?php if ($_rate->getErrorMessage()): ?>
                                         <strong><?php echo $_rate->getCarrierTitle() ?>: <?php echo $_rate->getErrorMessage() ?></strong>
                                    <?php else: ?>
-                                        <input name="shipping_method[<?php echo $_address->getId() ?>]" type="radio" value="<?php echo $this->htmlEscape($_rate->getCode()) ?>" id="s_method_<?php echo $_address->getId() ?>_<?php echo $_rate->getCode() ?>"<?php if($_rate->getCode()===$this->getAddressShippingMethod($_address)) echo ' checked="checked"' ?>/>
-                                        <label for="s_method_<?php echo $_address->getId() ?>_<?php echo $_rate->getCode() ?>"><?php echo $_rate->getMethodDescription() ?> - <strong><?php echo $_rate->getPrice() ?></strong></label>
+                                        <input name="shipping_method[<?php echo $_address->getId() ?>]" type="radio" value="<?php echo $this->htmlEscape($_rate->getCode()) ?>" id="s_method_<?php echo $_address->getId() ?>_<?php echo $_rate->getCode() ?>"<?php if($_rate->getCode()===$this->getAddressShippingMethod($_address)) echo ' checked="checked"' ?> />
+                                        <label for="s_method_<?php echo $_address->getId() ?>_<?php echo $_rate->getCode() ?>"><?php echo $_rate->getMethodDescription() ?>
+                                        -
+                                        <strong>
+                                        <?php $_excl = $this->getShippingPrice($_address, $_rate->getPrice(), $this->helper('tax')->displayShippingPriceIncludingTax()); ?>
+                                        <?php $_incl = $this->getShippingPrice($_address, $_rate->getPrice(), true); ?>
+
+                                        <?php echo $_excl; ?>
+                                        <?php if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                                            (<?php echo $this->__('Incl. Tax'); ?> <?php echo $_incl; ?>)
+                                        <?php endif; ?>
+                                        </strong>
+                                        </label>
                                    <?php endif ?>
                                 </li>
                             <?php endforeach; ?>
@@ -81,8 +92,8 @@
                 <h5><?php echo $this->__('Items') ?><span class="pipe">|</span><a href="<?php echo $this->getItemsEditUrl($_address) ?>"><?php echo $this->__('Edit Items') ?></a></h5>
             </div>
             <table cellspacing="0" id="shipping-table-<?php echo $_address->getId() ?>" class="data-table nested-table">
-                <col/>
-                <col width="30"/>
+                <col />
+                <col width="30" />
                 <thead>
                     <tr>
                         <th><?php echo $this->__('Product Name') ?></th>
@@ -93,8 +104,7 @@
                 <?php foreach ($this->getAddressItems($_address) as $_item): ?>
                     <tr>
                         <td>
-                            <?php echo $this->helper('checkout')->getQuoteItemProductName($_item) ?>
-                            <?php echo $this->helper('checkout')->getQuoteItemProductDescription($_item) ?>
+                            <?php echo $this->getItemHtml($_item->getQuoteItem()) ?>
                         </td>
                         <td class="a-center"><?php echo $_item->getQty() ?></td>
                     </tr>
@@ -108,6 +118,7 @@
     </div>
     </div>
 <?php endforeach; ?>
+<?php echo $this->getChildHtml('checkout_billing_items') ?>
 </div>
 <div class="button-set">
     <a href="<?php echo $this->getBackUrl() ?>" class="left"><?php echo $this->__('&laquo; Back to Select Addresses') ?></a>

@@ -21,9 +21,63 @@
 /**
  * Shopping cart operation observer
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Wishlist_Model_Observer extends Mage_Core_Model_Abstract
 {
+    /**
+     * Get customer wishlist model instance
+     *
+     * @param   int $customerId
+     * @return  Mage_Wishlist_Model_Wishlist || false
+     */
+    protected function _getWishlist($customerId)
+    {
+        if (!$customerId) {
+            return false;
+        }
+        return Mage::getModel('wishlist/wishlist')->loadByCustomer($customerId, true);
+    }
+
+    /**
+     * Check move quote item to wishlist request
+     *
+     * @param   Varien_Event_Observer $observer
+     * @return  Mage_Wishlist_Model_Observer
+     */
+    public function processCartUpdateBefore($observer)
+    {
+        $cart = $observer->getEvent()->getCart();
+        $data = $observer->getEvent()->getInfo();
+        $productIds = array();
+
+        $wishlist = $this->_getWishlist($cart->getQuote()->getCustomerId());
+        if (!$wishlist) {
+            return $this;
+        }
+
+        /**
+         * Collect product ids marked for move to wishlist
+         */
+        foreach ($data as $itemId => $itemInfo) {
+            if (!empty($itemInfo['wishlist'])) {
+                if ($item = $cart->getQuote()->getItemById($itemId)) {
+                    $productId = $item->getProductId();
+                    $productIds[] = $productId;
+                    $cart->getQuote()->removeItem($itemId);
+                }
+            }
+        }
+
+        if (!empty($productIds)) {
+            foreach ($productIds as $productId) {
+                $wishlist->addNewItem($productId);
+            }
+            $wishlist->save();
+        }
+        return $this;
+    }
+
     public function processAddToCart($observer)
     {
         $request = $observer->getRequest();
@@ -40,7 +94,7 @@ class Mage_Wishlist_Model_Observer extends Mage_Core_Model_Abstract
         if (count($wishlistIds) && $request->getParam('wishlist_next')){
             $wishlistId = array_shift($wishlistIds);
 
-            if (Mage::getSingleton('customer/session')->getCustomer()->getId()) {
+            if (Mage::getSingleton('customer/session')->isLoggedIn()) {
                 $wishlist = Mage::getModel('wishlist/wishlist')
                         ->loadByCustomer(Mage::getSingleton('customer/session')->getCustomer(), true);
             } else if ($sharedWishlist) {

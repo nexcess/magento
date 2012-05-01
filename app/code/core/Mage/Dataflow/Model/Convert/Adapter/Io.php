@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Dataflow
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Dataflow_Model_Convert_Adapter_Io extends Mage_Dataflow_Model_Convert_Adapter_Abstract
 {
@@ -42,15 +43,15 @@ class Mage_Dataflow_Model_Convert_Adapter_Io extends Mage_Dataflow_Model_Convert
             $ioConfig = $this->getVars();
             switch ($this->getVar('type', 'file')) {
                 case 'file':
-                    $path = $this->_resource->getCleanPath(Mage::getBaseDir('base') . '/' . trim($this->getVar('path'), '/'));
-                    $basePath = $this->_resource->getCleanPath(Mage::getBaseDir('base'));
+                    $baseDir = Mage::getBaseDir();
+                    $path = $this->_resource->getCleanPath($baseDir . '/' . trim($this->getVar('path'), '/'));
+                    $basePath = $this->_resource->getCleanPath($baseDir);
 
-                    if (strpos($path, $basePath) === false) {
+                    if (strpos($path, $basePath) !== 0) {
                         $message = Mage::helper('dataflow')->__('Access denied to destination folder "%s"', $path);
                         Mage::throwException($message);
                     } else {
-                        $this->_resource->setAllowCreateFolders(true);
-                        $this->_resource->createDestinationDir($path);
+                        $this->_resource->checkAndCreateFolder($path);
                     }
 
                     $realPath = realpath($path);

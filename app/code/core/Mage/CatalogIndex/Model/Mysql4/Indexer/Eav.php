@@ -22,6 +22,7 @@
 /**
  * Eav indexer resource model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogIndex_Model_Mysql4_Indexer_Eav extends Mage_CatalogIndex_Model_Mysql4_Indexer_Abstract
 {

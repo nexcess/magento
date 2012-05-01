@@ -24,6 +24,7 @@
  *
  * @category   Varien
  * @package    Varien_Object
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Object
 {
@@ -55,6 +56,8 @@ class Varien_Object
      * @var array
      */
     protected static $_underscoreCache = array();
+
+    protected static $_camelizeCache = array();
 
     /**
      * Enter description here...
@@ -231,6 +234,7 @@ class Varien_Object
      *
      * @param string $key
      * @param string|int $index
+     * @param mixed $default
      * @return mixed
      */
     public function getData($key='', $index=null)
@@ -239,23 +243,25 @@ class Varien_Object
             return $this->_data;
         }
 
+        $default = null;
+
         // accept a/b/c as ['a']['b']['c']
         if (strpos($key,'/')) {
             $keyArr = explode('/', $key);
             $data = $this->_data;
             foreach ($keyArr as $i=>$k) {
                 if ($k==='') {
-                    return null;
+                    return $default;
                 }
                 if (is_array($data)) {
                     if (!isset($data[$k])) {
-                        return null;
+                        return $default;
                     }
                     $data = $data[$k];
                 } elseif ($data instanceof Varien_Object) {
                     $data = $data->getData($k);
                 } else {
-                    return null;
+                    return $default;
                 }
             }
             return $data;
@@ -283,9 +289,48 @@ class Varien_Object
             } elseif ($value instanceof Varien_Object) {
                 return $value->getData($index);
             }
-            return null;
+            return $default;
         }
-        return null;
+        return $default;
+    }
+
+    /**
+     * Get value from _data array without parse key
+     *
+     * @param   string $key
+     * @return  mixed
+     */
+    protected function _getData($key)
+    {
+        return isset($this->_data[$key]) ? $this->_data[$key] : null;
+    }
+
+    public function setDataUsingMethod($key, $args=array())
+    {
+        $method = 'set'.$this->_camelize($key);
+        $this->$method($args);
+        return $this;
+    }
+
+    public function getDataUsingMethod($key, $args=null)
+    {
+        $method = 'get'.$this->_camelize($key);
+        return $this->$method($args);
+    }
+
+    /**
+     * Fast get data or set default if value is not available
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getDataSetDefault($key, $default)
+    {
+        if (!isset($this->_data[$key])) {
+            $this->_data[$key] = $default;
+        }
+        return $this->_data[$key];
     }
 
     /**
@@ -368,7 +413,9 @@ class Varien_Object
         if ($addOpenTag) {
             $xml.= '<?xml version="1.0" encoding="UTF-8"?>'."\n";
         }
-        $xml.= '<'.$rootName.'>'."\n";
+        if (!empty($rootName)) {
+            $xml.= '<'.$rootName.'>'."\n";
+        }
         $xmlModel = new Varien_Simplexml_Element('<node></node>');
         $arrData = $this->toArray($arrAttributes);
         foreach ($arrData as $fieldName => $fieldValue) {
@@ -379,7 +426,9 @@ class Varien_Object
             }
             $xml.= "<$fieldName>$fieldValue</$fieldName>"."\n";
         }
-        $xml.= '</'.$rootName.'>'."\n";
+        if (!empty($rootName)) {
+            $xml.= '</'.$rootName.'>'."\n";
+        }
         return $xml;
     }
 
@@ -465,30 +514,30 @@ class Varien_Object
     {
         switch (substr($method, 0, 3)) {
             case 'get' :
-//                Varien_Profiler::start('GETTER: '.get_class($this).'::'.$method);
+                //Varien_Profiler::start('GETTER: '.get_class($this).'::'.$method);
                 $key = $this->_underscore(substr($method,3));
                 $data = $this->getData($key, isset($args[0]) ? $args[0] : null);
-//                Varien_Profiler::stop('GETTER: '.get_class($this).'::'.$method);
+                //Varien_Profiler::stop('GETTER: '.get_class($this).'::'.$method);
                 return $data;
 
             case 'set' :
-//                Varien_Profiler::start('SETTER: '.get_class($this).'::'.$method);
+                //Varien_Profiler::start('SETTER: '.get_class($this).'::'.$method);
                 $key = $this->_underscore(substr($method,3));
                 $result = $this->setData($key, isset($args[0]) ? $args[0] : null);
-//                Varien_Profiler::stop('SETTER: '.get_class($this).'::'.$method);
+                //Varien_Profiler::stop('SETTER: '.get_class($this).'::'.$method);
                 return $result;
 
             case 'uns' :
-//                Varien_Profiler::start('UNS: '.get_class($this).'::'.$method);
+                //Varien_Profiler::start('UNS: '.get_class($this).'::'.$method);
                 $key = $this->_underscore(substr($method,3));
                 $result = $this->unsetData($key);
-//                Varien_Profiler::stop('UNS: '.get_class($this).'::'.$method);
+                //Varien_Profiler::stop('UNS: '.get_class($this).'::'.$method);
                 return $result;
 
             case 'has' :
-//                Varien_Profiler::start('HAS: '.get_class($this).'::'.$method);
+                //Varien_Profiler::start('HAS: '.get_class($this).'::'.$method);
                 $key = $this->_underscore(substr($method,3));
-//                Varien_Profiler::stop('HAS: '.get_class($this).'::'.$method);
+                //Varien_Profiler::stop('HAS: '.get_class($this).'::'.$method);
                 return isset($this->_data[$key]);
         }
         throw new Varien_Exception("Invalid method ".get_class($this)."::".$method."(".print_r($args,1).")");
@@ -552,6 +601,11 @@ class Varien_Object
         #Varien_Profiler::stop('underscore');
         self::$_underscoreCache[$name] = $result;
         return $result;
+    }
+
+    protected function _camelize($name)
+    {
+        return uc_words($name, '');
     }
 
     /**

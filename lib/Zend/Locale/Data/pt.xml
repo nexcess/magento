@@ -3238,11 +3238,11 @@
 			</currency>
 			<currency type="ROL">
 				<displayName>Leu romeno antigo</displayName>
-				<symbol choice="true">=0#lei Antigo|1#leu Antigo|1</symbol>
+				<symbol choice="true">0≤lei Antigo|1≤leu Antigo|1&lt;lei Antigo</symbol>
 			</currency>
 			<currency type="RON">
 				<displayName>Leu romeno</displayName>
-				<symbol choice="true">=0#lei|1#leu|1</symbol>
+				<symbol choice="true">0≤lei|1≤leu|1&lt;lei</symbol>
 			</currency>
 			<currency type="RSD">
 				<displayName>Dinar sérvio</displayName>

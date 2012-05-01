@@ -22,12 +22,12 @@
 /**
  * @see Zend_Gdata_Extension
  */
-require_once 'Zend/Gdata/Extension.php';
+#require_once 'Zend/Gdata/Extension.php';
 
 /**
  * @see Zend_Gdata_Extension
  */
-require_once 'Zend/Gdata/Calendar.php';
+#require_once 'Zend/Gdata/Calendar.php';
 
 /**
  * Represents the gCal:accessLevel element used by the Calendar data API

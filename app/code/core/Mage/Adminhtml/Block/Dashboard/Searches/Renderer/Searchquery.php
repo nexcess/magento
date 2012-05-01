@@ -30,8 +30,8 @@ class Mage_Adminhtml_Block_Dashboard_Searches_Renderer_Searchquery extends Mage_
     public function render(Varien_Object $row)
     {
         $value = $row->getData($this->getColumn()->getIndex());
-        if (strlen($value) > 30) {
-            $value = '<span title="'. $this->htmlEscape($value) .'">'. $this->htmlEscape(substr($value, 0, 30)).'...</span>';
+        if (Mage::helper('core/string')->strlen($value) > 30) {
+            $value = '<span title="'. $this->htmlEscape($value) .'">' . Mage::helper('core/string')->truncate($value, 30) . '</span>';
         }
         else {
             $value = $this->htmlEscape($value);

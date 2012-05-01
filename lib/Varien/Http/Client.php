@@ -23,6 +23,7 @@
  *
  * @category   Varien
  * @package    Varien_Http
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Http_Client extends Zend_Http_Client
 {

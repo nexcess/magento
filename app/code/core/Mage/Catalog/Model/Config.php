@@ -29,6 +29,8 @@ class Mage_Catalog_Model_Config extends Mage_Eav_Model_Config
 
     protected $_productTypesById;
 
+    const XML_PATH_PRODUCT_COLLECTION_ATTRIBUTES = 'frontend/product/collection/attributes';
+
     public function loadAttributeSets()
     {
         if ($this->_attributeSetsById) {
@@ -180,5 +182,16 @@ class Mage_Catalog_Model_Config extends Mage_Eav_Model_Config
             }
         }
         return null;
+    }
+
+    /**
+     * Load product attributes from config file
+     *
+     * @return array
+     */
+    public function getProductAttributes()
+    {
+        $attributes = Mage::getConfig()->getNode(self::XML_PATH_PRODUCT_COLLECTION_ATTRIBUTES)->asArray();
+        return array_keys($attributes);
     }
 }

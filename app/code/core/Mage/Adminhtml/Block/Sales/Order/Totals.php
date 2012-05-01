@@ -23,16 +23,27 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Totals extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
     /**
-     * Initialize template
+     * Retrieve required options from parent
      */
-    protected function _construct()
+    protected function _beforeToHtml()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/totals.phtml');
+        if (!$this->getParentBlock()) {
+            Mage::throwException(Mage::helper('adminhtml')->__('Invalid parrent block for this block'));
+        }
+        $this->setOrder($this->getParentBlock()->getOrder());
+        $this->setSource($this->getParentBlock()->getSource());
+        $this->setCurrency($this->getParentBlock()->getOrder()->getOrderCurrency());
+
+        foreach ($this->getParentBlock()->getOrderTotalData() as $k => $v) {
+            $this->setDataUsingMethod($k, $v);
+        }
+
+        parent::_beforeToHtml();
     }
 
     /**

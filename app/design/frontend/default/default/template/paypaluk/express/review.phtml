@@ -58,7 +58,7 @@
                                     <?php echo $_rate->getErrorMessage() ?>
                                 </option>
                            <?php else: ?>
-                               <option value="<?php echo $_rate->getCode() ?>" <?php if($_rate->getCode()===$this->getAddressShippingMethod()): ?>selected="selected"<?php endif ?>  style="margin-left:16px">
+                               <option value="<?php echo $_rate->getCode() ?>" <?php if($_rate->getCode()===$this->getAddressShippingMethod()): ?>selected="selected"<?php endif ?> style="margin-left:16px">
                                     <?php echo $_rate->getMethodDescription() ?> - <?php echo $_rate->getPrice() ?>
                                </option>
                            <?php endif ?>
@@ -84,7 +84,7 @@
             <div class="head">
                 <h4><?php echo $this->__('Payment Method') ?><span class="separator">|</span><a href="<?php echo $this->getUrl('paypaluk/express/edit') ?>"><?php echo $this->__('Change Payment Method') ?></a></h4>
             </div>
-            <?php echo $this->__('PayPal Uk Account') ?><br/>
+            <?php echo $this->__('PayPal Uk Account') ?><br />
             <?php echo $this->getBillingAddress()->getEmail() ?>
 
         </div>
@@ -107,7 +107,7 @@
                 <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt=""/> &nbsp; <?php echo $this->__('Submitting order information...') ?> &nbsp;
             </span>
             <span id="review-buttons-container">
-                <input type="image"  id="review-button" src="<?php echo $this->getSkinUrl('images/btn_place_order.gif') ?>" value="<?php echo $this->__('Place an Order') ?>" onclick="return saveOrder();"/>
+                <input type="image" id="review-button" src="<?php echo $this->getSkinUrl('images/btn_place_order.gif') ?>" value="<?php echo $this->__('Place an Order') ?>" onclick="return saveOrder();" />
             </span>
         </p>
     </form>

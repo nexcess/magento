@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_AddressController extends Mage_Core_Controller_Front_Action
 {
@@ -54,6 +55,9 @@ class Mage_Customer_AddressController extends Mage_Core_Controller_Front_Action
         if (count($this->_getSession()->getCustomer()->getAddresses())) {
             $this->loadLayout();
             $this->_initLayoutMessages('customer/session');
+            if ($block = $this->getLayout()->getBlock('address_book')) {
+                $block->setRefererUrl($this->_getRefererUrl());
+            }
             $this->renderLayout();
         }
         else {

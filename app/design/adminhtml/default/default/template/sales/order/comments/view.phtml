@@ -20,15 +20,27 @@
 ?>
 <?php if ($_entity = $this->getEntity()): ?>
 <div id="comments_block">
+    <span class="field-row">
+        <label class="normal" for="history_comment"><?php echo Mage::helper('sales')->__('Comment Text') ?></label>
+        <textarea name="comment[comment]" rows="3" cols="5" style="height:6em; width:99%;" id="history_comment"></textarea>
+    </span>
+    <div class="f-left">
+        <input name="comment[is_customer_notified]" type="checkbox" id="history_notify" value="1" />
+        <label class="normal" for="history_notify"><?php echo Mage::helper('sales')->__('Notify Customer') ?></label>
+    </div>
+    <div class="f-right">
+        <?php echo $this->getChildHtml('submit_button') ?>
+    </div>
+    <div class="clear"></div>
     <ul class="note-list">
-    <?php foreach ($_entity->getCommentsCollection() as $_comment): ?>
+    <?php foreach ($_entity->getCommentsCollection(true) as $_comment): ?>
         <li>
             <strong><?php echo $this->helper('core')->formatDate($_comment->getCreatedAt(), 'medium') ?></strong>
             <?php echo $this->helper('core')->formatTime($_comment->getCreatedAt(), 'medium') ?><span class="separator">|</span><small><?php echo $this->helper('sales')->__('Customer') ?>
             <strong class="subdue">
             <?php if ($_comment->getIsCustomerNotified()): ?>
             <?php echo $this->helper('sales')->__('Notified') ?>
-            <img src="<?php echo $this->getSkinUrl('images/ico_success.gif') ?>" width="16" height="16"/>
+            <img src="<?php echo $this->getSkinUrl('images/ico_success.gif') ?>" width="16" height="16" alt="" />
             <?php else: ?>
             <?php echo $this->helper('sales')->__('Not Notified') ?>
             <?php endif; ?>
@@ -38,25 +50,13 @@
         </li>
     <?php endforeach; ?>
     </ul>
-    <span class="field-row">
-        <label class="normal" for="history_comment"><?php echo Mage::helper('sales')->__('Comment Text') ?></label>
-        <textarea name="comment[comment]" class="input-text" style="height:6em;width:99%" id="history_comment"></textarea>
-    </span>
-    <div class="f-left">
-        <input name="comment[is_customer_notified]" type="checkbox" id="history_notify" value="1"/>
-        <label class="normal" for="history_notify"><?php echo Mage::helper('sales')->__('Notify Customer') ?></label>
-    </div>
-    <div class="f-right">
-        <?php echo $this->getChildHtml('submit_button') ?>
-    </div>
-    <div class="clear"></div>
 <script type="text/javascript">
 function submitComment() {
     submitAndReloadArea($('comments_block').parentNode, '<?php echo $this->getSubmitUrl() ?>')
 }
 
-if ($('submit_comment_buttom')) {
-    $('submit_comment_buttom').observe('click', submitComment);
+if ($('submit_comment_button')) {
+    $('submit_comment_button').observe('click', submitComment);
 }
 </script>
 </div>

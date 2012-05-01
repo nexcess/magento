@@ -56,6 +56,10 @@
                     <page title="Manage Pages" />
                     <poll title="Poll Manager" />
                 </cms>
+                <api title="Web Services" >
+                    <users title="Users"/>
+                    <roles title="Roles" />
+                </api>
                 <customer title="Customers" >
                     <group title="Customer Groups" />
                     <manage title="Manage Customers" />
@@ -111,7 +115,7 @@
                         <classes_customer title="Customer Tax Classes" />
                         <classes_product title="Product Tax Classes" />
                         <import_export title="Import / Export Tax Rates" />
-                        <rates title="Manage Tax Rates" />
+                        <rates title="Manage Tax Zones And Rates" />
                         <rules title="Manage Tax Rules" />
                     </tax>
                 </sales>

@@ -23,8 +23,11 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Block_Sales_Order_View_Tab_Shipments extends Mage_Adminhtml_Block_Widget_Grid
+class Mage_Adminhtml_Block_Sales_Order_View_Tab_Shipments
+    extends Mage_Adminhtml_Block_Widget_Grid
+    implements Mage_Adminhtml_Block_Widget_Tab_Interface
 {
     public function __construct()
     {
@@ -35,6 +38,7 @@ class Mage_Adminhtml_Block_Sales_Order_View_Tab_Shipments extends Mage_Adminhtml
 
     protected function _prepareCollection()
     {
+        //TODO: add full name logic
         $collection = Mage::getResourceModel('sales/order_shipment_collection')
             ->addAttributeToSelect('increment_id')
             ->addAttributeToSelect('created_at')
@@ -58,7 +62,7 @@ class Mage_Adminhtml_Block_Sales_Order_View_Tab_Shipments extends Mage_Adminhtml
         ));
 
         $this->addColumn('shipping_name', array(
-            'header' => Mage::helper('sales')->__('Ship to First Name'),
+            'header' => Mage::helper('sales')->__('Ship to Name'),
             'index' => 'shipping_name',
         ));
 
@@ -100,5 +104,31 @@ class Mage_Adminhtml_Block_Sales_Order_View_Tab_Shipments extends Mage_Adminhtml
     public function getGridUrl()
     {
         return $this->getUrl('*/*/shipments', array('_current' => true));
+    }
+
+    /**
+     * ######################## TAB settings #################################
+     */
+    public function getTabLabel()
+    {
+        return Mage::helper('sales')->__('Shipments');
+    }
+
+    public function getTabTitle()
+    {
+        return Mage::helper('sales')->__('Order Shipments');
+    }
+
+    public function canShowTab()
+    {
+        if ($this->getOrder()->getIsVirtual()) {
+            return false;
+        }
+        return true;
+    }
+
+    public function isHidden()
+    {
+        return false;
     }
 }

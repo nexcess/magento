@@ -32,18 +32,18 @@
     <?php echo $this->getToolbarHtml() ?>
     <table class="data-table box-table" id="my-tags-table" cellspacing="0">
     <?php if( sizeof($this->getMyProducts()) > 0 ): ?>
-        <col width="100"/>
-        <col/>
-        <col width="75"/>
+        <col width="100" />
+        <col />
+        <col width="75" />
         <tbody>
         <?php $iterator = 0 ?>
         <?php foreach($this->getMyProducts() as $_product): ?>
-            <tr <?php if($iterator % 2 == 0): ?>class="odd"<?php $iterator++;endif; ?>>
-                <td><a href="<?php echo $_product->getProductUrl(); ?>"><img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(100, 100); ?>" alt="" height="100" width="100"></a></td>
+            <tr<?php if($iterator % 2 == 0): ?> class="odd"<?php $iterator++;endif; ?>>
+                <td><a href="<?php echo $_product->getProductUrl(); ?>"><img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(100, 100); ?>" alt="" height="100" width="100" /></a></td>
                 <td>
                     <h5><a href="<?php echo $_product->getProductUrl() ?>"><?php echo $this->htmlEscape($_product->getName()) ?></a></h5>
-                    <?php echo $this->helper('catalog/product')->getPriceHtml($_product) ?>
-                    <?php echo $this->helper('review/product')->getSummaryHtml($_product, 'short') ?>
+                    <?php echo $this->getPriceHtml($_product) ?>
+                    <?php echo $this->getReviewsSummaryHtml($_product, 'short') ?>
                     <p><?php echo $_product->getDescription() ?></p>
                 </td>
                 <td class="a-center">
@@ -51,7 +51,7 @@
                         <button class="form-button" onclick="setLocation('<?php echo $this->getUrl('checkout/cart/add',array('product'=>$_product->getId())) ?>')"><span><?php echo $this->__('Add to Cart') ?></span></button>
                     <?php endif; ?>
                     <?php if ($this->helper('wishlist')->isAllow()) : ?>
-                    <br/><a href="<?php echo $this->getUrl('wishlist/index/add',array('product'=>$_product->getId())) ?>"><?php echo $this->__('Add to Wishlist') ?></a>
+                    <br /><a href="<?php echo $this->getUrl('wishlist/index/add',array('product'=>$_product->getId())) ?>"><?php echo $this->__('Add to Wishlist') ?></a>
                     <?php endif; ?>
                 </td>
             </tr>

@@ -21,6 +21,7 @@
 /**
  * Currency filter
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Directory_Model_Currency_Filter implements Zend_Filter_Interface
 {
@@ -62,7 +63,7 @@ class Mage_Directory_Model_Currency_Filter implements Zend_Filter_Interface
      */
     public function filter($value)
     {
-        $value = floatval($value);
+        $value = Mage::app()->getLocale()->getNumber($value);
         $value = Mage::app()->getStore()->roundPrice($this->_rate*$value);
         //$value = round($value, 2);
         $value = sprintf("%f", $value);

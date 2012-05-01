@@ -36,6 +36,9 @@
 
 <div class="bar-head">
     <h4>Manage Existing Extensions</h4>
+    <?php if (empty($_GET['updates'])): ?>
+        <span class="f-right"><button type="button" class="f-right" onclick="location.href = location.href.replace(/(#.*|$)/, '&updates=yes')">Check for Upgrades</button></span>
+    <?php endif; ?>
 </div>
 <?php $packages = $this->get('pear')->getAllPackages(); $i = 0; $cnt = count($packages); ?>
 <?php foreach ($packages as $channel=>$pkgs): ?>
@@ -44,7 +47,6 @@
 
     <button type="submit" class="f-right">Commit Changes</button>
     <h2 class="page-head">Channel: <?php echo $channel ?></h2>
-    <a href="#" onclick="upgradeAll(<?php echo $i ?>)" class="f-left">Select all upgradable extensions</a>
     <span class="f-right"><label for="clean_sessions">Clear all sessions after successfull install or upgrade: <input type="checkbox" id="clean_sessions"/></label></span>
     <div class="clear"></div>
 
@@ -53,8 +55,7 @@
             <tr>
                 <th class="first">Package Name</th>
                 <th>Installed</th>
-                <th>Available</th>
-                <th>State</th>
+                <?php if (!empty($_GET['updates'])): ?><th>Available</th><?php endif; ?>
                 <th>Actions</th>
                 <th class="last">Summary</th>
             </tr>
@@ -63,27 +64,30 @@
         <?php foreach ($pkgs as $pkgName=>$pkg): ?>
             <tr class="<?php echo $pkg['status']?>">
                 <td class="first"><?php echo $pkgName?></td>
-                <td><?php echo $pkg['local_version']?>&nbsp;</td>
-                <td><?php echo $pkg['remote_version']?>&nbsp;</td>
-                <td><?php echo $pkg['state']?>&nbsp;</td>
-                <td><select name="actions[<?php echo $channel.'|'.$pkgName.'|'.$pkg['remote_version'] ?>]" style="width:100%">
+                <td><?php echo $pkg['local_version'].' ('.$pkg['local_state'].')'?>&nbsp;</td>
+                <?php if (!empty($_GET['updates'])): ?><td><?php echo $pkg['upgrade_latest']?>&nbsp;</td><?php endif; ?>
+                <td><select name="actions[<?php echo $channel.'|'.$pkgName ?>]" style="width:100%">
                     <option selected="selected"></option>
                     <?php foreach ($pkg['actions'] as $k=>$v): ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                     <?php endforeach; ?>
                 </select>
                 </td>
-                <td class="last"><?php echo $pkg['summary']?>&nbsp;</td>
+                <td class="last"><?php echo $pkg['summary']?></td>
             </tr>
         <?php endforeach; /*channel*/ ?>
         </tbody>
     </table>
     <div class="clear"></div>
-
+    
     <div class="form-btn-set">
+        <button type="submit" class="f-right">Commit Changes</button>
+        <?php if (!empty($_GET['updates'])): ?>
         <p class="f-left a-left">
-        <span style="background:#f6f6f6;padding:0 5px;">&nbsp;</span> &nbsp;Installed<br/>
-        <span style="background:#fcfbbb;padding:0 5px;">&nbsp;</span> &nbsp;Upgrade Available<br/>
+            <span style="background:#f6f6f6;padding:0 5px;">&nbsp;</span> &nbsp;Installed<br/>
+            <span style="background:#fcfbbb;padding:0 5px;">&nbsp;</span> &nbsp;Upgrade Available<br/>
+        </p>
+        <?php endif; ?>
     </div>
 </form>
 <script type="text/javascript">
@@ -93,27 +97,6 @@ $$('#pear_packages_'+<?php echo $i?>+' select').each(function(el){el.value=''});
 <br/>
 <?php endforeach; /*all packages*/ ?>
 
-<script type="text/javascript">
-function upgradeAll(formId)
-{
-    var i, upgrade=false;
-
-    $$('#pear_packages_'+formId+' select').each(function(el) {
-        for (i=0; i<el.options.length; i++) {
-            if (el.options[i].value=='upgrade') {
-                el.value = 'upgrade';
-                upgrade = true;
-            }
-        }
-    });
-    if (upgrade) {
-        alert('All available upgrades has been selected. Please click "Commit Changes" button to proceed.');
-    } else {
-        alert('No upgrades were found');
-    }
-}
-
-</script>
 
 <?php echo $this->template('pear/iframe.phtml') ?>
 

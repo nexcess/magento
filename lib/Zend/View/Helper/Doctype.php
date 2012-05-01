@@ -20,7 +20,7 @@
  */
 
 /** Zend_Registry */
-require_once 'Zend/Registry.php';
+#require_once 'Zend/Registry.php';
 
 /**
  * Helper for setting and retrieving the doctype
@@ -110,7 +110,7 @@ class Zend_View_Helper_Doctype
                     break;
                 default:
                     if (substr($doctype, 0, 9) != '<!DOCTYPE') {
-                        require_once 'Zend/View/Exception.php';
+                        #require_once 'Zend/View/Exception.php';
                         throw new Zend_View_Exception('The specified doctype is malformed');
                     }
                     if (stristr($doctype, 'xhtml')) {

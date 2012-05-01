@@ -23,12 +23,30 @@
  *
  * @category   Mage
  * @package    Mage_Review
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Review_Model_Review_Summary extends Mage_Core_Model_Abstract
 {
+
     public function __construct()
     {
         $this->_init('review/review_summary');
     }
+
+    public function getEntityPkValue()
+    {
+        return $this->_getData('entity_pk_value');
+    }
+
+    public function getRatingSummary()
+    {
+        return $this->_getData('rating_summary');
+    }
+
+    public function getReviewsCount()
+    {
+        return $this->_getData('reviews_count');
+    }
+
 }

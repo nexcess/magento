@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_View_Giftmessage extends Mage_Adminhtml_Block_Widget
 {
@@ -40,10 +41,12 @@ class Mage_Adminhtml_Block_Sales_Order_View_Giftmessage extends Mage_Adminhtml_B
      */
     protected $_giftMessage;
 
-    public function __construct()
+    protected function _beforeToHtml()
     {
-        parent::__construct();
-        $this->setTemplate('sales/order/view/giftmessage.phtml');
+        if ($this->getParentBlock() && ($order = $this->getParentBlock()->getOrder())) {
+            $this->setEntity($order);
+        }
+        parent::_beforeToHtml();
     }
 
     /**

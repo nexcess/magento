@@ -21,6 +21,7 @@
 /**
  * Catalog category helper
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Helper_Product extends Mage_Core_Helper_Url
 {
@@ -119,33 +120,14 @@ class Mage_Catalog_Helper_Product extends Mage_Core_Helper_Url
 
     public function getEmailToFriendUrl($product)
     {
-        return $this->_getUrl('sendfriend/product/send', array('id'=>$product->getId()));
-    }
-
-    /**
-     * Retrieve product price html block
-     *
-     * @param   Mage_Catalog_Model_Product $product
-     * @param   bool $displayMinimalPrice
-     * @return  string
-     */
-    public function getPriceHtml($product, $displayMinimalPrice = false)
-    {
-        if (is_null($this->_priceBlock)) {
-            $className = Mage::getConfig()->getBlockClassName('core/template');
-            $block = new $className();
-            $block->setType('core/template')
-                ->setIsAnonymous(true)
-                ->setTemplate('catalog/product/price.phtml');
-            // TODO make nice block name to be able to set template form the layout
-            $this->_priceBlock = $block;
+        $categoryId = null;
+        if ($category = Mage::registry('current_category')) {
+            $categoryId = $category->getId();
         }
-        $html = '';
-
-        $this->_priceBlock->setProduct($product);
-        $this->_priceBlock->setDisplayMinimalPrice($displayMinimalPrice);
-
-        return $this->_priceBlock->toHtml();
+        return $this->_getUrl('sendfriend/product/send', array(
+            'id' => $product->getId(),
+            'cat_id' => $categoryId
+        ));
     }
 
     public function getStatuses()
@@ -155,41 +137,6 @@ class Mage_Catalog_Helper_Product extends Mage_Core_Helper_Url
         }
 
         return $this->_statuses;
-    }
-
-    /**
-     * Retrieve product description
-     *
-     * @param   Mage_Catalog_Model_Product $item
-     * @return  string
-     */
-    public function getProductDescription($product)
-    {
-        if ($superProduct = $product->getSuperProduct()) {
-            if ($superProduct->isConfigurable()) {
-                return $this->_getConfigurableProductDescription($product->getProduct());
-            }
-        }
-        return '';
-    }
-
-    protected function _getConfigurableProductDescription($product)
-    {
- 		$html = '<ul class="super-product-attributes">';
- 		$attributes = $product->getSuperProduct()->getTypeInstance()->getUsedProductAttributes();
- 		foreach ($attributes as $attribute) {
- 			$html.= '<li><strong>' . $attribute->getFrontend()->getLabel() . ':</strong> ';
- 			if($attribute->getSourceModel()) {
- 				$html.= $this->htmlEscape(
- 				   $attribute->getSource()->getOptionText($product->getData($attribute->getAttributeCode()))
-                );
- 			} else {
- 				$html.= $this->htmlEscape($product->getData($attribute->getAttributeCode()));
- 			}
- 			$html.='</li>';
- 		}
- 		$html.='</ul>';
-        return $html;
     }
 
     /**

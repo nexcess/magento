@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Backup extends Mage_Adminhtml_Block_Template
@@ -41,7 +42,7 @@ class Mage_Adminhtml_Block_Backup extends Mage_Adminhtml_Block_Template
                 ->setData(array(
                     'label' => Mage::helper('backup')->__('Create Backup'),
                     'onclick' => "window.location.href='" . $this->getUrl('*/*/create') . "'",
-                                        'class'  => 'task'
+                    'class'  => 'task'
                 ))
         );
         $this->setChild('backupsGrid',

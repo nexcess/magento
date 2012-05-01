@@ -22,7 +22,7 @@
 /**
  * @see Zend_Gdata_App_CaptchaRequiredException
  */
-require_once 'Zend/Gdata/App/AuthException.php';
+#require_once 'Zend/Gdata/App/AuthException.php';
 
 /**
  * Gdata exceptions

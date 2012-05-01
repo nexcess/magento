@@ -23,17 +23,17 @@
 /**
  * Zend_Loader
  */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 /**
  * Zend_Date
  */
-require_once 'Zend/Date.php';
+#require_once 'Zend/Date.php';
 
 /**
  * Zend_TimeSync_Exception
  */
-require_once 'Zend/TimeSync/Exception.php';
+#require_once 'Zend/TimeSync/Exception.php';
 
 /**
  * @category   Zend

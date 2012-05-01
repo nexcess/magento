@@ -23,15 +23,13 @@
  * Template for Mage_Page_Block_Html
  */
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->getLang() ?>" lang="<?php echo $this->getLang() ?>">
 <head>
     <?php echo $this->getChildHtml('head') ?>
 </head>
-
 <body <?php echo $this->getBodyClass()?'class="'.$this->getBodyClass().'"':'' ?>>
-
+<div class="wrapper">
     <!--<p class="demo-notice"><span><?php echo $this->__('This is a demo store. Any orders placed through this store will not be honored or fulfilled.') ?></span></p>-->
         <!-- [start] header -->
         <div class="header">
@@ -74,5 +72,6 @@
         <!-- [end] footer -->
 
 <?php echo $this->getChildHtml('before_body_end') ?>
-    </body>
+</div>
+</body>
 </html>

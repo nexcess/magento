@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Checkout_Block_Onepage_Progress extends Mage_Checkout_Block_Onepage_Abstract
 {
@@ -51,13 +52,31 @@ class Mage_Checkout_Block_Onepage_Progress extends Mage_Checkout_Block_Onepage_A
         /*$amount = $this->getQuote()->getShippingAddress()->getShippingAmount();
         $filter = Mage::app()->getStore()->getPriceFilter();
         return $filter->filter($amount);*/
-        return $this->helper('checkout')->formatPrice(
-            $this->getQuote()->getShippingAddress()->getShippingAmount()
-        );
+        //return $this->helper('checkout')->formatPrice(
+        //    $this->getQuote()->getShippingAddress()->getShippingAmount()
+        //);
+        return $this->getQuote()->getShippingAddress()->getShippingAmount();
     }
 
     public function getPaymentHtml()
     {
         return $this->getChildHtml('payment_info');
+    }
+
+    public function getShippingPriceInclTax()
+    {
+        $exclTax = $this->getQuote()->getShippingAddress()->getShippingAmount();
+        $taxAmount = $this->getQuote()->getShippingAddress()->getShippingTaxAmount();
+        return $this->formatPrice($exclTax + $taxAmount);
+    }
+
+    public function getShippingPriceExclTax()
+    {
+        return $this->formatPrice($this->getQuote()->getShippingAddress()->getShippingAmount());
+    }
+
+    public function formatPrice($price)
+    {
+        return $this->getQuote()->getStore()->formatPrice($price);
     }
 }

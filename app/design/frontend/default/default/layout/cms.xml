@@ -41,6 +41,7 @@ Default layout, loads most of the pages
             <block type="cms/page" name="cms_page"/>
         </reference>
     </cms_page>
+    
 
     <cms_index_defaultindex>
         <remove name="right"/>

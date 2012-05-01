@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Catalog_Product_Attribute_Edit_Tab_Main extends Mage_Adminhtml_Block_Widget_Form
 {
@@ -38,7 +39,15 @@ class Mage_Adminhtml_Block_Catalog_Product_Attribute_Edit_Tab_Main extends Mage_
             'method' => 'post'
         ));
 
-
+        $disableAttributeFields = array(
+            'sku'       => array(
+                'is_global',
+                'is_unique',
+            ),
+            'url_key'   => array(
+                'is_unique',
+            ),
+        );
 
         $fieldset = $form->addFieldset('base_fieldset',
             array('legend'=>Mage::helper('catalog')->__('Attribute Properties'))
@@ -63,8 +72,8 @@ class Mage_Adminhtml_Block_Catalog_Product_Attribute_Edit_Tab_Main extends Mage_
 
         $fieldset->addField('attribute_code', 'text', array(
             'name'  => 'attribute_code',
-            'label' => Mage::helper('catalog')->__('Attribute Identifier'),
-            'title' => Mage::helper('catalog')->__('Attribute Identifier'),
+            'label' => Mage::helper('catalog')->__('Attribute Code'),
+            'title' => Mage::helper('catalog')->__('Attribute Code'),
             'note'  => Mage::helper('catalog')->__('For internal use. Must be unique with no spaces'),
             'class' => 'validate-code',
             'required' => true,
@@ -297,6 +306,12 @@ class Mage_Adminhtml_Block_Catalog_Product_Attribute_Edit_Tab_Main extends Mage_
         if ($model->getId()) {
             $form->getElement('attribute_code')->setDisabled(1);
             $form->getElement('frontend_input')->setDisabled(1);
+
+            if (isset($disableAttributeFields[$model->getAttributeCode()])) {
+                foreach ($disableAttributeFields[$model->getAttributeCode()] as $field) {
+                    $form->getElement($field)->setDisabled(1);
+                }
+            }
         }
         if (!$model->getIsUserDefined() && $model->getId()) {
             $form->getElement('is_unique')->setDisabled(1);

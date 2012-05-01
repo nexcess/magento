@@ -20,25 +20,25 @@
 
 
 /** Zend_Pdf_Element_Object */
-require_once 'Zend/Pdf/Element/Object.php';
+#require_once 'Zend/Pdf/Element/Object.php';
 
 /** Zend_Pdf_Element_Stream */
-require_once 'Zend/Pdf/Element/Stream.php';
+#require_once 'Zend/Pdf/Element/Stream.php';
 
 /** Zend_Pdf_Filter_Ascii85 */
-require_once 'Zend/Pdf/Filter/Ascii85.php';
+#require_once 'Zend/Pdf/Filter/Ascii85.php';
 
 /** Zend_Pdf_Filter_AsciiHex */
-require_once 'Zend/Pdf/Filter/AsciiHex.php';
+#require_once 'Zend/Pdf/Filter/AsciiHex.php';
 
 /** Zend_Pdf_Filter_Compression_Flate */
-require_once 'Zend/Pdf/Filter/Compression/Flate.php';
+#require_once 'Zend/Pdf/Filter/Compression/Flate.php';
 
 /** Zend_Pdf_Filter_Compression_Lzw */
-require_once 'Zend/Pdf/Filter/Compression/Lzw.php';
+#require_once 'Zend/Pdf/Filter/Compression/Lzw.php';
 
 /** Zend_Pdf_ElementFactory */
-require_once 'Zend/Pdf/ElementFactory.php';
+#require_once 'Zend/Pdf/ElementFactory.php';
 
 
 /**

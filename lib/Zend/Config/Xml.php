@@ -23,7 +23,7 @@
 /**
  * @see Zend_Config
  */
-require_once 'Zend/Config.php';
+#require_once 'Zend/Config.php';
 
 
 /**
@@ -59,7 +59,7 @@ class Zend_Config_Xml extends Zend_Config
             /**
              * @see Zend_Config_Exception
              */
-            require_once 'Zend/Config/Exception.php';
+            #require_once 'Zend/Config/Exception.php';
             throw new Zend_Config_Exception('Filename is not set');
         }
 
@@ -78,7 +78,7 @@ class Zend_Config_Xml extends Zend_Config
                     /**
                      * @see Zend_Config_Exception
                      */
-                    require_once 'Zend/Config/Exception.php';
+                    #require_once 'Zend/Config/Exception.php';
                     throw new Zend_Config_Exception("Section '$sectionName' cannot be found in $filename");
                 }
                 $dataArray = array_merge($this->_processExtends($config, $sectionName), $dataArray);
@@ -89,7 +89,7 @@ class Zend_Config_Xml extends Zend_Config
                 /**
                  * @see Zend_Config_Exception
                  */
-                require_once 'Zend/Config/Exception.php';
+                #require_once 'Zend/Config/Exception.php';
                 throw new Zend_Config_Exception("Section '$section' cannot be found in $filename");
             }
             $dataArray = $this->_processExtends($config, $section);
@@ -120,7 +120,7 @@ class Zend_Config_Xml extends Zend_Config
             /**
              * @see Zend_Config_Exception
              */
-            require_once 'Zend/Config/Exception.php';
+            #require_once 'Zend/Config/Exception.php';
             throw new Zend_Config_Exception("Section '$section' cannot be found");
         }
 

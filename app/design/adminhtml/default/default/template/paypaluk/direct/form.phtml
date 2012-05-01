@@ -81,6 +81,7 @@
                  <?php endforeach ?>
                  </select>
                 </li>
+                <li class="adv-container"></li>
                </ul>
             </div>
             <script type="text/javascript">
@@ -111,8 +112,48 @@
     </ul>
 <script type="text/javascript">
 Validation.addAllThese([
-    ['validate-cc-ukss', 'Please bla bla.', function(v) {
-                return false;
-            }]
+    ['validate-cc-ukss', 'Please enter issue number or start date for switch/solo card type.', function(v,elm) {
+              var endposition;
+
+              if (elm.id.match(/(.)+_cc_issue$/)) {
+                  endposition = elm.id.indexOf('_cc_issue');
+              } else if (elm.id.match(/(.)+_start_month$/)) {
+                  endposition = elm.id.indexOf('_start_month');
+              } else {
+                  endposition = elm.id.indexOf('_start_year');
+              }
+
+              var prefix = elm.id.substr(0,endposition);
+
+              var ccTypeContainer = $(prefix + '_cc_type');
+
+              if (!ccTypeContainer) {
+                    return true;
+              }
+              var ccType = ccTypeContainer.value;
+
+              if(ccType!='SS'){
+                  return true;
+              }
+
+              $(prefix + '_cc_issue').advaiceContainer
+                = $(prefix + '_start_month').advaiceContainer
+                = $(prefix + '_start_year').advaiceContainer
+                = $(prefix + '_cc_type_ss_div').down('ul li.adv-container');
+
+              var ccIssue   =  $(prefix + '_cc_issue').value;
+              var ccSMonth  =  $(prefix + '_start_month').value;
+              var ccSYear   =  $(prefix + '_start_year').value;
+
+              if((!ccIssue && !ccSMonth && !ccSYear) ||
+                 (!ccIssue && !ccSMonth && ccSYear)  ||
+                 (!ccIssue && ccSMonth && !ccSYear)
+              ){
+                  return false;
+              }
+
+              return true;
+
+    }]
 ]);
 </script>

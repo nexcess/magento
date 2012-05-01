@@ -21,6 +21,7 @@
 /**
  * Abstract model for import currency
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Directory_Model_Currency_Import_Abstract
 {
@@ -87,7 +88,7 @@ abstract class Mage_Directory_Model_Currency_Import_Abstract
         $data = array();
         $currencies = $this->_getCurrencyCodes();
         $defaultCurrencies = $this->_getDefaultCurrencyCodes();
-        set_time_limit(0);
+        @set_time_limit(0);
         foreach ($defaultCurrencies as $currencyFrom) {
             if (!isset($data[$currencyFrom])) {
                 $data[$currencyFrom] = array();

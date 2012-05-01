@@ -24,8 +24,9 @@
  *
  * @category   Mage
  * @package    Mage_Wishlist
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Wishlist_Block_Customer_Wishlist extends Mage_Core_Block_Template
+class Mage_Wishlist_Block_Customer_Wishlist extends Mage_Catalog_Block_Product_Abstract
 {
 
     protected $_wishlistLoaded = false;
@@ -42,21 +43,11 @@ class Mage_Wishlist_Block_Customer_Wishlist extends Mage_Core_Block_Template
         if(!$this->_wishlistLoaded) {
             Mage::registry('wishlist')
                 ->loadByCustomer(Mage::getSingleton('customer/session')->getCustomer());
+
             $collection = Mage::registry('wishlist')->getProductCollection()
-                ->addAttributeToSelect('name')
-                ->addAttributeToSelect('price')
-                ->addAttributeToSelect('special_price')
-                ->addAttributeToSelect('special_from_date')
-                ->addAttributeToSelect('special_to_date')
-                ->addAttributeToSelect('image')
-                ->addAttributeToSelect('thumbnail')
-                ->addAttributeToSelect('small_image')
-                ->addAttributeToSelect('tax_class_id')
+                ->addAttributeToSelect(Mage::getSingleton('catalog/config')->getProductAttributes())
                 ->addAttributeToFilter('store_id', array('in'=>Mage::registry('wishlist')->getSharedStoreIds()))
                 ->addStoreFilter();
-
-
-
 
             Mage::getSingleton('catalog/product_status')->addVisibleFilterToCollection($collection);
             Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($collection);
@@ -69,7 +60,7 @@ class Mage_Wishlist_Block_Customer_Wishlist extends Mage_Core_Block_Template
 
     public function getEscapedDescription(Varien_Object $item)
     {
-        return $this->htmlEscape($item->getDescription());
+        return $this->htmlEscape($item->getWishlistItemDescription());
     }
 
     public function getFormatedDate($date)
@@ -89,6 +80,9 @@ class Mage_Wishlist_Block_Customer_Wishlist extends Mage_Core_Block_Template
 
     public function getBackUrl()
     {
+        if ($this->getRefererUrl()) {
+            return $this->getRefererUrl();
+        }
         return $this->getUrl('customer/account/');
     }
 

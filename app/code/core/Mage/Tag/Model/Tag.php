@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Tag
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Tag_Model_Tag extends Mage_Core_Model_Abstract
@@ -34,6 +35,32 @@ class Mage_Tag_Model_Tag extends Mage_Core_Model_Abstract
     protected function _construct()
     {
         $this->_init('tag/tag');
+    }
+
+    public function getPopularity()
+    {
+        return $this->_getData('popularity');
+    }
+
+    public function getName()
+    {
+        return $this->_getData('name');
+    }
+
+    public function getTagId()
+    {
+        return $this->_getData('tag_id');
+    }
+
+    public function getRatio()
+    {
+        return $this->_getData('ratio');
+    }
+
+    public function setRatio($ratio)
+    {
+        $this->setData('ratio', $ratio);
+        return $this;
     }
 
     public function loadByName($name)
@@ -110,7 +137,7 @@ class Mage_Tag_Model_Tag extends Mage_Core_Model_Abstract
     {
         return Mage::getUrl('tag/customer/remove', array('tagId' => $this->getTagId()));
     }
-    
+
     public function getPopularCollection()
     {
         return Mage::getResourceModel('tag/popular_collection');

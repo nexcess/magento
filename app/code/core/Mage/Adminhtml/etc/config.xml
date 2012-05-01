@@ -23,9 +23,6 @@
     <modules>
         <Mage_Adminhtml>
             <version>0.7.1</version>
-            <depends>
-                <Mage_Admin />
-            </depends>
         </Mage_Adminhtml>
     </modules>
 
@@ -53,6 +50,18 @@
                 </system_emails_forgot_email_template>
             </email>
         </template>
+
+        <events>
+            <adminhtml_controller_action_predispatch_start>
+                <observers>
+                    <store>
+                        <type>singleton</type>
+                        <class>adminhtml/observer</class>
+                        <method>bindStore</method>
+                    </store>
+                </observers>
+            </adminhtml_controller_action_predispatch_start>
+        </events>
     </global>
 
     <admin>
@@ -69,20 +78,15 @@
 
     <adminhtml>
         <events>
-            <controller_action_predispatch_admin>
+            <controller_action_predispatch>
                 <observers>
                     <auth>
                         <type>singleton</type>
                         <class>admin/observer</class>
                         <method>actionPreDispatchAdmin</method>
                     </auth>
-                    <store>
-                        <type>singleton</type>
-                        <class>adminhtml/observer</class>
-                        <method>bindStore</method>
-                    </store>
                 </observers>
-            </controller_action_predispatch_admin>
+            </controller_action_predispatch>
             <core_locale_set_locale>
                 <observers>
                     <bind_locale>
@@ -119,6 +123,7 @@
                 <sort_order>10</sort_order>
                 <action>adminhtml/dashboard</action>
             </dashboard>
+
             <system translate="title" module="adminhtml">
                 <title>System</title>
                 <sort_order>90</sort_order>
@@ -127,16 +132,34 @@
                     <myaccount translate="title" module="adminhtml">
                         <title>My Account</title>
                         <action>adminhtml/system_account</action>
+                        <sort_order>10</sort_order>
                     </myaccount>
                     <tools translate="title" module="adminhtml">
                         <title>Tools</title>
+                        <sort_order>20</sort_order>
                     </tools>
+                    <api translate="title" module="adminhtml">
+                        <title>Web Services</title>
+                        <sort_order>25</sort_order>
+                        <children>
+                            <users translate="title" module="adminhtml">
+                                <title>Users</title>
+                                <action>adminhtml/api_user</action>
+                            </users>
+                            <roles translate="title" module="adminhtml">
+                                <title>Roles</title>
+                                <action>adminhtml/api_role</action>
+                            </roles>
+                        </children>
+                    </api>
                     <design translate="title" module="adminhtml">
                         <title>Design</title>
                         <action>adminhtml/system_design</action>
+                        <sort_order>30</sort_order>
                     </design>
                     <convert translate="title" module="adminhtml">
                         <title>Import/Export</title>
+                        <sort_order>40</sort_order>
                         <children>
                             <gui translate="title" module="adminhtml">
                                 <title>Profiles</title>
@@ -151,13 +174,16 @@
                     <currency translate="title" module="adminhtml">
                         <title>Manage Currency Rates</title>
                         <action>adminhtml/system_currency</action>
+                        <sort_order>50</sort_order>
                     </currency>
                     <email_template translate="title" module="adminhtml">
                         <title>Transactional Emails</title>
                         <action>adminhtml/system_email_template</action>
+                        <sort_order>60</sort_order>
                     </email_template>
                     <acl translate="title" module="adminhtml">
                         <title>Permissions</title>
+                        <sort_order>70</sort_order>
                         <children>
                             <users translate="title" module="adminhtml">
                                 <title>Users</title>
@@ -170,7 +196,8 @@
                         </children>
                     </acl>
                     <extensions translate="title" module="adminhtml">
-                        <title>Magento Extensions</title>
+                        <title>Magento Connect</title>
+                        <sort_order>80</sort_order>
                         <children>
                             <local translate="title" module="adminhtml">
                                 <title>Manage Extensions</title>
@@ -183,16 +210,19 @@
                         </children>
                     </extensions>
                     <cache translate="title" module="adminhtml">
-                        <title>Cache management</title>
+                        <title>Cache Management</title>
                         <action>adminhtml/system_cache</action>
+                        <sort_order>90</sort_order>
                     </cache>
                     <store translate="title" module="core">
                         <title>Manage Stores</title>
                         <action>adminhtml/system_store/</action>
+                        <sort_order>100</sort_order>
                     </store>
                     <config translate="title" module="adminhtml">
                         <title>Configuration</title>
                         <action>adminhtml/system_config</action>
+                        <sort_order>110</sort_order>
                     </config>
                 </children>
             </system>
@@ -254,10 +284,26 @@
                                             <title>Customers Section</title>
                                             <sort_order>50</sort_order>
                                         </customer>
-                                            <sales>
+                                        <tax>
+                                            <title>Tax Section</title>
+                                            <sort_order>55</sort_order>
+                                        </tax>
+                                        <sales>
                                             <title>Sales Section</title>
                                             <sort_order>60</sort_order>
                                         </sales>
+                                        <sales_email>
+                                            <title>Sales Emails Section</title>
+                                            <sort_order>65</sort_order>
+                                        </sales_email>
+                                        <checkout>
+                                            <title>Checkout Section</title>
+                                            <sort_order>70</sort_order>
+                                        </checkout>
+                                        <strikeiron>
+                                            <title>Strikeiron Section</title>
+                                            <sort_order>75</sort_order>
+                                        </strikeiron>
                                         <system>
                                             <title>System Section</title>
                                             <sort_order>80</sort_order>
@@ -282,10 +328,18 @@
                                             <title>Allowed Settings</title>
                                             <sort_order>130</sort_order>
                                         </allow>
+                                        <rss>
+                                            <title>Rss Feeds Section</title>
+                                            <sort_order>135</sort_order>
+                                        </rss>
                                         <sendfriend>
                                             <title>Email to a Friend</title>
                                             <sort_order>140</sort_order>
                                         </sendfriend>
+                                        <admin>
+                                            <title>Advanced Admin Section</title>
+                                            <sort_order>100</sort_order>
+                                        </admin>
                                     </children>
                                 </config>
                                 <currency>
@@ -340,16 +394,16 @@
                                     <title>Cache Management</title>
                                 </cache>
                                 <extensions>
-                                    <title>Extensions</title>
+                                    <title>Magento Connect</title>
                                     <children>
                                         <local>
-                                            <title>Locally Installed</title>
+                                            <title>Manage Extensions</title>
                                         </local>
                                         <remote>
                                             <title>Available Remote</title>
                                         </remote>
                                         <custom>
-                                            <title>Custom Local</title>
+                                            <title>Package Extensions</title>
                                         </custom>
                                         <config>
                                             <title>PEAR Configuration</title>
@@ -387,8 +441,21 @@
                 <adminhtml>
                     <file>main.xml</file>
                 </adminhtml>
+                <catalog>
+                    <file>catalog.xml</file>
+                </catalog>
             </updates>
         </layout>
+        <sales>
+            <order>
+                <create>
+                    <available_product_types>
+                        <simple/>
+                        <virtual/>
+                    </available_product_types>
+                </create>
+            </order>
+        </sales>
     </adminhtml>
     <default>
         <system>
@@ -411,4 +478,16 @@
             </design>
         </admin>
     </stores>
+    <websites>
+        <admin>
+            <web>
+                <routers>
+                    <frontend><disabled>true</disabled></frontend>
+                </routers>
+                <default>
+                    <no_route>admin/index/noRoute</no_route>
+                </default>
+            </web>
+        </admin>
+    </websites>
 </config>

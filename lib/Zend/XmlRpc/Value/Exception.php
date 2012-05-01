@@ -23,7 +23,7 @@
 /**
  * Zend_XmlRpc_Exception
  */
-require_once 'Zend/XmlRpc/Exception.php';
+#require_once 'Zend/XmlRpc/Exception.php';
 
 
 /**

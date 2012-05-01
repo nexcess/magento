@@ -94,12 +94,18 @@ class Mage_Sales_Model_Order_Invoice_Item extends Mage_Core_Model_Abstract
      */
     public function setQty($qty)
     {
-        $qty = (float) $qty;
+        if ($this->getOrderItem()->getIsQtyDecimal()) {
+            $qty = (float) $qty;
+        }
+        else {
+            $qty = (int) $qty;
+        }
         $qty = $qty > 0 ? $qty : 0;
         /**
          * Check qty availability
          */
-        if ($qty <= $this->getOrderItem()->getQtyToInvoice()) {
+
+        if ($qty <= $this->getOrderItem()->getQtyToInvoice() || $this->getOrderItem()->isDummy()) {
             $this->setData('qty', $qty);
         }
         else {

@@ -24,6 +24,7 @@
  *
  * @category   Varien
  * @package    Varien_Crypt
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Varien_Crypt_Abstract extends Varien_Object
 {

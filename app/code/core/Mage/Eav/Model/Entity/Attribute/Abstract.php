@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Eav_Model_Entity_Attribute_Abstract
     extends Mage_Core_Model_Abstract
@@ -65,8 +66,14 @@ abstract class Mage_Eav_Model_Entity_Attribute_Abstract
     protected $_source;
 
     /**
-     * Enter description here...
+     * Attribute id cache
      *
+     * @var array
+     */
+    protected $_attributeIdCache = array();
+
+    /**
+     * Initialize resource model
      */
     protected function _construct()
     {
@@ -74,11 +81,11 @@ abstract class Mage_Eav_Model_Entity_Attribute_Abstract
     }
 
     /**
-     * Enter description here...
+     * Load attribute data by code
      *
-     * @param unknown_type $entityType
-     * @param unknown_type $code
-     * @return unknown
+     * @param   mixed $entityType
+     * @param   string $code
+     * @return  Mage_Eav_Model_Entity_Attribute_Abstract
      */
     public function loadByCode($entityType, $code)
     {
@@ -94,6 +101,7 @@ abstract class Mage_Eav_Model_Entity_Attribute_Abstract
             throw Mage::exception('Mage_Eav', Mage::helper('eav')->__('Invalid entity supplied'));
         }
         $this->_getResource()->loadByCode($this, $entityTypeId, $code);
+        $this->_afterLoad();
         return $this;
     }
 
@@ -133,11 +141,6 @@ abstract class Mage_Eav_Model_Entity_Attribute_Abstract
         return $this->setData('attribute_code', $data);
     }
 
-    /**
-     * Enter description here...
-     *
-     * @return string
-     */
     public function getAttributeCode()
     {
         return (isset($this->_data['attribute_code'])) ? $this->_data['attribute_code'] : null;
@@ -191,6 +194,39 @@ abstract class Mage_Eav_Model_Entity_Attribute_Abstract
     public function getDefaultValue()
     {
         return (isset($this->_data['default_value'])) ? $this->_data['default_value'] : null;
+    }
+
+    public function getAttributeSetId()
+    {
+        return isset($this->_data['attribute_set_id'] ) ? $this->_data['attribute_set_id'] : null;
+    }
+
+    public function setAttributeSetId($id)
+    {
+        $this->_data['attribute_set_id'] = $id;
+        return $this;
+    }
+
+    public function getEntityTypeId()
+    {
+        return $this->getData('entity_type_id');
+    }
+
+    public function setEntityTypeId($id)
+    {
+        $this->_data['entity_type_id'] = $id;
+        return $this;
+    }
+
+    public function setEntityType($type)
+    {
+        $this->setData('entity_type', $type);
+        return $this;
+    }
+
+    public function getIsGlobal()
+    {
+        return $this->_getData('is_global');
     }
 
     /**
@@ -337,5 +373,62 @@ abstract class Mage_Eav_Model_Entity_Attribute_Abstract
             || $value===false && $attrType!='int'
             || $value==='' && ($attrType=='int' || $attrType=='decimal' || $attrType=='datetime');
         return $isEmpty;
+    }
+
+    /**
+     * Check if attribute in specified set
+     *
+     * @param int|array $setId
+     * @return boolean
+     */
+    public function isInSet($setId)
+    {
+        if (!$this->hasAttributeSetInfo()) {
+            return true;
+        }
+
+        if (is_array($setId)
+            && count(array_intersect($setId, array_keys($this->getAttributeSetInfo())))) {
+            return true;
+        }
+
+        if (!is_array($setId)
+            && array_key_exists($setId, $this->getAttributeSetInfo())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if attribute in specified group
+     *
+     * @param int $setId
+     * @param int $groupId
+     * @return boolean
+     */
+    public function isInGroup($setId, $groupId)
+    {
+        if ($this->isInSet($setId) && $this->getData('attribute_set_info/' . $setId . '/group_id') == $groupId) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Return attribute id
+     *
+     * @param string $entityType
+     * @param string $code
+     * @return int
+     */
+    public function getIdByCode($entityType, $code)
+    {
+        $k = "{$entityType}|{$code}";
+        if (!isset($this->_attributeIdCache[$k])) {
+            $this->_attributeIdCache[$k] = $this->getResource()->getIdByCode($entityType, $code);
+        }
+        return $this->_attributeIdCache[$k];
     }
 }

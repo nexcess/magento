@@ -24,6 +24,7 @@
  *
  * @category   Varien
  * @package    Varien_Io
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 interface Varien_Io_Interface
 {

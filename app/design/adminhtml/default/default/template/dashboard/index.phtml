@@ -20,22 +20,27 @@
 ?>
 
 <script type="text/javascript">
-function changePeriod(obj)
-{
-    var periodParam = obj.value ? 'period/'+obj.value + '/' : '';
-    setLocation('<?php echo $this->getSwitchUrl() ?>'+periodParam);
+//<![CDATA[
+function changeDiagramsPeriod(periodObj) {
+    periodParam = periodObj.value ? 'period/' + periodObj.value + '/' : '';
+<?php foreach ($this->getChild('diagrams')->getTabsIds() as $tabId): ?>
+    ajaxBlockParam = 'block/tab_<?php echo $tabId ?>/';
+    ajaxBlockUrl = '<?php echo $this->getUrl('*/*/ajaxBlock', array('_current' => true, 'block' => '', 'period' => '')) ?>' + ajaxBlockParam + periodParam;
+    tabContentElementId = '<?php echo $this->getChild('diagrams')->getId() ?>_<?php echo $tabId ?>_content';
+    new Ajax.Updater(tabContentElementId, ajaxBlockUrl);
+<?php endforeach; ?>
 }
+
 function toggleCal(id) {
     $('dashboard_'+id+'_cal_div').toggle();
     $('dashboard_'+id+'_range_div').toggle();
 }
+//]]>
 </script>
 <div class="content-header">
     <table cellspacing="0">
         <tr>
-            <td>
-                <h3 class="head-dashboard"><?php echo $this->__('Dashboard') ?></h3>
-            </td>
+            <td><h3 class="head-dashboard"><?php echo $this->__('Dashboard') ?></h3></td>
         </tr>
     </table>
 </div>
@@ -60,9 +65,7 @@ function toggleCal(id) {
             <td>
                 <div class="entry-edit" style="border:1px solid #ccc;">
                     <?php echo $this->getChildHtml('diagrams') ?>
-                    <center>
                         <div id="diagram_tab_content"></div>
-                    </center>
                     <div style="margin:20px;">
                         <?php echo $this->getChildHtml('totals') ?>
                     </div>

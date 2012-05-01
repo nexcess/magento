@@ -11,7 +11,7 @@
                 <table cellspacing="0" cellpadding="0" border="0" width="650">
                     <tr>
                         <td valign="top">
-                            <p><a href="{{store url=""}}" style="color:#1E7EC8;"><img src="{{skin url="images/logo_email.gif"}}" alt="Magento" border="0"/></a></p></td>
+                            <p><a href="{{store url=""}}" style="color:#1E7EC8;"><img src="{{skin url="images/logo_email.gif" _area='frontend'}}" alt="Magento" border="0"/></a></p></td>
                     </tr>
                 </table>
 
@@ -28,7 +28,7 @@
 
                         <br/>
 
-<p><strong><a href="{{var addAllLink}}" style="color:#DC6809;">Add all items to shopping cart</a></strong> | <strong><a href="{{var viewOnSiteLink}}" style="color:#1E7EC8;">View all wishlist items</a></strong></p>
+{{depend salable}}<p><strong><a href="{{var addAllLink}}" style="color:#DC6809;">Add all items to shopping cart</a></strong> |{{/depend}} <strong><a href="{{var viewOnSiteLink}}" style="color:#1E7EC8;">View all wishlist items</a></strong></p>
 
                         <p>Thank you,<br/><strong>{{var customer.name}}</strong></p>
 

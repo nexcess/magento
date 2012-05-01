@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Price_Tier extends Mage_Adminhtml_Block_Widget implements Varien_Data_Form_Element_Renderer_Interface
 {
@@ -105,6 +106,11 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Price_Tier extends Mage_Admi
         return count($this->getWebsites());
     }
 
+    public function isMultiWebsites()
+    {
+        return !Mage::app()->isSingleStoreMode();
+    }
+
     public function getWebsites()
     {
         if (!is_null($this->_websites)) {
@@ -164,5 +170,21 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Price_Tier extends Mage_Admi
     public function getAddButtonHtml()
     {
         return $this->getChildHtml('add_button');
+    }
+
+    /**
+     * Returns customized price column header
+     * that was seted through set...
+     *
+     * @param string $default
+     * @return string
+     */
+    public function getPriceColumnHeader($default)
+    {
+        if ($this->hasData('price_column_header')) {
+            return $this->getData('price_column_header');
+        } else {
+            return $default;
+        }
     }
 }

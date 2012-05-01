@@ -23,6 +23,7 @@
  *
  * @category    Mage
  * @package     Mage_Paygate
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Paygate_Model_Payflow_Pro extends  Mage_Payment_Model_Method_Cc
@@ -66,6 +67,7 @@ class Mage_Paygate_Model_Payflow_Pro extends  Mage_Payment_Model_Method_Cc
     protected $_canUseCheckout          = true;
     protected $_canUseForMultishipping  = true;
     protected $_canSaveCc = false;
+	protected $_isProxy = false;
 
     /**
      * 3 = Authorisation approved
@@ -191,7 +193,7 @@ class Mage_Paygate_Model_Payflow_Pro extends  Mage_Payment_Model_Method_Cc
                 $payment->setStatus(self::STATUS_ERROR);
                 $payment->setStatusDescription($result->getRespmsg()?
                     $result->getRespmsg():
-                    Mage::helper('paygate')->__('Error in retreiving the transaction'));
+                    Mage::helper('paygate')->__('Error in retrieving the transaction'));
             }
         }else{
             $payment->setStatus(self::STATUS_ERROR);
@@ -210,9 +212,10 @@ class Mage_Paygate_Model_Payflow_Pro extends  Mage_Payment_Model_Method_Cc
       */
     public function void(Varien_Object $payment)
     {
-         if($payment->getCcTransId()){
+         $error = false;
+         if($payment->getVoidTransactionId()){
             $payment->setTrxtype(self::TRXTYPE_DELAYED_VOID);
-            $payment->setTransactionId($payment->getCcTransId());
+            $payment->setTransactionId($payment->getVoidTransactionId());
             $request=$this->_buildBasicRequest($payment);
             $result = $this->_postRequest($request);
 
@@ -225,12 +228,15 @@ class Mage_Paygate_Model_Payflow_Pro extends  Mage_Payment_Model_Method_Cc
                  $payment->setCcTransId($result->getPnref());
             }else{
                 $payment->setStatus(self::STATUS_ERROR);
-                $payment->setStatusDescription($result->getRespmsg());
+                $error = $result->getRespmsg();
             }
-
          }else{
             $payment->setStatus(self::STATUS_ERROR);
-            $payment->setStatusDescription(Mage::helper('paygate')->__('Invalid transaction id'));
+            $error = Mage::helper('paygate')->__('Invalid transaction id');
+        }
+
+        if ($error !== false) {
+            Mage::throwException($error);
         }
 
         return $this;
@@ -300,12 +306,21 @@ class Mage_Paygate_Model_Payflow_Pro extends  Mage_Payment_Model_Method_Cc
 
         $client = new Varien_Http_Client();
 
-        $uri = $this->getConfigData('url');
+    	$_config = array(
+                        'maxredirects'=>5,
+                        'timeout'=>30,
+                    );
+
+    	$_isProxy = $this->getConfigData('use_proxy', false);
+    	if($_isProxy){
+    		$_config['proxy'] = $this->getConfigData('proxy_host') . ':' . $this->getConfigData('proxy_port');//http://proxy.shr.secureserver.net:3128',
+    		$_config['httpproxytunnel'] = true;
+    		$_config['proxytype'] = CURLPROXY_HTTP;
+    	}
+
+	    $uri = $this->getConfigData('url');
         $client->setUri($uri)
-               ->setConfig(array(
-                    'maxredirects'=>5,
-                    'timeout'=>30,
-                ))
+            ->setConfig($_config)
             ->setMethod(Zend_Http_Client::POST)
             ->setParameterPost($request->getData())
             ->setHeaders('X-VPS-VIT-CLIENT-CERTIFICATION-ID: 33baf5893fc2123d8b191d2d011b7fdc')

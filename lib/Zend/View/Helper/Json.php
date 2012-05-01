@@ -21,10 +21,10 @@
  */
 
 /** Zend_Json */
-require_once 'Zend/Json.php';
+#require_once 'Zend/Json.php';
 
 /** Zend_Controller_Front */
-require_once 'Zend/Controller/Front.php';
+#require_once 'Zend/Controller/Front.php';
 
 /**
  * Helper for simplifying JSON responses
@@ -49,7 +49,7 @@ class Zend_View_Helper_Json
     {
         $data = Zend_Json::encode($data);
         if (!$keepLayouts) {
-            require_once 'Zend/Layout.php';
+            #require_once 'Zend/Layout.php';
             $layout = Zend_Layout::getMvcInstance();
             if ($layout instanceof Zend_Layout) {
                 $layout->disableLayout();

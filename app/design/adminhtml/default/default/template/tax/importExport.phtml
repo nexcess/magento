@@ -19,7 +19,7 @@
  */
 ?>
 <div class="content-header">
-    <table cellspacing="0"><tr><td><h3 class="icon-head head-tax-rate-importExport"><?php echo Mage::helper('tax')->__('Tax Rates Import / Export') ?></h3></td></tr></table>
+    <table cellspacing="0"><tr><td><h3 class="icon-head head-tax-rate-importExport"><?php echo Mage::helper('tax')->__('Import / Export Tax Rates') ?></h3></td></tr></table>
 </div>
 
 <div class="entry-edit">
@@ -40,12 +40,12 @@
 			</script>
 		</td><td width="50%">
 			<form id="export_form" action="<?php echo $this->getUrl('*/*/exportPost') ?>" method="post" enctype="multipart/form-data">
-			
+
             <div class="entry-edit-head"><h4 class="icon-head head-edit-form fieldset-legend"><?php echo Mage::helper('tax')->__('Export Tax Rates') ?></h4></div>
 			<fieldset>
 				<legend><?php echo Mage::helper('tax')->__('Export Tax Rates') ?></legend>
 		        <?php echo $this->getButtonHtml('Export Tax Rates', "this.form.submit()") ?>
-		    </fieldset>	
+		    </fieldset>
 			</form>
     	</td></tr>
     </table>

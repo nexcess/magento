@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Poll_Poll extends Mage_Adminhtml_Block_Widget_Grid_Container
 {
@@ -30,7 +31,7 @@ class Mage_Adminhtml_Block_Poll_Poll extends Mage_Adminhtml_Block_Widget_Grid_Co
     public function __construct()
     {
         $this->_controller = 'poll';
-        $this->_headerText = Mage::helper('poll')->__('Polls');
+        $this->_headerText = Mage::helper('poll')->__('Poll Manager');
         $this->_addButtonLabel = Mage::helper('poll')->__('Add New Poll');
         parent::__construct();
     }

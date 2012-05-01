@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Related extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -74,6 +75,7 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Related extends Mage_Adminht
     {
         $collection = Mage::getModel('catalog/product_link')->useRelatedLinks()
             ->getProductCollection()
+            ->addFilterByRequiredOptions()
             ->setProduct($this->_getProduct())
             ->addAttributeToSelect('*');
 
@@ -183,7 +185,7 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Related extends Mage_Adminht
 
     public function getGridUrl()
     {
-        return $this->getUrl('*/*/related', array('_current'=>true));
+        return $this->getData('grid_url') ? $this->getData('grid_url') : $this->getUrl('*/*/related', array('_current'=>true));
     }
 
     protected function _getSelectedProducts()

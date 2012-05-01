@@ -63,8 +63,8 @@ class Mage_Checkout_Model_Mysql4_Cart extends Mage_Core_Model_Mysql4_Abstract
     {
         $read = $this->_getReadAdapter();
         $select = $read->select()
-            ->from(array('qi'=>$this->getTable('sales/quote_item')), array('id'=>'entity_id', 'product_id', 'super_product_id', 'qty', 'created_at'))
-            ->where('qi.parent_id=?', $quoteId);
+            ->from(array('qi'=>$this->getTable('sales/quote_item')), array('id'=>'item_id', 'product_id', 'super_product_id', 'qty', 'created_at'))
+            ->where('qi.quote_id=?', $quoteId);
 
         return $read->fetchAll($select);
     }

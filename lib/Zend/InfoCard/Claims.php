@@ -23,7 +23,7 @@
 /**
  * Zend_InfoCard_Exception
  */
-require_once 'Zend/InfoCard/Exception.php';
+#require_once 'Zend/InfoCard/Exception.php';
 
 /**
  * Result value of the InfoCard component, contains any error messages and claims

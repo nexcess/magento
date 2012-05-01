@@ -20,7 +20,7 @@
 /**
  * Zend_Memory_Container_Interface
  */
-require_once 'Zend/Memory/Container/Interface.php';
+#require_once 'Zend/Memory/Container/Interface.php';
 
 /**
  * Memory object container access controller.

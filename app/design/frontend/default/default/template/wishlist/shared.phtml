@@ -25,9 +25,9 @@
 <?php if($this->getWishlist()->getSize()): ?>
 <form action="<?php echo $this->getUrl('*/*/update') ?>" method="post">
     <table cellspacing="0" width="100%" class="data-table box-table" id="wishlist-table">
-    <col width="130"/>
-    <col/>
-    <col width="130"/>
+    <col width="130" />
+    <col />
+    <col width="130" />
     <thead>
         <tr>
             <th class="align-left"><?php echo $this->__('Product') ?></th>
@@ -41,11 +41,11 @@
             <td>
                 <div>
                     <a href="<?php echo $item->getProductUrl() ?>">
-                        <img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize(113); ?>" alt="<?php echo $this->htmlEscape($item->getName()) ?>" width="113"/>
+                        <img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize(113); ?>" alt="<?php echo $this->htmlEscape($item->getName()) ?>" width="113" />
                     </a>
                 </div>
                 <div><a href="<?php echo $item->getProductUrl() ?>" title="<?php echo $this->htmlEscape($item->getName()) ?>"><?php echo $this->htmlEscape($item->getName()) ?></a></div>
-                <?php echo $this->helper('catalog/product')->getPriceHtml($item) ?>
+                <?php echo $this->getPriceHtml($item) ?>
             </td>
             <td class="align-center"><?php echo $this->getEscapedDescription($item) ?></td>
             <td class="align-center">
@@ -56,7 +56,7 @@
             </td>
         </tr>
         <?php endforeach ?>
-    <tbody>
+    </tbody>
     </table>
     <script type="text/javascript">decorateTable('wishlist-table')</script>
     <?php if($this->isSaleable()):?>

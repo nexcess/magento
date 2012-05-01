@@ -24,12 +24,12 @@
 /**
  * Zend_InfoCard_Adapter_Interface
  */
-require_once 'Zend/InfoCard/Adapter/Interface.php';
+#require_once 'Zend/InfoCard/Adapter/Interface.php';
 
 /**
  * Zend_InfoCard_Adapter_Exception
  */
-require_once 'Zend/InfoCard/Adapter/Exception.php';
+#require_once 'Zend/InfoCard/Adapter/Exception.php';
 
 /**
  * The default InfoCard component Adapter which serves as a pass-thru placeholder

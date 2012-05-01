@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Report_Sales_Tax_Grid extends Mage_Adminhtml_Block_Report_Grid
 {
@@ -41,17 +42,25 @@ class Mage_Adminhtml_Block_Report_Sales_Tax_Grid extends Mage_Adminhtml_Block_Re
 
     protected function _prepareColumns()
     {
+        $this->addColumn('tax_title', array(
+            'header'    =>Mage::helper('reports')->__('Tax'),
+            'index'     =>'tax_title',
+            'type'      =>'string'
+        ));
+
         $this->addColumn('tax_rate', array(
-            'header'    =>Mage::helper('reports')->__('Tax Rate'),
+            'header'    =>Mage::helper('reports')->__('Rate'),
             'index'     =>'tax_rate',
-            'type'      =>'number'
+            'type'      =>'number',
+            'width'     =>'100'
         ));
 
         $this->addColumn('orders', array(
             'header'    =>Mage::helper('reports')->__('Number of Orders'),
             'index'     =>'orders',
             'total'     =>'sum',
-            'type'      =>'number'
+            'type'      =>'number',
+            'width'     =>'100'
         ));
 
         $this->addColumn('tax', array(

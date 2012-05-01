@@ -23,11 +23,6 @@
     <modules>
         <Mage_Newsletter>
             <version>0.8.0</version>
-            <depends>
-                <Mage_Core />
-                <Mage_Customer />
-                <Mage_Eav />
-            </depends>
         </Mage_Newsletter>
     </modules>
     <global>

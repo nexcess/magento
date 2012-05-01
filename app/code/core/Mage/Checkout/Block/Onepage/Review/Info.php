@@ -12,36 +12,28 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @category   Mage
- * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @category    Mage
+ * @package     Mage_Checkout
+ * @copyright   Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 /**
- * One page checkout status
+ * One page checkout order review
  *
- * @category   Mage
- * @package    Mage_Checkout
+ * @category    Mage
+ * @package     Mage_Checkout
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Checkout_Block_Onepage_Review_Info extends Mage_Checkout_Block_Onepage_Abstract
-{    
+class Mage_Checkout_Block_Onepage_Review_Info extends Mage_Sales_Block_Items_Abstract
+{
     public function getItems()
     {
-		/*$priceFilter = Mage::app()->getStore()->getPriceFilter();
-        $itemsFilter = new Varien_Filter_Object_Grid();
-        $itemsFilter->addFilter(new Varien_Filter_Sprintf('%d'), 'qty');
-        $itemsFilter->addFilter($priceFilter, 'price');
-        $itemsFilter->addFilter($priceFilter, 'row_total');
-        return $itemsFilter->filter($this->getQuote()->getAllItems());*/
-		return $this->getQuote()->getAllItems();
+		return Mage::getSingleton('checkout/session')->getQuote()->getAllVisibleItems();
     }
-    
+
     public function getTotals()
     {
-        /*$totalsFilter = new Varien_Filter_Object_Grid();
-        $totalsFilter->addFilter(Mage::app()->getStore()->getPriceFilter(), 'value');
-        return $totalsFilter->filter($this->getQuote()->getTotals());*/
-        return $this->getQuote()->getTotals();
+        return Mage::getSingleton('checkout/session')->getQuote()->getTotals();
     }
 }

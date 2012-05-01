@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Newsletter
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Newsletter_Model_Mysql4_Problem extends Mage_Core_Model_Mysql4_Abstract
 {

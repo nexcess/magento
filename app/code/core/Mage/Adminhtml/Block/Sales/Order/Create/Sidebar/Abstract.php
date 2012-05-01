@@ -23,14 +23,26 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Abstract extends Mage_Adminhtml_Block_Sales_Order_Create_Abstract
 {
+    protected $_sidebarStorageAction = 'add';
 
     public function __construct()
     {
         parent::__construct();
         $this->setTemplate('sales/order/create/sidebar/items.phtml');
+    }
+
+    /**
+     * Return name of sidebar storage action
+     *
+     * @return string
+     */
+    public function getSidebarStorageAction()
+    {
+        return $this->_sidebarStorageAction;
     }
 
     /**
@@ -59,12 +71,12 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Abstract extends Mage_Admi
     }
 
     /**
-     * Retrieve product identifier of block item
+     * Retrieve identifier of block item
      *
-     * @param   mixed $item
+     * @param   Varien_Object $item
      * @return  int
      */
-    public function getProductId($item)
+    public function getIdentifierId($item)
     {
         return $item->getProductId();
     }
@@ -103,10 +115,31 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Abstract extends Mage_Admi
     public function getItems()
     {
         if ($collection = $this->getItemCollection()) {
+            $productTypes = Mage::getConfig()->getNode('adminhtml/sales/order/create/available_product_types')->asArray();
+            $productTypes = array_keys($productTypes);
             if (is_array($collection)) {
-                return $collection;
+                $items = $collection;
+            } else {
+                $items = $collection->getItems();
             }
-            return $collection->getItems();
+            /*
+             * filtering items by product type
+             */
+            foreach($items as $key=>$item) {
+                if ($item instanceof Mage_Catalog_Model_Product) {
+                    $type = $item->getTypeId();
+                } else if ($item instanceof Mage_Sales_Model_Order_Item) {
+                    $type = $item->getProductType();
+                } else if ($item instanceof Mage_Sales_Model_Quote_Item) {
+                    $type = $item->getProductType();
+                } else {
+                    $type = '';
+                }
+                if (!in_array($type, $productTypes)) {
+                    unset($items[$key]);
+                }
+            }
+            return $items;
         }
         return array();
     }

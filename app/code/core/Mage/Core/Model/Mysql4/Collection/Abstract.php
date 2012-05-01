@@ -189,6 +189,19 @@ abstract class Mage_Core_Model_Mysql4_Collection_Abstract extends Varien_Data_Co
         return $this;
     }
 
+    /**
+     * Save all the entities in the collection
+     *
+     * @return Mage_Core_Model_Mysql4_Collection_Abstract
+     */
+    public function save()
+    {
+        foreach ($this->getItems() as $item) {
+            $item->save();
+        }
+        return $this;
+    }
+
     protected function _canUseCache()
     {
         return Mage::app()->useCache('collections');

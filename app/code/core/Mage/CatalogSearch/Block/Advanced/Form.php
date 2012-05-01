@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogSearch
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogSearch_Block_Advanced_Form extends Mage_Core_Block_Template
 {
@@ -110,6 +111,10 @@ class Mage_CatalogSearch_Block_Advanced_Form extends Mage_Core_Block_Template
             return 'select';
         }
 
+        if ($imputType == 'boolean') {
+            return 'yesno';
+        }
+
         if ($dataType == 'int' || $dataType == 'decimal') {
             return 'number';
         }
@@ -144,6 +149,24 @@ class Mage_CatalogSearch_Block_Advanced_Form extends Mage_Core_Block_Template
             ->setId($attribute->getAttributeCode())
             ->setTitle($this->getAttributeLabel($attribute))
             ->setExtraParams($extra)
+            ->setValue($this->getAttributeValue($attribute))
+            ->setOptions($options)
+            ->getHtml();
+    }
+
+    public function getAttributeYesNoElement($attribute)
+    {
+        $options = array(
+            array('value' => '',  'label' => Mage::helper('catalogsearch')->__('All')),
+            array('value' => '1', 'label' => Mage::helper('catalogsearch')->__('Yes')),
+            array('value' => '0', 'label' => Mage::helper('catalogsearch')->__('No'))
+        );
+
+        $name = $attribute->getAttributeCode();
+        return $this->_getSelectBlock()
+            ->setName($name)
+            ->setId($attribute->getAttributeCode())
+            ->setTitle($this->getAttributeLabel($attribute))
             ->setValue($this->getAttributeValue($attribute))
             ->setOptions($options)
             ->getHtml();

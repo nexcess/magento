@@ -24,10 +24,10 @@
     <tr>
     <?php $i=0; foreach($this->getWishlist() as $item): $i++ ?>
         <td width="32%">
-            <p align="center"><a href="<?php echo $item->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize(135); ?>" style="border:1px solid #ccc;" width="135"></a></p>
+            <p align="center"><a href="<?php echo $item->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize(135); ?>" style="border:1px solid #ccc;" width="135" alt="" /></a></p>
             <p align="center"><a href="<?php echo $item->getProductUrl() ?>" style="color:#203548;"><strong><?php echo $this->htmlEscape($item->getName()) ?></strong></a></p>
             <?php if($this->hasDescription($item)): ?><p align="center"><?php echo $this->__('Comment') ?>:<br /><?php echo $this->getEscapedDescription($item) ?></p><?php endif; ?>
-            <p align="center"><a href="<?php echo $item->getProductUrl() ?>" style="color:#1E7EC8;"><?php echo $this->__('View Product') ?></a> <small>|</small> <a href="<?php echo $this->getUrl('checkout/cart/add', array('product'=>$item->getId())) ?>" style="color:#DC6809;"><strong><?php echo $this->__('Add to Cart') ?></strong></a>
+            <p align="center"><a href="<?php echo $item->getProductUrl() ?>" style="color:#1E7EC8;"><?php echo $this->__('View Product') ?></a> <small><?php if($item->getIsSalable()):?>|</small> <a href="<?php echo $this->getUrl('checkout/cart/add', array('product'=>$item->getId())) ?>" style="color:#DC6809;"><strong><?php echo $this->__('Add to Cart') ?></strong></a><?php endif;?>
             </p></td>
         <?php if ($i%3!=0): ?>
             <td width="2%"></td>

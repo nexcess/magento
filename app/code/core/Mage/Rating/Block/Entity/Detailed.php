@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Rating
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Rating_Block_Entity_Detailed extends Mage_Core_Block_Template
 {

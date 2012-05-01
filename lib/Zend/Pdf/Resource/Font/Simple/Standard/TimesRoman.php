@@ -19,7 +19,7 @@
  */
 
 /** Zend_Pdf_Resource_Font_Simple_Standard */
-require_once 'Zend/Pdf/Resource/Font/Simple/Standard.php';
+#require_once 'Zend/Pdf/Resource/Font/Simple/Standard.php';
 
 
 /**

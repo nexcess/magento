@@ -1,3 +1,4 @@
+<?php if (!Mage::registry('current_category')) return ?>
 <?php
 /**
  * Magento
@@ -18,22 +19,22 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Category left navigation
- * 
+ *
  * @see Mage_Catalog_Block_Navigation
  */
 ?>
 <?php $_categories=$this->getCurrentChildCategories() ?>
 <?php if($_categories->count()): ?>
 <div class="box layered-nav">
-        <div class="head">
-            <h3><?php echo $this->__('Browse By') ?></h3>
-        </div>
-        <div class="border-creator">
+    <div class="head">
+        <h3><?php echo $this->__('Browse By') ?></h3>
+    </div>
+    <div class="border-creator">
         <div class="narrow-by">
-                                <dl id="narrow-by-list">
+            <dl id="narrow-by-list">
                 <dt><?php echo $this->__('Category') ?></dt>
                 <dd>
                     <ol>
@@ -46,9 +47,9 @@
                     <?php endforeach ?>
                     </ol>
                 </dd>
-                                </dl><script type="text/javascript">decorateDataList('narrow-by-list')</script>
-                            </div>
-                        </div>
-                    </div>
+            </dl><script type="text/javascript">decorateDataList('narrow-by-list')</script>
+        </div>
+    </div>
+</div>
 <?php endif; ?>
 <!-- [ends] .browse-by // -->

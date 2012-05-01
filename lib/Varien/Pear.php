@@ -9,7 +9,11 @@ if (!defined('DS')) {
 
 // add PEAR lib in include_path if needed
 $_includePath = get_include_path();
-$_pearPhpDir = dirname(dirname(dirname(__FILE__))) . DS . 'downloader' . DS . 'pearlib' . DS . 'php';
+$_pearDir = dirname(dirname(dirname(__FILE__))) . DS . 'downloader' . DS . 'pearlib';
+if (!getenv('PHP_PEAR_INSTALL_DIR')) {
+    putenv('PHP_PEAR_INSTALL_DIR=' . $_pearDir);
+}
+$_pearPhpDir = $_pearDir . DS . 'php';
 if (strpos($_includePath, $_pearPhpDir) === false) {
     if (substr($_includePath, 0, 2) === '.' . PATH_SEPARATOR) {
         $_includePath = '.' . PATH_SEPARATOR . $_pearPhpDir . PATH_SEPARATOR . substr($_includePath, 2);
@@ -124,7 +128,7 @@ class Varien_Pear
     public function getRegistry($redirectOnChange=true)
     {
         if (!$this->_registry) {
-            $this->_registry = new PEAR_Registry($this->getPearDir().DS.'php');
+            $this->_registry = new Varien_Pear_Registry($this->getPearDir().DS.'php');
 
             $changed = false;
             foreach ($this->getMagentoChannels() as $channel) {
@@ -135,7 +139,7 @@ class Varien_Pear
             }
 
             if ($changed) {
-                $this->_registry = new PEAR_Registry($this->getPearDir().DS.'php');
+                $this->_registry = new Varien_Pear_Registry($this->getPearDir().DS.'php');
             }
 //            if ($changed && self::$reloadOnRegistryUpdate && empty($_GET['pear_registry'])) {
 //                echo "TEST:";

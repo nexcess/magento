@@ -28,7 +28,7 @@ class Mage_Adminhtml_Model_System_Config_Source_Payment_Allowedmethods
             $paymentTitle = Mage::getStoreConfig('payment/'.$paymentCode.'/title');
             $methods[$paymentCode] = array(
                 'label'   => $paymentTitle,
-                'value' => $paymentTitle,
+                'value' => $paymentCode,
             );
         }
 

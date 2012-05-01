@@ -22,6 +22,7 @@
 /**
  * Catalog indexer price processor
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_CatalogIndex_Model_Indexer_Price extends Mage_CatalogIndex_Model_Indexer_Abstract
 {
@@ -79,6 +80,10 @@ class Mage_CatalogIndex_Model_Indexer_Price extends Mage_CatalogIndex_Model_Inde
 
     protected function _getIndexableAttributeConditions()
     {
+        /**
+         * Problem with remove price from index - need check
+         */
+        //$conditions = "frontend_input = 'price' OR attribute_code = 'tier_price'";
         $conditions = "frontend_input = 'price' AND attribute_code <> 'price'";
         return $conditions;
 

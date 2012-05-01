@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Customer_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -38,11 +39,7 @@ class Mage_Adminhtml_Block_Customer_Grid extends Mage_Adminhtml_Block_Widget_Gri
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel('customer/customer_collection')
-            ->addAttributeToSelect('firstname')
-            ->addAttributeToSelect('lastname')
-            ->addExpressionAttributeToSelect('name',
-                'CONCAT({{firstname}}, " ", {{lastname}})',
-                array('firstname', 'lastname'))
+            ->addNameToSelect()
             ->addAttributeToSelect('email')
             ->addAttributeToSelect('created_at')
             ->addAttributeToSelect('group_id')
@@ -62,7 +59,8 @@ class Mage_Adminhtml_Block_Customer_Grid extends Mage_Adminhtml_Block_Widget_Gri
         $this->addColumn('id', array(
             'header'    => Mage::helper('customer')->__('ID'),
             'width'     => '50px',
-            'index'     => 'entity_id'
+            'index'     => 'entity_id',
+            'type'  => 'number',
         ));
         /*$this->addColumn('firstname', array(
             'header'    => Mage::helper('customer')->__('First Name'),
@@ -122,7 +120,7 @@ class Mage_Adminhtml_Block_Customer_Grid extends Mage_Adminhtml_Block_Widget_Gri
 
         $this->addColumn('customer_since', array(
             'header'    => Mage::helper('customer')->__('Customer Since'),
-            'type'      => 'date',
+            'type'      => 'datetime',
             'align'     => 'center',
             'index'     => 'created_at',
             'gmtoffset' => true

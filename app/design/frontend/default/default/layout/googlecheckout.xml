@@ -36,4 +36,12 @@
         </reference>
     </checkout_cart_index>
 
+    <googlecheckout_redirect_redirect>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="googlecheckout/redirect" name="googlecheckout_redirect" template="page/redirect.phtml"></block>
+        </reference>
+    </googlecheckout_redirect_redirect>
 </layout>

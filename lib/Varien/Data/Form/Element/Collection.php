@@ -23,18 +23,19 @@
  *
  * @category   Varien
  * @package    Varien_Data
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggregate
 {
     private $_elements;
     private $_container;
-    
-    public function __construct($container) 
+
+    public function __construct($container)
     {
         $this->_elements = array();
         $this->_container = $container;
     }
-    
+
     /**
     * Implementation of IteratorAggregate::getIterator()
     */
@@ -50,7 +51,7 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
     {
         $this->_elements[$key] = $value;
     }
-    
+
     /**
     * Implementation of ArrayAccess:offsetGet()
     */
@@ -58,7 +59,7 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
     {
         return $this->_elements[$key];
     }
-    
+
     /**
     * Implementation of ArrayAccess:offsetUnset()
     */
@@ -66,7 +67,7 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
     {
         unset($this->_elements[$key]);
     }
-    
+
     /**
     * Implementation of ArrayAccess:offsetExists()
     */
@@ -74,10 +75,10 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
     {
         return isset($this->_elements[$key]);
     }
-    
+
     /**
     * Add element to collection
-    * 
+    *
     * @todo get it straight with $after
     * @param $element Varien_Data_Form_Element_Abstract
     * @param $after boolean|'^'|string
@@ -90,7 +91,7 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
             $element->setContainer($this->_container);
             $element->setForm($this->_container->getForm());
         }
-        
+
         if ($after === false) {
             $this->_elements[] = $element;
         }
@@ -113,7 +114,13 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
 
         return $element;
     }
-    
+
+    public function usort($callback)
+    {
+        usort($this->_elements, $callback);
+        return $this;
+    }
+
     public function remove($elementId)
     {
         foreach ($this->_elements as $index => $element) {
@@ -122,7 +129,7 @@ class Varien_Data_Form_Element_Collection implements ArrayAccess, IteratorAggreg
             }
         }
     }
-    
+
     public function count()
     {
         return count($this->_elements);

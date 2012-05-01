@@ -25,12 +25,17 @@ class Mage_Sales_Model_Order_Creditmemo extends Mage_Core_Model_Abstract
     const STATE_REFUNDED    = 2;
     const STATE_CANCELED    = 3;
 
-    const XML_PATH_EMAIL_TEMPLATE   = 'sales_email/creditmemo/template';
-    const XML_PATH_EMAIL_IDENTITY   = 'sales_email/creditmemo/identity';
-    const XML_PATH_EMAIL_COPY_TO    = 'sales_email/creditmemo/copy_to';
-    const XML_PATH_UPDATE_EMAIL_TEMPLATE= 'sales_email/creditmemo_comment/template';
-    const XML_PATH_UPDATE_EMAIL_IDENTITY= 'sales_email/creditmemo_comment/identity';
-    const XML_PATH_UPDATE_EMAIL_COPY_TO = 'sales_email/creditmemo_comment/copy_to';
+    const XML_PATH_EMAIL_TEMPLATE               = 'sales_email/creditmemo/template';
+    const XML_PATH_EMAIL_GUEST_TEMPLATE         = 'sales_email/creditmemo/guest_template';
+    const XML_PATH_EMAIL_IDENTITY               = 'sales_email/creditmemo/identity';
+    const XML_PATH_EMAIL_COPY_TO                = 'sales_email/creditmemo/copy_to';
+    const XML_PATH_EMAIL_COPY_METHOD            = 'sales_email/creditmemo/copy_method';
+
+    const XML_PATH_UPDATE_EMAIL_TEMPLATE        = 'sales_email/creditmemo_comment/template';
+    const XML_PATH_UPDATE_EMAIL_GUEST_TEMPLATE  = 'sales_email/creditmemo_comment/guest_template';
+    const XML_PATH_UPDATE_EMAIL_IDENTITY        = 'sales_email/creditmemo_comment/identity';
+    const XML_PATH_UPDATE_EMAIL_COPY_TO         = 'sales_email/creditmemo_comment/copy_to';
+    const XML_PATH_UPDATE_EMAIL_COPY_METHOD     = 'sales_email/creditmemo_comment/copy_method';
 
     protected static $_states;
 
@@ -478,12 +483,13 @@ class Mage_Sales_Model_Order_Creditmemo extends Mage_Core_Model_Abstract
         return $this;
     }
 
-    public function getCommentsCollection()
+    public function getCommentsCollection($reload=false)
     {
-        if (is_null($this->_comments)) {
+        if (is_null($this->_comments) || $reload) {
             $this->_comments = Mage::getResourceModel('sales/order_creditmemo_comment_collection')
                 ->addAttributeToSelect('*')
-                ->setCreditmemoFilter($this->getId());
+                ->setCreditmemoFilter($this->getId())
+                ->setCreatedAtOrder();
             if ($this->getId()) {
                 foreach ($this->_comments as $comment) {
                     $comment->setCreditmemo($this);
@@ -501,38 +507,76 @@ class Mage_Sales_Model_Order_Creditmemo extends Mage_Core_Model_Abstract
      */
     public function sendEmail($notifyCustomer=true, $comment='')
     {
-        $order  = $this->getOrder();
-        $bcc    = $this->_getEmails(self::XML_PATH_EMAIL_COPY_TO);
+        $currentDesign = Mage::getDesign()->setAllGetOld(array(
+            'package' => Mage::getStoreConfig('design/package/name', $this->getStoreId()),
+        ));
 
-        if (!$notifyCustomer && !$bcc) {
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
+        $order  = $this->getOrder();
+
+        $copyTo = $this->_getEmails(self::XML_PATH_EMAIL_COPY_TO);
+        $copyMethod = Mage::getStoreConfig(self::XML_PATH_EMAIL_COPY_METHOD, $this->getStoreId());
+
+        if (!$notifyCustomer && !$copyTo) {
             return $this;
         }
-        $paymentBlock   = Mage::helper('payment')->getInfoBlock($order->getPayment());
+        $paymentBlock   = Mage::helper('payment')->getInfoBlock($order->getPayment())
+            ->setIsSecureMode(true);
 
         $mailTemplate = Mage::getModel('core/email_template');
 
-        if ($notifyCustomer) {
-            $customerEmail = $order->getCustomerEmail();
-            $mailTemplate->addBcc($bcc);
-        }
-        else {
-            $customerEmail = $bcc;
+        if ($order->getCustomerIsGuest()) {
+            $template = Mage::getStoreConfig(self::XML_PATH_EMAIL_GUEST_TEMPLATE, $order->getStoreId());
+            $customerName = $order->getBillingAddress()->getName();
+        } else {
+            $template = Mage::getStoreConfig(self::XML_PATH_EMAIL_TEMPLATE, $order->getStoreId());
+            $customerName = $order->getCustomerName();
         }
 
-        $mailTemplate->setDesignConfig(array('area'=>'frontend', 'store'=>$order->getStoreId()))
-            ->sendTransactional(
-                Mage::getStoreConfig(self::XML_PATH_EMAIL_TEMPLATE, $order->getStoreId()),
-                Mage::getStoreConfig(self::XML_PATH_EMAIL_IDENTITY, $order->getStoreId()),
-                $customerEmail,
-                $order->getBillingAddress()->getName(),
-                array(
-                    'order'       => $order,
-                    'creditmemo'  => $this,
-                    'comment'     => $comment,
-                    'billing'     => $order->getBillingAddress(),
-                    'payment_html'=> $paymentBlock->toHtml(),
-                )
+        if ($notifyCustomer) {
+            $sendTo[] = array(
+                'name'  => $customerName,
+                'email' => $order->getCustomerEmail()
             );
+            if ($copyTo && $copyMethod == 'bcc') {
+                $mailTemplate->addBcc($copyTo);
+            }
+
+        }
+
+        if ($copyTo && ($copyMethod == 'copy' || !$notifyCustomer)) {
+            foreach ($copyTo as $email) {
+                $sendTo[] = array(
+                    'name'  => null,
+                    'email' => $email
+                );
+            }
+        }
+
+        foreach ($sendTo as $recipient) {
+            $mailTemplate->setDesignConfig(array('area'=>'frontend', 'store'=>$order->getStoreId()))
+                ->sendTransactional(
+                    $template,
+                    Mage::getStoreConfig(self::XML_PATH_EMAIL_IDENTITY, $order->getStoreId()),
+                    $recipient['email'],
+                    $recipient['name'],
+                    array(
+                        'order'       => $order,
+                        'creditmemo'  => $this,
+                        'comment'     => $comment,
+                        'billing'     => $order->getBillingAddress(),
+                        'payment_html'=> $paymentBlock->toHtml(),
+                    )
+                );
+        }
+
+        $translate->setTranslateInline(true);
+
+        Mage::getDesign()->setAllGetOld($currentDesign);
+
         return $this;
     }
 
@@ -543,34 +587,73 @@ class Mage_Sales_Model_Order_Creditmemo extends Mage_Core_Model_Abstract
      */
     public function sendUpdateEmail($notifyCustomer=true, $comment='')
     {
-        $bcc = $this->_getEmails(self::XML_PATH_UPDATE_EMAIL_COPY_TO);
-        if (!$notifyCustomer && !$bcc) {
+        $currentDesign = Mage::getDesign()->setAllGetOld(array(
+            'package' => Mage::getStoreConfig('design/package/name', $this->getStoreId()),
+        ));
+
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
+        $order  = $this->getOrder();
+
+        $copyTo = $this->_getEmails(self::XML_PATH_UPDATE_EMAIL_COPY_TO);
+        $copyMethod = Mage::getStoreConfig(self::XML_PATH_UPDATE_EMAIL_COPY_METHOD, $this->getStoreId());
+
+        if (!$notifyCustomer && !$copyTo) {
             return $this;
         }
 
         $mailTemplate = Mage::getModel('core/email_template');
+
+        if ($order->getCustomerIsGuest()) {
+            $template = Mage::getStoreConfig(self::XML_PATH_UPDATE_EMAIL_GUEST_TEMPLATE, $order->getStoreId());
+            $customerName = $order->getBillingAddress()->getName();
+        } else {
+            $template = Mage::getStoreConfig(self::XML_PATH_UPDATE_EMAIL_TEMPLATE, $order->getStoreId());
+            $customerName = $order->getCustomerName();
+        }
+
         if ($notifyCustomer) {
-            $customerEmail = $this->getOrder()->getCustomerEmail();
-            $mailTemplate->addBcc($bcc);
-        }
-        else {
-            $customerEmail = $bcc;
-        }
-
-
-        $mailTemplate->setDesignConfig(array('area'=>'frontend', 'store'=>$this->getStoreId()))
-            ->sendTransactional(
-                Mage::getStoreConfig(self::XML_PATH_UPDATE_EMAIL_TEMPLATE, $this->getStoreId()),
-                Mage::getStoreConfig(self::XML_PATH_UPDATE_EMAIL_IDENTITY, $this->getStoreId()),
-                $customerEmail,
-                $this->getOrder()->getBillingAddress()->getName(),
-                array(
-                    'order'  => $this->getOrder(),
-                    'billing'=> $this->getOrder()->getBillingAddress(),
-                    'creditmemo'=> $this,
-                    'comment'=> $comment
-                )
+            $sendTo[] = array(
+                'name'  => $customerName,
+                'email' => $order->getCustomerEmail()
             );
+            if ($copyTo && $copyMethod == 'bcc') {
+                $mailTemplate->addBcc($copyTo);
+            }
+
+        }
+
+        if ($copyTo && ($copyMethod == 'copy' || !$notifyCustomer)) {
+            foreach ($copyTo as $email) {
+                $sendTo[] = array(
+                    'name'  => null,
+                    'email' => $email
+                );
+            }
+        }
+
+        foreach ($sendTo as $recipient) {
+            $mailTemplate->setDesignConfig(array('area'=>'frontend', 'store'=>$this->getStoreId()))
+                ->sendTransactional(
+                    $template,
+                    Mage::getStoreConfig(self::XML_PATH_UPDATE_EMAIL_IDENTITY, $this->getStoreId()),
+                    $recipient['email'],
+                    $recipient['name'],
+                    array(
+                        'order'  => $order,
+                        'billing'=> $order->getBillingAddress(),
+                        'creditmemo'=> $this,
+                        'comment'=> $comment
+                    )
+                );
+        }
+
+        $translate->setTranslateInline(true);
+
+        Mage::getDesign()->setAllGetOld($currentDesign);
+
         return $this;
     }
 

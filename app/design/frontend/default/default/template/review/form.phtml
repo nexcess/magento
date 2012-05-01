@@ -25,7 +25,7 @@
 <form action="<?php echo $this->getAction() ?>" method="post" id="review-form">
 <div>
     <?php if( $this->getRatings() && $this->getRatings()->getSize()): ?>
-    <strong><?php echo $this->__('How do you rate this product?') ?><span class="required">*</span></strong><br/>
+    <strong><?php echo $this->__('How do you rate this product?') ?><span class="required">*</span></strong><br />
     <span id="input-message-box"></span>
     <table class="data-table product-review-box field-row" id="product-review-table" cellspacing="0">
         <thead>
@@ -46,7 +46,7 @@
             <?php $_iterator = 1; ?>
             <?php foreach ($_rating->getOptions() as $_option): ?>
                 <!--<td <?php if($_iterator == 5): ?>class="last"<?php endif; ?> style="width:60px;"><input type="radio" <?php if($_iterator == 5): $_iterator=0; ?>class="validate-one-required-by-name"<?php endif; ?> name="ratings[<?php echo $_rating->getId() ?>]" id="<?php echo $_rating->getRatingCode() ?>_<?php echo $_option->getValue() ?>" value="<?php echo $_option->getId() ?>"/></td>-->
-                <td <?php if($_iterator == 5): ?>class="last"<?php endif; ?> style="width:60px;"><input type="radio" name="ratings[<?php echo $_rating->getId() ?>]" id="<?php echo $_rating->getRatingCode() ?>_<?php echo $_option->getValue() ?>" value="<?php echo $_option->getId() ?>"/></td>
+                <td<?php if($_iterator == 5): ?> class="last"<?php endif; ?> style="width:60px;"><input type="radio" name="ratings[<?php echo $_rating->getId() ?>]" id="<?php echo $_rating->getRatingCode() ?>_<?php echo $_option->getValue() ?>" value="<?php echo $_option->getId() ?>" /></td>
             <?php $_iterator++ ?>
             <?php endforeach; ?>
             </tr>
@@ -59,17 +59,17 @@
     <?php endif; ?>
         <?php // do not remove div - some problem whith validator in IE ?>
         <div>
-        <label for="nickname_field"><?php echo $this->__('Nickname') ?><span class="required">*</span></label><br/>
-        <input class="input-text required-entry" name="nickname" id="nickname_field" style="width: 450px;" type="text" value="<?php echo $this->htmlEscape($data->getNickname()) ?>"/>
+        <label for="nickname_field"><?php echo $this->__('Nickname') ?><span class="required">*</span></label><br />
+        <input class="input-text required-entry" name="nickname" id="nickname_field" style="width: 450px;" type="text" value="<?php echo $this->htmlEscape($data->getNickname()) ?>" />
         </div>
 
         <div>
-        <label for="summary_field"><?php echo $this->__('Summary of Your Review') ?><span class="required">*</span></label><br/>
-        <input name="title" class="input-text  required-entry" id="summary_field" style="width: 450px;" type="text" value="<?php echo $this->htmlEscape($data->getTitle()) ?>"/>
+        <label for="summary_field"><?php echo $this->__('Summary of Your Review') ?><span class="required">*</span></label><br />
+        <input name="title" class="input-text  required-entry" id="summary_field" style="width: 450px;" type="text" value="<?php echo $this->htmlEscape($data->getTitle()) ?>" />
         </div>
 
         <div>
-        <label for="review_field"><?php echo $this->__('Review') ?><span class="required">*</span></label><br/>
+        <label for="review_field"><?php echo $this->__('Review') ?><span class="required">*</span></label><br />
         <textarea class="required-entry" name="detail" id="review_field" cols="53" rows="10" style="width: 450px;"><?php echo $this->htmlEscape($data->getDetail()) ?></textarea>
         </div>
 

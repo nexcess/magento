@@ -23,52 +23,52 @@
 /**
  * @see Zend_Gdata_Extension_Comments
  */
-require_once 'Zend/Gdata/Extension/Comments.php';
+#require_once 'Zend/Gdata/Extension/Comments.php';
 
 /**
  * @see Zend_Gdata_Extension_FeedLink
  */
-require_once 'Zend/Gdata/Extension/FeedLink.php';
+#require_once 'Zend/Gdata/Extension/FeedLink.php';
 
 /**
  * @see Zend_Gdata_YouTube_MediaEntry
  */
-require_once 'Zend/Gdata/YouTube/MediaEntry.php';
+#require_once 'Zend/Gdata/YouTube/MediaEntry.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_NoEmbed
  */
-require_once 'Zend/Gdata/YouTube/Extension/NoEmbed.php';
+#require_once 'Zend/Gdata/YouTube/Extension/NoEmbed.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_Statistics
  */
-require_once 'Zend/Gdata/YouTube/Extension/Statistics.php';
+#require_once 'Zend/Gdata/YouTube/Extension/Statistics.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_Link
  */
-require_once 'Zend/Gdata/YouTube/Extension/Link.php';
+#require_once 'Zend/Gdata/YouTube/Extension/Link.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_Racy
  */
-require_once 'Zend/Gdata/YouTube/Extension/Racy.php';
+#require_once 'Zend/Gdata/YouTube/Extension/Racy.php';
 
 /**
  * @see Zend_Gdata_Extension_Rating
  */
-require_once 'Zend/Gdata/Extension/Rating.php';
+#require_once 'Zend/Gdata/Extension/Rating.php';
 
 /**
  * @see Zend_Gdata_Geo_Extension_GeoRssWhere
  */
-require_once 'Zend/Gdata/Geo/Extension/GeoRssWhere.php';
+#require_once 'Zend/Gdata/Geo/Extension/GeoRssWhere.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_Control
  */
-require_once 'Zend/Gdata/YouTube/Extension/Control.php';
+#require_once 'Zend/Gdata/YouTube/Extension/Control.php';
 
 /**
  * Represents the YouTube video flavor of an Atom entry
@@ -452,7 +452,7 @@ class Zend_Gdata_YouTube_VideoEntry extends Zend_Gdata_YouTube_MediaEntry
         $fullId = $this->getId()->getText();
         $position = strrpos($fullId, '/');
         if ($position === false) {
-            require_once 'Zend/Gdata/App/Exception.php';
+            #require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception('Slash not found in atom:id');
         } else {
             return substr($fullId, strrpos($fullId,'/') + 1);

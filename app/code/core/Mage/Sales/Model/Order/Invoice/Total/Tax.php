@@ -33,6 +33,9 @@ class Mage_Sales_Model_Order_Invoice_Total_Tax extends Mage_Sales_Model_Order_In
             $orderItemQty = $orderItem->getQtyOrdered();
 
             if ($orderItemTax && $orderItemQty) {
+                if ($item->getOrderItem()->isDummy()) {
+                    continue;
+                }
                 /**
                  * Resolve rounding problems
                  */
@@ -56,11 +59,30 @@ class Mage_Sales_Model_Order_Invoice_Total_Tax extends Mage_Sales_Model_Order_In
             }
         }
 
+        $includeShippingTax = true;
+        /**
+         * Check shipping amount in previus invoices
+         */
+        foreach ($invoice->getOrder()->getInvoiceCollection() as $previusInvoice) {
+            if ($previusInvoice->getShippingAmount() && !$previusInvoice->isCanceled()) {
+                $includeShippingTax = false;
+            }
+        }
+
+        if ($includeShippingTax) {
+            $totalTax += $invoice->getOrder()->getShippingTaxAmount();
+            $baseTotalTax += $invoice->getOrder()->getBaseShippingTaxAmount();
+            $invoice->setShippingTaxAmount($invoice->getOrder()->getShippingTaxAmount());
+            $invoice->setBaseShippingTaxAmount($invoice->getOrder()->getBaseShippingTaxAmount());
+        }
+
+
         $invoice->setTaxAmount($totalTax);
         $invoice->setBaseTaxAmount($baseTotalTax);
 
         $invoice->setGrandTotal($invoice->getGrandTotal() + $totalTax);
         $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseTotalTax);
+
         return $this;
     }
 }

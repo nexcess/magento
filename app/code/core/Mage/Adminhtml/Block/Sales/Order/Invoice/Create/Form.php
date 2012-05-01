@@ -23,15 +23,29 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Sales_Order_Invoice_Create_Form extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
-    protected function _construct()
+    /**
+     * Retrieve invoice order
+     *
+     * @return Mage_Sales_Model_Order
+     */
+    public function getOrder()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/invoice/create/form.phtml');
-        $this->setOrder($this->getInvoice()->getOrder());
+        return $this->getInvoice()->getOrder();
+    }
+
+    /**
+     * Retrieve source
+     *
+     * @return Mage_Sales_Model_Order_Invoice
+     */
+    public function getSource()
+    {
+        return $this->getInvoice();
     }
 
     /**
@@ -46,21 +60,21 @@ class Mage_Adminhtml_Block_Sales_Order_Invoice_Create_Form extends Mage_Adminhtm
 
     protected function _prepareLayout()
     {
-        $infoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_view_info')
-            ->setOrder($this->getInvoice()->getOrder());
-        $this->setChild('order_info', $infoBlock);
+//        $infoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_view_info')
+//            ->setOrder($this->getInvoice()->getOrder());
+//        $this->setChild('order_info', $infoBlock);
 
-        $this->setChild(
-            'items',
-            $this->getLayout()->createBlock('adminhtml/sales_order_invoice_create_items')
-        );
+//        $this->setChild(
+//            'items',
+//            $this->getLayout()->createBlock('adminhtml/sales_order_invoice_create_items')
+//        );
 
-        $trackingBlock = $this->getLayout()->createBlock('adminhtml/sales_order_invoice_create_tracking');
-        $this->setChild('tracking', $trackingBlock);
+//        $trackingBlock = $this->getLayout()->createBlock('adminhtml/sales_order_invoice_create_tracking');
+//        $this->setChild('tracking', $trackingBlock);
 
-        $paymentInfoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_payment')
-            ->setPayment($this->getInvoice()->getOrder()->getPayment());
-        $this->setChild('payment_info', $paymentInfoBlock);
+//        $paymentInfoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_payment')
+//            ->setPayment($this->getInvoice()->getOrder()->getPayment());
+//        $this->setChild('payment_info', $paymentInfoBlock);
 
         return parent::_prepareLayout();
     }

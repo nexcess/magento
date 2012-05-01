@@ -26,7 +26,7 @@
     <ol>
         <?php $iterator = 0 ?>
         <?php foreach( $this->getCollection()->getItems() as $_item ): ?>
-            <li <?php if($iterator % 2 == 0): ?>class="odd"<?php else: ?>class="even"<?php endif; ?>>
+            <li<?php if($iterator % 2 == 0): ?> class="odd"<?php else: ?> class="even"<?php endif; ?>>
                 <div class="count"><?php echo ++$iterator ?></div>
                 <div class="content">
                     <a href="<?php echo $_item->getProductUrl() ?>"><?php echo $this->htmlEscape($_item->getName()) ?></a><br/>

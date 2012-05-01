@@ -19,13 +19,13 @@
  */
 
 /** Zend_Pdf_FileParserDataSource */
-require_once 'Zend/Pdf/FileParserDataSource.php';
+#require_once 'Zend/Pdf/FileParserDataSource.php';
 
 /** Zend_Pdf_FileParserDataSource_File */
-require_once 'Zend/Pdf/FileParserDataSource/File.php';
+#require_once 'Zend/Pdf/FileParserDataSource/File.php';
 
 /** Zend_Pdf_FileParserDataSource_String */
-require_once 'Zend/Pdf/FileParserDataSource/String.php';
+#require_once 'Zend/Pdf/FileParserDataSource/String.php';
 
 /**
  * Abstract factory class which vends {@link Zend_Pdf_Resource_Image} objects.
@@ -127,7 +127,7 @@ abstract class Zend_Pdf_Image
          * use old implementation
          * @todo switch to new implementation
          */
-        require_once 'Zend/Pdf/Resource/ImageFactory.php';
+        #require_once 'Zend/Pdf/Resource/ImageFactory.php';
         return Zend_Pdf_Resource_ImageFactory::factory($filePath);
 
 

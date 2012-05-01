@@ -22,34 +22,30 @@
  * Poll vote controller
  *
  * @file        Vote.php
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Poll_VoteController extends Mage_Core_Controller_Front_Action
 {
-    /**
-     * Add vote action
-     *
-     * @access public
-     * @return void
-     */
     public function addAction()
     {
-        $pollId     = intval( $this->getRequest()->getParam('poll_id') );
-        $answerId   = intval( $this->getRequest()->getParam('vote') );
+        $pollId     = intval($this->getRequest()->getParam('poll_id'));
+        $answerId   = intval($this->getRequest()->getParam('vote'));
 
-        if( $pollId && $answerId && !Mage::getSingleton('poll/poll')->isVoted($pollId) ) {
-            Mage::getSingleton('poll/poll_vote')
-                ->setPollId($pollId)
-                ->setIpAddress(ip2long($this->getRequest()->getServer('REMOTE_ADDR')))
-                ->setCustomerId(Mage::getSingleton('customer/session')->getCustomerId())
-                ->setVoteTime(now())
+        $poll = Mage::getModel('poll/poll')->load($pollId);
+
+        /**
+         * Check poll data
+         */
+        if ($poll->getId() && !$poll->getClosed() && !$poll->isVoted()) {
+            $vote = Mage::getModel('poll/poll_vote')
                 ->setPollAnswerId($answerId)
-                ->addVote();
+                ->setIpAddress(ip2long($this->getRequest()->getServer('REMOTE_ADDR')))
+                ->setCustomerId(Mage::getSingleton('customer/session')->getCustomerId());
 
+            $poll->addVote($vote);
             Mage::getSingleton('core/session')->setJustVotedPoll($pollId);
-            Mage::getSingleton('poll/poll')->setVoted($pollId);
         }
-
         $this->_redirectReferer();
     }
 }

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# REPLACE with your PHP5 binary path (example: /usr/local/php5/bin/php )
+#MAGE_PEAR_PHP_BIN="php"
+
 PEAR_PATH="downloader/pearlib"
 
 # initial setup
@@ -66,7 +69,7 @@ fi
 
 # get default pear dir of not set
 if test "x$MAGE_PEAR_ROOT_DIR" = "x"; then
-  MAGE_PEAR_ROOT_DIR="./$PEAR_PATH"
+    MAGE_PEAR_ROOT_DIR="`pwd`/$PEAR_PATH"
 fi
 
 # look for the right pear include dir
@@ -85,5 +88,8 @@ else
   PEAR_INI="$MAGE_PEAR_ROOT_DIR/pear.ini"
 fi
 
-exec $PHP -C -q $INCARG -d output_buffering=1 -d variables_order=EGPCS -d open_basedir="" -d safe_mode=0 -d register_argc_argv="On" -d auto_prepend_file="" -d auto_append_file="" $INCDIR/pearmage.php -c $PEAR_INI "$@"
+exec $PHP -C -q $INCARG -d output_buffering=1 -d variables_order=EGPCS \
+    -d open_basedir="" -d safe_mode=0 -d register_argc_argv="On" \
+    -d auto_prepend_file="" -d auto_append_file="" \
+    $INCDIR/pearmage.php -c $PEAR_INI "$@"
 

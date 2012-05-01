@@ -23,40 +23,28 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author     Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Invoice_View_Form extends Mage_Adminhtml_Block_Sales_Order_Abstract
 {
-    protected function _construct()
+    /**
+     * Retrieve invoice order
+     *
+     * @return Mage_Sales_Model_Order
+     */
+    public function getOrder()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/invoice/view/form.phtml');
-        $this->setOrder($this->getInvoice()->getOrder());
+        return $this->getInvoice()->getOrder();
     }
 
     /**
-     * Prepare child blocks
+     * Retrieve source
      *
-     * @return Mage_Adminhtml_Block_Sales_Order_Invoice_Create_Items
+     * @return Mage_Sales_Model_Order_Invoice
      */
-    protected function _prepareLayout()
+    public function getSource()
     {
-        $infoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_view_info')
-            ->setOrder($this->getInvoice()->getOrder());
-        $this->setChild('order_info', $infoBlock);
-
-        $totalsBlock = $this->getLayout()->createBlock('adminhtml/sales_order_totals')
-            ->setOrder($this->getInvoice()->getOrder())
-            ->setSource($this->getInvoice());
-        $this->setChild('totals', $totalsBlock);
-
-        $commentsBlock = $this->getLayout()->createBlock('adminhtml/sales_order_comments_view')
-            ->setEntity($this->getInvoice());
-        $this->setChild('comments', $commentsBlock);
-
-        $paymentInfoBlock = $this->getLayout()->createBlock('adminhtml/sales_order_payment')
-            ->setPayment($this->getInvoice()->getOrder()->getPayment());
-        $this->setChild('payment_info', $paymentInfoBlock);
-        return parent::_prepareLayout();
+        return $this->getInvoice();
     }
 
     /**
@@ -69,11 +57,20 @@ class Mage_Adminhtml_Block_Sales_Order_Invoice_View_Form extends Mage_Adminhtml_
         return Mage::registry('current_invoice');
     }
 
+    /**
+     * Retrieve order url
+     */
     public function getOrderUrl()
     {
-        return $this->getUrl('*/sales_order/view', array('order_id'=>$this->getInvoice()->getOrderId()));
+        return $this->getUrl('*/sales_order/view', array('order_id' => $this->getInvoice()->getOrderId()));
     }
 
+    /**
+     * Retrieve formated price
+     *
+     * @param float $price
+     * @return string
+     */
     public function formatPrice($price)
     {
         return $this->getInvoice()->getOrder()->formatPrice($price);

@@ -26,6 +26,10 @@ class Mage_CatalogRule_Model_Observer
     public function applyAllRulesOnProduct($observer)
     {
         $product = $observer->getEvent()->getProduct();
+        if ($product->getIsMassupdate()) {
+            return;
+        }
+
         $productWebsiteIds = $product->getWebsiteIds();
 
         $rules = Mage::getModel('catalogrule/rule')->getCollection()
@@ -40,6 +44,13 @@ class Mage_CatalogRule_Model_Observer
             $websiteIds = array_intersect($productWebsiteIds, $ruleWebsiteIds);
             $rule->applyToProduct($product, $websiteIds);
         }
+    }
+
+    public function applyAllRules($observer)
+    {
+        $resource = Mage::getResourceSingleton('catalogrule/rule');
+        $resource->applyAllRulesForDateRange($resource->formatDate(mktime(0,0,0)));
+        Mage::app()->removeCache('catalog_rules_dirty');
     }
 
     /**

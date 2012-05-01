@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Catalog_Product_SetController extends Mage_Adminhtml_Controller_Action
@@ -35,7 +36,7 @@ class Mage_Adminhtml_Catalog_Product_SetController extends Mage_Adminhtml_Contro
         $this->_setActiveMenu('catalog/sets');
 
         $this->_addBreadcrumb(Mage::helper('catalog')->__('Catalog'), Mage::helper('catalog')->__('Catalog'));
-        $this->_addBreadcrumb(Mage::helper('catalog')->__('Manage Product Sets'), Mage::helper('catalog')->__('Manage Product Sets'));
+        $this->_addBreadcrumb(Mage::helper('catalog')->__('Manage Attribute Sets'), Mage::helper('catalog')->__('Manage Attribute Sets'));
 
         $this->_addContent($this->getLayout()->createBlock('adminhtml/catalog_product_attribute_set_toolbar_main'));
         $this->_addContent($this->getLayout()->createBlock('adminhtml/catalog_product_attribute_set_grid'));

@@ -20,19 +20,19 @@
 
 
 /** Zend_Controller_Exception */
-require_once 'Zend/Controller/Action/Exception.php';
+#require_once 'Zend/Controller/Action/Exception.php';
 
 /** Zend_Controller_Action_HelperBroker */
-require_once 'Zend/Controller/Action/HelperBroker.php';
+#require_once 'Zend/Controller/Action/HelperBroker.php';
 
 /** Zend_Controller_Front */
-require_once 'Zend/Controller/Front.php';
+#require_once 'Zend/Controller/Front.php';
 
 /** Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
+#require_once 'Zend/Controller/Request/Abstract.php';
 
 /** Zend_Controller_Response_Abstract */
-require_once 'Zend/Controller/Response/Abstract.php';
+#require_once 'Zend/Controller/Response/Abstract.php';
 
 
 /**
@@ -162,7 +162,7 @@ abstract class Zend_Controller_Action
             return $this->view;
         }
 
-        require_once 'Zend/View/Interface.php';
+        #require_once 'Zend/View/Interface.php';
         if (isset($this->view) && ($this->view instanceof Zend_View_Interface)) {
             return $this->view;
         }
@@ -178,7 +178,7 @@ abstract class Zend_Controller_Action
             throw new Zend_Controller_Exception('Missing base view directory ("' . $baseDir . '")');
         }
 
-        require_once 'Zend/View.php';
+        #require_once 'Zend/View.php';
         $this->view = new Zend_View(array('basePath' => $baseDir));
 
         return $this->view;
@@ -425,7 +425,7 @@ abstract class Zend_Controller_Action
         }
 
         // Throw exception in all other cases
-        require_once 'Zend/Controller/Exception.php';
+        #require_once 'Zend/Controller/Exception.php';
         throw new Zend_Controller_Exception('Front controller class has not been loaded');
     }
 
@@ -472,12 +472,12 @@ abstract class Zend_Controller_Action
     public function __call($methodName, $args)
     {
         if ('Action' == substr($methodName, -6)) {
-            require_once 'Zend/Controller/Action/Exception.php';
+            #require_once 'Zend/Controller/Action/Exception.php';
             $action = substr($methodName, 0, strlen($methodName) - 6);
             throw new Zend_Controller_Action_Exception(sprintf('Action "%s" does not exist and was not trapped in __call()', $action), 404);
         }
 
-        require_once 'Zend/Controller/Action/Exception.php';
+        #require_once 'Zend/Controller/Action/Exception.php';
         throw new Zend_Controller_Action_Exception(sprintf('Method "%s" does not exist and was not trapped in __call()', $methodName), 500);
     }
 

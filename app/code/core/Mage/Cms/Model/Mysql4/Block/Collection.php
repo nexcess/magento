@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Cms
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Cms_Model_Mysql4_Block_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
@@ -32,9 +33,31 @@ class Mage_Cms_Model_Mysql4_Block_Collection extends Mage_Core_Model_Mysql4_Coll
     {
         $this->_init('cms/block');
     }
-    
+
     public function toOptionArray()
     {
         return $this->_toOptionArray('block_id', 'title');
+    }
+
+    /**
+     * Add Filter by store
+     *
+     * @param int|Mage_Core_Model_Store $store
+     * @return Mage_Cms_Model_Mysql4_Page_Collection
+     */
+    public function addStoreFilter($store)
+    {
+        if ($store instanceof Mage_Core_Model_Store) {
+            $store = array($store->getId());
+        }
+
+        $this->getSelect()->join(
+            array('store_table' => $this->getTable('cms/block_store')),
+            'main_table.block_id = store_table.block_id',
+            array()
+        )
+        ->where('store_table.store_id in (?)', array(0, $store));
+
+        return $this;
     }
 }

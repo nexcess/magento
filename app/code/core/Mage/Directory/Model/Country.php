@@ -21,6 +21,7 @@
 /**
  * Country model
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Directory_Model_Country extends Mage_Core_Model_Abstract
 {
@@ -58,6 +59,7 @@ class Mage_Directory_Model_Country extends Mage_Core_Model_Abstract
 
     public function formatAddress(Varien_Object $address, $html=false)
     {
+        //TODO: is it still used?
         $address->getRegion();
         $address->getCountry();
 

@@ -21,7 +21,7 @@
 
 class Mage_Log_Model_Visitor extends Mage_Core_Model_Abstract
 {
-    const ONLINE_MINUTES_INTERVAL = 15;
+    const DEFAULT_ONLINE_MINUTES_INTERVAL = 15;
 
     protected function _construct()
     {
@@ -73,6 +73,19 @@ class Mage_Log_Model_Visitor extends Mage_Core_Model_Abstract
     }
 
     /**
+     * Return Online Minutes Interval
+     *
+     * @return int Minutes Interval
+     */
+    public static function getOnlineMinutesInterval()
+    {
+        $configValue = Mage::getStoreConfig('customer/online_customers/online_minutes_interval');
+        return intval($configValue) > 0
+            ? intval($configValue)
+            : self::DEFAULT_ONLINE_MINUTES_INTERVAL;
+    }
+
+    /**
      * Retrieve url from model data
      *
      * @return string
@@ -105,7 +118,7 @@ class Mage_Log_Model_Visitor extends Mage_Core_Model_Abstract
         $ignores = Mage::getConfig()->getNode('global/ignoredModules/entities')->asArray();
 
         if( is_array($ignores) && $observer) {
-            $curModule = $observer->getEvent()->getControllerAction()->getRequest()->getModuleName();
+            $curModule = $observer->getEvent()->getControllerAction()->getRequest()->getRouteName();
             if (isset($ignores[$curModule])) {
                 return true;
             }

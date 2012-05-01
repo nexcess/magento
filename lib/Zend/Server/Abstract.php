@@ -19,7 +19,7 @@
  */
 
 /** Zend_Server_Interface */
-require_once 'Zend/Server/Interface.php';
+#require_once 'Zend/Server/Interface.php';
 
 /**
  * Zend_Server_Abstract

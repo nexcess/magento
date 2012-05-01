@@ -23,21 +23,22 @@
  *
  * @category   Mage
  * @package    Mage_Directory
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Directory_Model_Mysql4_Country_Collection extends Varien_Data_Collection_Db
 {
     protected $_countryTable;
-    
-    public function __construct() 
+
+    public function __construct()
     {
         parent::__construct(Mage::getSingleton('core/resource')->getConnection('directory_read'));
-        
+
         $this->_countryTable = Mage::getSingleton('core/resource')->getTableName('directory/country');
-        
+
         $this->_select->from(array('country'=>$this->_countryTable));
         $this->setItemObjectClass(Mage::getConfig()->getModelClassName('directory/country'));
     }
-    
+
     public function loadByStore()
     {
         $allowCountries = explode(',', (string)Mage::getStoreConfig('general/country/allow'));
@@ -49,17 +50,17 @@ class Mage_Directory_Model_Mysql4_Country_Collection extends Varien_Data_Collect
 
         return $this;
     }
-    
+
     public function getItemById($countryId)
     {
         foreach ($this->_items as $country) {
-            if ($country->getCountryId() == $countryId) { 
+            if ($country->getCountryId() == $countryId) {
                 return $country;
             }
         }
         return Mage::getResourceModel('directory/country');
     }
-    
+
     public function addCountryCodeFilter($countryCode, $iso=array(0 => 'iso3', 'iso2'))
     {
         if (!empty($countryCode)) {
@@ -105,7 +106,7 @@ class Mage_Directory_Model_Mysql4_Country_Collection extends Varien_Data_Collect
     public function toOptionArray($emptyLabel = '')
     {
         $options = $this->_toOptionArray('country_id', 'name', array('title'=>'iso2_code'));
-        
+
         $sort = array();
         foreach ($options as $index=>$data) {
             $name = Mage::app()->getLocale()->getLocale()->getCountryTranslation($data['value']);
@@ -113,7 +114,7 @@ class Mage_Directory_Model_Mysql4_Country_Collection extends Varien_Data_Collect
                 $sort[$name] = $data['value'];
             }
         }
-        
+
         ksort($sort);
         $options = array();
         foreach ($sort as $label=>$value) {
@@ -122,7 +123,7 @@ class Mage_Directory_Model_Mysql4_Country_Collection extends Varien_Data_Collect
                'label' => $label
             );
         }
-        
+
         if (count($options)>0 && $emptyLabel !== false) {
             array_unshift($options, array('value'=>'', 'label'=>$emptyLabel));
         }

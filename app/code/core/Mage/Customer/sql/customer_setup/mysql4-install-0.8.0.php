@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 $installer = $this;
 /* @var $installer Mage_Customer_Model_Entity_Setup */
@@ -235,7 +236,7 @@ CREATE TABLE `{$installer->getTable('customer_group')}` (
   PRIMARY KEY  (`customer_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Customer groups';
 
-INSERT INTO `{$installer->getTable('customer_group')}` VALUES(0, 'NOT LOGGED IN', 1), (1, 'General', 3), (2, 'Wholesale', 3), (3, 'Retailer', 3);
+INSERT INTO `{$installer->getTable('customer_group')}` VALUES(0, 'NOT LOGGED IN', 3), (1, 'General', 3), (2, 'Wholesale', 3), (3, 'Retailer', 3);
 ");
 $installer->endSetup();
 $installer->installEntities();

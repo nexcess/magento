@@ -23,6 +23,7 @@
  * 
  * @category   Mage
  * @package    Mage_Newsletter
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Newsletter_Model_Mysql4_Template_Collection extends Varien_Data_Collection_Db
 {

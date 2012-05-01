@@ -23,9 +23,12 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Reorder extends Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Abstract
 {
+
+    protected $_sidebarStorageAction = 'reorder';
 
     public function __construct()
     {
@@ -65,7 +68,13 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Reorder extends Mage_Admin
     public function getItemCollection()
     {
         if ($order = $this->getLastOrder()) {
-            return $order->getItemsCollection();
+            $items = array();
+            foreach ($order->getItemsCollection() as $item) {
+                if (!$item->getParentItem()) {
+                    $items[] = $item;
+                }
+            }
+            return $items;
         }
         return false;
     }
@@ -83,5 +92,16 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Reorder extends Mage_Admin
     public function canDisplayPrice()
     {
         return false;
+    }
+
+    /**
+     * Retrieve identifier of block item
+     *
+     * @param Varien_Object $item
+     * @return int
+     */
+    public function getIdentifierId($item)
+    {
+        return $item->getId();
     }
 }

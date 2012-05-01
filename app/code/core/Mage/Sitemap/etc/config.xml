@@ -97,6 +97,25 @@
                 </admin>
             </resources>
         </acl>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <sitemap>
+                                            <title>Google Sitemap Section</title>
+                                        </sitemap>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
         <translate>
             <modules>
                 <Mage_Sitemap>

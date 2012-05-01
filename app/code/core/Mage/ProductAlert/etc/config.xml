@@ -23,11 +23,6 @@
     <modules>
         <Mage_ProductAlert>
             <version>0.7.1</version>
-            <depends>
-                <Mage_Catalog />
-                <Mage_Customer />
-                <Mage_Newsletter />
-            </depends>
         </Mage_ProductAlert>
     </modules>
 

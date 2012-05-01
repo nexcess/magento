@@ -270,7 +270,7 @@ class Zend_Db_Profiler
         /**
          * @see Zend_Db_Profiler_Query
          */
-        require_once 'Zend/Db/Profiler/Query.php';
+        #require_once 'Zend/Db/Profiler/Query.php';
         $this->_queryProfiles[] = new Zend_Db_Profiler_Query($queryText, $queryType);
 
         end($this->_queryProfiles);
@@ -298,7 +298,7 @@ class Zend_Db_Profiler
             /**
              * @see Zend_Db_Profiler_Exception
              */
-            require_once 'Zend/Db/Profiler/Exception.php';
+            #require_once 'Zend/Db/Profiler/Exception.php';
             throw new Zend_Db_Profiler_Exception("Profiler has no query with handle '$queryId'.");
         }
 
@@ -309,7 +309,7 @@ class Zend_Db_Profiler
             /**
              * @see Zend_Db_Profiler_Exception
              */
-            require_once 'Zend/Db/Profiler/Exception.php';
+            #require_once 'Zend/Db/Profiler/Exception.php';
             throw new Zend_Db_Profiler_Exception("Query with profiler handle '$queryId' has already ended.");
         }
 
@@ -349,7 +349,7 @@ class Zend_Db_Profiler
             /**
              * @see Zend_Db_Profiler_Exception
              */
-            require_once 'Zend/Db/Profiler/Exception.php';
+            #require_once 'Zend/Db/Profiler/Exception.php';
             throw new Zend_Db_Profiler_Exception("Query handle '$queryId' not found in profiler log.");
         }
 

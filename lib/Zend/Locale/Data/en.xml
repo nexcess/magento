@@ -3556,11 +3556,11 @@
 			</currency>
 			<currency type="ROL">
 				<displayName>Old Romanian Leu</displayName>
-				<symbol choice="true">=0#Old lei|1#Old leu|1&lt;Old lei</symbol>
+				<symbol choice="true">0≤Old lei|1≤Old leu|1&lt;Old lei</symbol>
 			</currency>
 			<currency type="RON">
 				<displayName>Romanian Leu</displayName>
-				<symbol choice="true">=0#lei|1#leu|1&lt;lei</symbol>
+				<symbol choice="true">0≤lei|1≤leu|1&lt;lei</symbol>
 			</currency>
 			<currency type="RSD">
 				<displayName>Serbian Dinar</displayName>
@@ -3673,6 +3673,7 @@
 			</currency>
 			<currency type="TRY">
 				<displayName>New Turkish Lira</displayName>
+				<symbol>YTL</symbol>
 			</currency>
 			<currency type="TTD">
 				<displayName>Trinidad and Tobago Dollar</displayName>

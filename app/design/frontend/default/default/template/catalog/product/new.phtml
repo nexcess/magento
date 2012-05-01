@@ -29,12 +29,12 @@
     <td>
         <div>
             <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>">
-                <img class="product-image" src="<?php echo $_product->getSmallImageUrl() ?>" width="80" height="77" alt="<?php echo $this->htmlEscape($_product->getName()) ?>"/>
+                <img class="product-image" src="<?php echo $_product->getSmallImageUrl() ?>" width="80" height="77" alt="<?php echo $this->htmlEscape($_product->getName()) ?>" />
             </a>
         </div>
             <p><a class="product-name" href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>)"><?php echo $this->htmlEscape($_product->getName()) ?></a></p>
-            <?php echo $this->helper('review/product')->getSummaryHtml($_product, 'short') ?>
-            <?php echo $this->helper('catalog/product')->getPriceHtml($_product) ?>
+            <?php echo $this->getReviewsSummaryHtml($_product, 'short') ?>
+            <?php echo $this->getPriceHtml($_product) ?>
             <?php if($_product->isSaleable()): ?>
             <button class="form-button" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><?php echo $this->__('Add to Cart') ?></span></button>
             <?php else: ?>
@@ -45,7 +45,7 @@
                 <?php if ($this->helper('wishlist')->isAllow()) : ?>
                 <a href="<?php echo $this->getAddToWishlistUrl($_product) ?>" class="link-cart"><?php echo $this->__('Add to Wishlist') ?></a>
                 <?php endif; ?>
-                <?php if($_compareUrl=$this->getAddToCompareUrl($_product)): ?><br/>
+                <?php if($_compareUrl=$this->getAddToCompareUrl($_product)): ?><br />
                 <a href="<?php echo $_compareUrl ?>"><?php echo $this->__('Add to Compare') ?></a>
                 <?php endif; ?>
             </p>

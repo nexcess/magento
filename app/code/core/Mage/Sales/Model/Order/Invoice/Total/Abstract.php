@@ -25,4 +25,20 @@ abstract class Mage_Sales_Model_Order_Invoice_Total_Abstract
     {
         return $this;
     }
+
+    public function isItemSkipped(Mage_Sales_Model_Order_Invoice_Item $item)
+    {
+        /**
+         * Skipping child if parent price calculated by itself
+         */
+        if ($orderItem = $item->getOrderItem()->getParentItem()) {
+            return !$orderItem->isChildrenCalculated();
+        } else {
+            /**
+             * Skipping parent if its price calculated by childs
+             */
+            return $item->getOrderItem()->isChildrenCalculated();
+        }
+        return false;
+    }
 }

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Review
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Review_Model_Review extends Mage_Core_Model_Abstract
 {

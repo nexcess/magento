@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Customer_Online_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -61,6 +62,7 @@ class Mage_Adminhtml_Block_Customer_Online_Grid extends Mage_Adminhtml_Block_Wid
             'header'=>Mage::helper('customer')->__('ID'),
             'width'=>'40px',
             'align'=>'right',
+            'type'  => 'number',
             'default' => Mage::helper('customer')->__('n/a'),
             'index'=>'customer_id')
         );

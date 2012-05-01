@@ -22,6 +22,6 @@
     {{pdf_row_separator}}
 <?php echo Mage::helper('payment')->__('Credit Card Type: %s', $this->htmlEscape($this->getCcTypeName())) ?>
     {{pdf_row_separator}}
-<?php echo Mage::helper('payment')->__('Credit Card Number: %s', $this->htmlEscape($this->getInfo()->getCcNumber())) ?>
+<?php echo Mage::helper('payment')->__('Credit Card Number: xxxx-%s', $this->htmlEscape($this->getInfo()->getCcLast4())) ?>
     {{pdf_row_separator}}
 <?php echo Mage::helper('payment')->__('Expiration Date: %s/%s', $this->htmlEscape($this->getCcExpMonth()), $this->htmlEscape($this->getInfo()->getCcExpYear())) ?>

@@ -23,10 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Invoice_View extends Mage_Adminhtml_Block_Widget_Form_Container
 {
-
     public function __construct()
     {
         $this->_objectId    = 'invoice_id';
@@ -119,7 +119,7 @@ class Mage_Adminhtml_Block_Sales_Order_Invoice_View extends Mage_Adminhtml_Block
     }
 
     public function getBackUrl()
-    {//return 'http://google.com.ua';
+    {
         return $this->getUrl(
             '*/sales_order/view',
             array(
@@ -157,9 +157,12 @@ class Mage_Adminhtml_Block_Sales_Order_Invoice_View extends Mage_Adminhtml_Block
             'invoice_id' => $this->getInvoice()->getId()
         ));
     }
-    
-    public function updateBackButtonUrl()
+
+    public function updateBackButtonUrl($flag)
     {
-        return $this->_updateButton('back', 'onclick', 'setLocation(\'' . $this->getUrl('*/sales_invoice/') . '\')');
+        if ($flag) {
+            return $this->_updateButton('back', 'onclick', 'setLocation(\'' . $this->getUrl('*/sales_invoice/') . '\')');
+        }
+        return $this;
     }
 }

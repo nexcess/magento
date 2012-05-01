@@ -22,17 +22,17 @@
 /**
  * @see Zend_Gdata_Media_Extension_MediaGroup
  */
-require_once 'Zend/Gdata/Media/Extension/MediaGroup.php';
+#require_once 'Zend/Gdata/Media/Extension/MediaGroup.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_MediaContent
  */
-require_once 'Zend/Gdata/YouTube/Extension/MediaContent.php';
+#require_once 'Zend/Gdata/YouTube/Extension/MediaContent.php';
 
 /**
  * @see Zend_Gdata_YouTube_Extension_Duration
  */
-require_once 'Zend/Gdata/YouTube/Extension/Duration.php';
+#require_once 'Zend/Gdata/YouTube/Extension/Duration.php';
 
 /**
  * This class represents the media:group element of Media RSS.

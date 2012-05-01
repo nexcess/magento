@@ -24,12 +24,12 @@
 /**
  * Zend_InfoCard_Xml_Exception
  */
-require_once 'Zend/InfoCard/Xml/Exception.php';
+#require_once 'Zend/InfoCard/Xml/Exception.php';
 
 /**
  * Zend_InfoCard_Xml_Assertion_Interface
  */
-require_once 'Zend/InfoCard/Xml/Assertion/Interface.php';
+#require_once 'Zend/InfoCard/Xml/Assertion/Interface.php';
 
 /**
  * Factory object to retrieve an Assertion object based on the type of XML document provided

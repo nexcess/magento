@@ -23,13 +23,22 @@
  *
  * @category   Mage
  * @package    Mage_Reports
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Reports_Block_Product_Viewed extends Mage_Catalog_Block_Product_Abstract
 {
+    protected function _hasViewedProductsBefore()
+    {
+        return Mage::getSingleton('reports/session')->getData('viewed_products');
+    }
+
     public function __construct()
     {
         parent::__construct();
+        if ($this->_hasViewedProductsBefore() === false) {
+            return $this;
+        }
 //        $this->setTemplate('reports/product_viewed.phtml');
 
         $ignore = null;
@@ -37,8 +46,8 @@ class Mage_Reports_Block_Product_Viewed extends Mage_Catalog_Block_Product_Abstr
             $ignore = $product->getId();
         }
 
-        $customer = Mage::getSingleton('customer/session')->getCustomer();
-        if ($customer->getId()) {
+        if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+            $customer = Mage::getSingleton('customer/session')->getCustomer();
             $subjectId = $customer->getId();
             $subtype = 0;
         } else {
@@ -53,6 +62,11 @@ class Mage_Reports_Block_Product_Viewed extends Mage_Catalog_Block_Product_Abstr
             $productIds[] = $event->getObjectId();
         }
         unset($collection);
+
+        if (is_null($this->_hasViewedProductsBefore())) {
+            Mage::getSingleton('reports/session')->setData('viewed_products', count($productIds) > 0);
+        }
+
         $productCollection = null;
         if ($productIds) {
             $productCollection = Mage::getModel('catalog/product')
@@ -65,6 +79,10 @@ class Mage_Reports_Block_Product_Viewed extends Mage_Catalog_Block_Product_Abstr
             Mage::getSingleton('catalog/product_status')->addVisibleFilterToCollection($productCollection);
             Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($productCollection);
             $productCollection->setPageSize(5)->setCurPage(1)->load();
+
+            foreach ($productCollection as $product) {
+                $product->setDoNotUseCategoryId(true);
+            }
         }
         $this->setRecentlyViewedProducts($productCollection);
     }

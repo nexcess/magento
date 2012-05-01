@@ -21,12 +21,12 @@
 /**
  * Zend_Json
  */
-require_once 'Zend/Json.php';
+#require_once 'Zend/Json.php';
 
 /**
  * Zend_Json_Exception
  */
-require_once 'Zend/Json/Exception.php';
+#require_once 'Zend/Json/Exception.php';
 
 
 /**

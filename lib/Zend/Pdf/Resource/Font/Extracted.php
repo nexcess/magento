@@ -19,10 +19,10 @@
  */
 
 /** Zend_Pdf_Resource_Font */
-require_once 'Zend/Pdf/Resource/Font.php';
+#require_once 'Zend/Pdf/Resource/Font.php';
 
 /** Zend_Pdf_Cmap */
-require_once 'Zend/Pdf/Cmap.php';
+#require_once 'Zend/Pdf/Cmap.php';
 
 
 

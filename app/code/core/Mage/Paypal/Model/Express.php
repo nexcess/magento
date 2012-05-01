@@ -22,6 +22,7 @@
  *
  * PayPal Express Checkout Module
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
 {
@@ -116,7 +117,7 @@ class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
     public function catchError()
     {
         if ($this->getApi()->getError()) {
-            $s = Mage::getSingleton('checkout/session');
+            $s = $this->getCheckout();
             $e = $this->getApi()->getError();
             switch ($e['type']) {
                 case 'CURL':
@@ -173,6 +174,8 @@ class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
 
         $this->catchError();
 
+        $this->getSession()->setExpressCheckoutMethod('shortcut');
+
         return $this;
     }
 
@@ -188,6 +191,8 @@ class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
 
         $this->catchError();
 
+         $this->getSession()->setExpressCheckoutMethod('mark');
+
         return $this;
     }
 
@@ -198,7 +203,7 @@ class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
             $this->_getExpressCheckoutDetails();
         } catch (Exception $e) {
             $error=$e->getMessage();
-             Mage::getSingleton('paypal/session')->addError($e->getMessage());
+             $this->getSession()->addError($e->getMessage());
              $this->getApi()->setRedirectUrl('paypal/express/review');
         }
         switch ($this->getApi()->getUserAction()) {
@@ -229,22 +234,35 @@ class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
             Mage::getModel('directory/region')->loadByCode($a->getRegion(), $a->getCountryId())->getId()
         );
 
-        $q->getBillingAddress()
-            ->setFirstname($a->getFirstname())
-            ->setLastname($a->getLastname())
-            ->setEmail($a->getEmail());
+        /*
+        we want to set the billing information
+        only if the customer checkout from shortcut(shopping cart) or
+        if the customer checkout from mark(one page) and guest
+        */
+
+        if ($this->getSession()->getExpressCheckoutMethod()=='shortcut'
+        || ($this->getSession()->getExpressCheckoutMethod()=='mark' && $q->getCheckoutMethod()!='register')){
+            $q->getBillingAddress()
+                ->setPrefix($a->getPrefix())
+                ->setFirstname($a->getFirstname())
+                ->setMiddlename($a->getMiddlename())
+                ->setLastname($a->getLastname())
+                ->setSuffix($a->getSuffix())
+                ->setEmail($a->getEmail());
+        }
 
         $q->getShippingAddress()
             ->importCustomerAddress($a)
             ->setCollectShippingRates(true);
 
-        $q->setCheckoutMethod('paypal_express');
+        //$q->setCheckoutMethod('paypal_express');
 
         $q->getPayment()
             ->setMethod('paypal_express')
             ->setPaypalCorrelationId($api->getCorrelationId())
             ->setPaypalPayerId($api->getPayerId())
             ->setPaypalPayerStatus($api->getPayerStatus())
+            ->setAdditionalData($api->getPaypalPayerEmail())
         ;
 
         $q->collectTotals()->save();
@@ -317,9 +335,9 @@ class Mage_Paypal_Model_Express extends Mage_Payment_Model_Method_Abstract
     public function void(Varien_Object $payment)
     {
         $error = false;
-        if($payment->getCcTransId()){
+        if($payment->getVoidTransactionId()){
             $api = $this->getApi();
-            $api->setAuthorizationId($payment->getCcTransId());
+            $api->setAuthorizationId($payment->getVoidTransactionId());
 
              if ($api->callDoVoid()!==false){
                  $payment->setStatus('SUCCESS')

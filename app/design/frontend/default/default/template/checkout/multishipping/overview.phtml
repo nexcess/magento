@@ -23,7 +23,7 @@
 </div>
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 <div class="multi-address-checkout-box">
-    <form action="<?php echo $this->getPostActionUrl() ?>" method="post" onsubmit="return showLoader();" >
+    <form action="<?php echo $this->getPostActionUrl() ?>" method="post" onsubmit="return showLoader();">
         <div class="box">
             <h4 class="legend"><?php echo $this->__('Billing Information') ?></h4>
             <div class="clear"></div>
@@ -41,8 +41,8 @@
                     <div class="head">
                         <h4><?php echo $this->__('Payment Method') ?><span class="separator">|</span><a href="<?php echo $this->getEditBillingUrl() ?>"><?php echo $this->__('Change Payment Method') ?></a></h4>
                     </div>
-                    <input type="hidden" name="payment[cc_number]" value="<?echo $this->htmlEscape($this->getPayment()->getCcNumber())?>">
-                    <input type="hidden" name="payment[cc_cid]" value="<?echo $this->htmlEscape($this->getPayment()->getCcCid())?>">
+                    <input type="hidden" name="payment[cc_number]" value="<?php echo $this->htmlEscape($this->getPayment()->getCcNumber())?>" />
+                    <input type="hidden" name="payment[cc_cid]" value="<?php echo $this->htmlEscape($this->getPayment()->getCcCid())?>" />
                     <?php echo $this->getPaymentHtml() ?>
                 </div>
             </div>
@@ -51,6 +51,7 @@
         <div class="box">
             <h4 class="legend"><?php echo $this->__('Shipping Information') ?></h4>
             <div class="clear"></div>
+            <?php $mergedCells = ($this->helper('tax')->displayCartBothPrices() ? 2 : 1); ?>
             <?php foreach ($this->getShippingAddresses() as $_index => $_address): ?>
                 <div class="content col2-alt-set"><h4><?php echo $this->__('Address %s of %s', ($_index+1), $this->getShippingAddressCount()) ?></h4>
                     <div class="col-1">
@@ -60,12 +61,22 @@
                         <address>
                             <?php echo $_address->format('html') ?>
                         </address>
-                        <br/>
+                        <br />
                         <div class="head">
                             <h4><?php echo $this->__('Shipping Method') ?><span class="separator">|</span><a href="<?php echo $this->getEditShippingUrl() ?>"><?php echo $this->__('Change Shipping Method') ?></a></h4>
                         </div>
                         <?php if($_rate=$this->getShippingAddressRate($_address)): ?>
-                        <p><?php echo $_rate->getCarrierTitle() ?> (<?php echo $_rate->getMethodDescription() ?>) - <?php echo $_rate->getPrice() ?></p>
+                        <p>
+                        <?php echo $_rate->getCarrierTitle() ?> (<?php echo $_rate->getMethodDescription() ?>)
+                        -
+                        <?php $_excl = $this->getShippingPriceExclTax($_address); ?>
+                        <?php $_incl = $this->getShippingPriceInclTax($_address); ?>
+
+                        <?php echo $_excl; ?>
+                        <?php if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                            (<?php echo $this->__('Incl. Tax'); ?> <?php echo $_incl; ?>)
+                        <?php endif; ?>
+                        </p>
                         <?php endif; ?>
                     </div>
                     <div class="col-2">
@@ -73,40 +84,64 @@
                             <h4><?php echo $this->__('Items') ?><span class="separator">|</span><a href="<?php echo $this->getAddressesEditUrl() ?>"><?php echo $this->__('Edit Items') ?></a></h4>
                         </div>
                         <table cellspacing="0" id="overview-table-<?php echo $_address->getId() ?>" class="data-table nested-data-table">
-                            <col/>
-                            <col width="70"/>
-                            <col width="30"/>
-                            <col width="70"/>
+                            <col />
+                            <col width="70" />
+                            <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                            <col width="70" />
+                            <?php endif; ?>
+                            <col width="30" />
+                            <col width="70" />
+                            <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                            <col width="70" />
+                            <?php endif; ?>
                             <thead>
                                 <tr>
-                                    <th><?php echo $this->__('Product Name') ?></th>
-
-                                    <th class="a-right"><?php echo $this->__('Price') ?></th>
-                                    <th class="a-center"><?php echo $this->__('Qty') ?></th>
-                                    <th class="a-right"><?php echo $this->__('Subtotal') ?></th>
+                                    <th rowspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Product Name') ?></th>
+                                    <th class="a-right" colspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Price') ?></th>
+                                    <th class="a-center" rowspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Qty') ?></th>
+                                    <th class="a-right" colspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Subtotal') ?></th>
                                 </tr>
+                                <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                <tr>
+                                    <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                    <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                                    <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                    <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                                </tr>
+                                <?php endif; ?>
                             </thead>
                             <tbody>
                             <?php foreach ($this->getShippingAddressItems($_address) as $_item): ?>
                                 <tr>
                                     <td>
-                                        <?php echo $this->helper('checkout')->getQuoteItemProductName($_item) ?>
-                                        <?php echo $this->helper('checkout')->getQuoteItemProductDescription($_item) ?>
+                                        <?php echo $this->getItemHtml($_item->getQuoteItem()) ?>
                                     </td>
-
-                                    <td class="a-right"><?php echo $this->helper('checkout')->formatPrice($_item->getCalculationPrice()) ?></td>
+                                    <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                    <td class="a-right">
+                                        <?php echo $this->helper('checkout')->formatPrice($_item->getCalculationPrice()) ?>
+                                    </td>
+                                    <?php endif; ?>
+                                    <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                    <td class="a-right">
+                                        <?php echo $this->helper('checkout')->formatPrice($this->helper('checkout')->getPriceInclTax($_item)) ?>
+                                    </td>
+                                    <?php endif; ?>
                                     <td class="a-center"><?php echo $_item->getQty()*1 ?></td>
-                                    <td class="a-right"><?php echo $this->helper('checkout')->formatPrice($_item->getRowTotal()) ?></td>
+                                    <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                    <td class="a-right">
+                                        <?php echo $this->helper('checkout')->formatPrice($_item->getRowTotal()) ?>
+                                    </td>
+                                    <?php endif; ?>
+                                    <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                    <td class="a-right">
+                                        <?php echo $this->helper('checkout')->formatPrice($this->helper('checkout')->getSubtotalInclTax($_item)) ?>
+                                    </td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
                             <tfoot>
-                            <?php foreach ($this->getShippingAddressTotals($_address) as $_total): ?>
-                                <tr>
-                                    <td colspan="3" class="a-right"><?php echo $_total->getTitle() ?></td>
-                                    <td class="a-right"><?php echo $this->helper('checkout')->formatPrice($_total->getValue()) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
+                            <?php echo $this->renderTotals($this->getShippingAddressTotals($_address)); ?>
                             </tfoot>
                         </table>
                         <script type="text/javascript">decorateTable('overview-table-<?php echo $_address->getId() ?>')</script>
@@ -117,11 +152,93 @@
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
+
+        <?php if ($this->getQuote()->hasVirtualItems()): ?>
+        <div class="box">
+            <h4 class="legend"><?php echo $this->__('Other items in your order') ?></h4>
+            <div class="clear"></div>
+            <div class="content col2-alt-set">
+                <div class="col-1"></div>
+                <div class="col-2">
+                    <div class="head">
+                        <h4><?php echo $this->__('Items') ?><span class="separator">|</span><a href="<?php echo $this->getVirtualProductEditUrl() ?>"><?php echo $this->__('Edit Items') ?></a></h4>
+                    </div>
+                    <?php $mergedCells = ($this->helper('tax')->displayCartBothPrices() ? 2 : 1); ?>
+                    <table cellspacing="0" id="virtual-overview-table" class="data-table nested-data-table">
+                        <col />
+                        <col width="70" />
+                        <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                        <col width="70" />
+                        <?php endif; ?>
+                        <col width="30" />
+                        <col width="70" />
+                        <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                        <col width="70" />
+                        <?php endif; ?>
+                        <thead>
+                            <tr>
+                                <th rowspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Product Name') ?></th>
+                                <th class="a-right" colspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Price') ?></th>
+                                <th class="a-center" rowspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Qty') ?></th>
+                                <th class="a-right" colspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Subtotal') ?></th>
+                            </tr>
+                            <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                            <tr>
+                                <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                                <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                            </tr>
+                            <?php endif; ?>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($this->getVirtualItems() as $_item): ?>
+                            <tr>
+                                <td>
+                                    <?php echo $this->getItemHtml($_item) ?>
+                                </td>
+
+                                <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <td class="a-right">
+                                    <?php echo $this->helper('checkout')->formatPrice($_item->getCalculationPrice()) ?>
+                                </td>
+                                <?php endif; ?>
+                                <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <td class="a-right">
+                                    <?php echo $this->helper('checkout')->formatPrice($this->helper('checkout')->getPriceInclTax($_item)) ?>
+                                </td>
+                                <?php endif; ?>
+                                <td class="a-center"><?php echo $_item->getQty()*1 ?></td>
+                                <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <td class="a-right">
+                                    <?php echo $this->helper('checkout')->formatPrice($_item->getRowTotal()) ?>
+                                </td>
+                                <?php endif; ?>
+                                <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <td class="a-right">
+                                    <?php echo $this->helper('checkout')->formatPrice($this->helper('checkout')->getSubtotalInclTax($_item)) ?>
+                                </td>
+                                <?php endif; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                            <tfoot>
+                            <?php echo $this->renderTotals($this->getBillinAddressTotals()); ?>
+                            </tfoot>
+                        </table>
+                        <script type="text/javascript">decorateTable('virtual-overview-table')</script>
+                    </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php echo $this->getChildHtml('agreements') ?>
+
         <table class="place-order-box" cellspacing="0">
             <tr>
                 <td class="v-middle">
                     <span id="review-please-wait" style="display:none;" class="opc-please-wait f-right">
-                        <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt=""/> &nbsp; <?php echo $this->__('Submitting order information...') ?> &nbsp;
+                        <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt="" /> &nbsp; <?php echo $this->__('Submitting order information...') ?> &nbsp;
                     </span>
                 </td>
                 <td class="left-radius">&nbsp;</td>
@@ -148,6 +265,16 @@
         if (submitted) {
             return false;
         }
+        if ($('checkout-agreements')) {
+            var checkboxes = $$('#checkout-agreements input');
+            for (var i=0, l=checkboxes.length; i<l; i++) {
+                if (!checkboxes[i].checked) {
+                    alert("<?php echo $this->__('Please agree to all Terms and Conditions before placing the orders.')?>");
+                    return false;
+                }
+            }
+        }
+
         submitted = true;
         var step='review';
         Element.show(step+'-please-wait');

@@ -18,16 +18,22 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php if($this->getProduct()->getRatingSummary()->getReviewsCount()): ?>
-<div class="ratings">
-    <div class="rating-box">
-        <div class="rating" style="width:<?php echo $this->getProduct()->getRatingSummary()->getRatingSummary() ?>%"></div>
-    </div>
-    <div class="clear"></div>
-    <a href="<?php echo $this->getUrl('review/product/list', array('id' => $this->getProduct()->getId())) ?>"><small class="count"><?php echo $this->__('%d Review(s)', $this->getProduct()->getRatingSummary()->getReviewsCount()) ?></small></a><br /><a href="<?php echo $this->getAddLink() ?>#review-form"><small><?php echo $this->__('Add Your Review') ?></small></a>
-</div>
-<?php endif; ?>
 
-<?php if( !$this->getProduct()->getRatingSummary()->getReviewsCount() && $this->getDisplayBlock() ): ?>
-    <p><a href="<?php echo $this->getAddLink() ?>#review-form"><?php echo $this->__('Be the first to review this product') ?></a></p>
+<?php if ($this->getReviewsCount()): ?>
+
+    <div class="ratings">
+        <?php if ($this->getRatingSummary()):?>
+            <div class="rating-box">
+                <div class="rating" style="width:<?php echo $this->getRatingSummary() ?>%"></div>
+            </div>
+        <?php endif;?>
+        <a href="<?php echo $this->getReviewsUrl() ?>"><?php echo $this->__('%d Review(s)', $this->getReviewsCount()) ?></a>
+        <span class="pipe">|</span>
+        <a href="<?php echo $this->getReviewsUrl() ?>#review-form"><?php echo $this->__('Add Your Review') ?></a>
+    </div>
+
+<?php elseif ($this->getDisplayIfEmpty()): ?>
+
+    <p><a href="<?php echo $this->getReviewsUrl() ?>#review-form"><?php echo $this->__('Be the first to review this product') ?></a></p>
+
 <?php endif; ?>

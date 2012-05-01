@@ -35,9 +35,9 @@ var giftMessagesController = {
         if(!$(container).toogleGiftMessage) {
             $(container).toogleGiftMessage = true;
             $(this.getFieldId(container, 'edit')).show();
-            $(container).getElementsByClassName('action-link')[0].addClassName('open');
-            $(container).getElementsByClassName('default-text')[0].hide();
-            $(container).getElementsByClassName('close-text')[0].show();
+            $(container).down('.action-link').addClassName('open');
+            $(container).down('.default-text').hide();
+            $(container).down('.close-text').show();
             this.toogleRequired(this.getFieldId(container, 'message'), [
                 this.getFieldId(container, 'sender'),
                 this.getFieldId(container, 'recipient')
@@ -54,9 +54,24 @@ var giftMessagesController = {
                 return false;
             }
 
-            new Ajax.Updater(container, $(this.getFieldId(container, 'form')).action, {
+            new Ajax.Request($(this.getFieldId(container, 'form')).action, {
                 parameters: Form.serialize($(this.getFieldId(container, 'form')), true),
-                loaderArea: container
+                loaderArea: container,
+                onComplete: function(transport) {
+
+                    $(container).down('.action-link').removeClassName('open');
+                    $(container).down('.default-text').show();
+                    $(container).down('.close-text').hide();
+                    $(this.getFieldId(container, 'edit')).hide();
+                    if (transport.responseText.match(/YES/g)) {
+                        $(container).down('.default-text').down('.edit').show();
+                        $(container).down('.default-text').down('.add').hide();
+                    } else {
+                        $(container).down('.default-text').down('.add').show();
+                        $(container).down('.default-text').down('.edit').hide();
+                    }
+
+                }.bind(this)
             });
         }
 

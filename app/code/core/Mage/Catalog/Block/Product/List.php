@@ -24,10 +24,11 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Block_Product_List extends Mage_Catalog_Block_Product_Abstract
 {
-
+    protected $_defaultToolbarBlock = 'catalog/product_list_toolbar';
     protected $_productCollection;
 
     /**
@@ -91,7 +92,11 @@ class Mage_Catalog_Block_Product_List extends Mage_Catalog_Block_Product_Abstrac
      */
     protected function _beforeToHtml()
     {
-        $toolbar = $this->getLayout()->createBlock('catalog/product_list_toolbar', microtime());
+        /*$toolbar = $this->getLayout()->createBlock('catalog/product_list_toolbar', microtime());
+        if ($toolbarTemplate = $this->getToolbarTemplate()) {
+            $toolbar->setTemplate($toolbarTemplate);
+        }*/
+        $toolbar = $this->getToolbarBlock();
         if ($orders = $this->getAvailableOrders()) {
             $toolbar->setAvailableOrders($orders);
         }
@@ -106,7 +111,18 @@ class Mage_Catalog_Block_Product_List extends Mage_Catalog_Block_Product_Abstrac
 
         $this->_getProductCollection()->load();
         Mage::getModel('review/review')->appendSummary($this->_getProductCollection());
-        return parent::_prepareLayout();
+        return parent::_beforeToHtml();
+    }
+
+    public function getToolbarBlock()
+    {
+        if ($blockName = $this->getToolbarBlockName()) {
+            if ($block = $this->getLayout()->getBlock($blockName)) {
+                return $block;
+            }
+        }
+        $block = $this->getLayout()->createBlock($this->_defaultToolbarBlock, microtime());
+        return $block;
     }
 
     /**
@@ -129,6 +145,11 @@ class Mage_Catalog_Block_Product_List extends Mage_Catalog_Block_Product_Abstrac
     {
         $this->_getProductCollection()->addAttributeToSelect($code);
         return $this;
+    }
+
+    public function getPriceBlockTemplate()
+    {
+        return $this->_getData('price_block_template');
     }
 
 }

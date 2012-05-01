@@ -22,12 +22,12 @@
 /** 
  * @see Zend_Controller_Action_Exception
  */
-require_once 'Zend/Controller/Action/Exception.php';
+#require_once 'Zend/Controller/Action/Exception.php';
 
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
-require_once 'Zend/Controller/Action/Helper/Abstract.php';
+#require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
 /**
  * @category   Zend
@@ -92,7 +92,7 @@ class Zend_Controller_Action_Helper_Redirector extends Zend_Controller_Action_He
             /**
              * @see Zend_Controller_Exception
              */
-            require_once 'Zend/Controller/Exception.php';
+            #require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Action_Exception('Invalid redirect HTTP status code (' . $code  . ')');
         }
 

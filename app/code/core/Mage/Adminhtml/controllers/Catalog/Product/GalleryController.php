@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Catalog_Product_GalleryController extends Mage_Adminhtml_Controller_Action
 {
@@ -40,6 +41,13 @@ class Mage_Adminhtml_Catalog_Product_GalleryController extends Mage_Adminhtml_Co
 
             $result['url'] = Mage::getSingleton('catalog/product_media_config')->getTmpMediaUrl($result['file']);
             $result['file'] = $result['file'] . '.tmp';
+            $result['cookie'] = array(
+                'name'     => session_name(),
+                'value'    => $this->_getSession()->getSessionId(),
+                'lifetime' => $this->_getSession()->getCookieLifetime(),
+                'path'     => $this->_getSession()->getCookiePath(),
+                'domain'   => $this->_getSession()->getCookieDomain()
+            );
         } catch (Exception $e) {
             $result = array('error'=>$e->getMessage(), 'errorcode'=>$e->getCode());
         }

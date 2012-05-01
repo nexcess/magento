@@ -21,6 +21,7 @@
 /**
  * Config installation block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Install_Block_Config extends Mage_Install_Block_Abstract
 {
@@ -64,5 +65,30 @@ class Mage_Install_Block_Config extends Mage_Install_Block_Abstract
     public function getSkipUrlValidation()
     {
         return Mage::getSingleton('install/session')->getSkipUrlValidation();
+    }
+
+    public function getSkipBaseUrlValidation()
+    {
+        return Mage::getSingleton('install/session')->getSkipBaseUrlValidation();
+    }
+
+    public function getSessionSaveOptions()
+    {
+        return array(
+            'files' => Mage::helper('install')->__('File system'),
+            'db'    => Mage::helper('install')->__('Database'),
+        );
+    }
+
+    public function getSessionSaveSelect()
+    {
+        $html = $this->getLayout()->createBlock('core/html_select')
+            ->setName('config[session_save]')
+            ->setId('session_save')
+            ->setTitle(Mage::helper('install')->__('Save session files in'))
+            ->setClass('required-entry')
+            ->setOptions($this->getSessionSaveOptions())
+            ->getHtml();
+        return $html;
     }
 }

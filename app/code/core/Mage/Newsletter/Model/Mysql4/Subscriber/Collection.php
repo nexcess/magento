@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Newsletter
+ * @author      Magento Core Team <core@magentocommerce.com>
  * @todo       Refactoring this collection to Mage_Core_Model_Mysql4_Collection_Abstract.
  */
 

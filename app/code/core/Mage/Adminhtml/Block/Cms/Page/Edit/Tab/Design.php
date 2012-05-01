@@ -34,7 +34,8 @@ class Mage_Adminhtml_Block_Cms_Page_Edit_Tab_Design extends Mage_Adminhtml_Block
         $model = Mage::registry('cms_page');
 
         $fieldset = $form->addFieldset('design_fieldset', array(
-            'legend'=>Mage::helper('cms')->__('Custom Design')
+            'legend'=>Mage::helper('cms')->__('Custom Design'),
+						'class'=>'cms-edit-form',
         ));
 
     	$fieldset->addField('custom_theme', 'select', array(
@@ -69,7 +70,7 @@ class Mage_Adminhtml_Block_Cms_Page_Edit_Tab_Design extends Mage_Adminhtml_Block
         $fieldset->addField('layout_update_xml', 'editor', array(
             'name'      => 'layout_update_xml',
             'label'     => Mage::helper('cms')->__('Layout Update XML'),
-            'style'     => 'width:98%'
+            'style'     => 'width:98%; height:300px;'
         ));
 
         $form->setValues($model->getData());

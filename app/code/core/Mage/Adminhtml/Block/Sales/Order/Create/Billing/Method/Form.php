@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Sales_Order_Create_Billing_Method_Form extends Mage_Payment_Block_Form_Container
 {
@@ -69,6 +70,11 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Billing_Method_Form extends Mage_P
     {
         if ($method = $this->getQuote()->getPayment()->getMethod()) {
             return $method;
+        }
+        if (count($this->getMethods()) == 1) {
+            foreach ($this->getMethods() as $_method) {
+                return $_method->getCode();
+            }
         }
         return false;
     }

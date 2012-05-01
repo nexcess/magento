@@ -21,12 +21,12 @@
 /**
  * Zend_XmlRpc_Value
  */
-require_once 'Zend/XmlRpc/Value.php';
+#require_once 'Zend/XmlRpc/Value.php';
 
 /**
  * Zend_XmlRpc_Exception
  */
-require_once 'Zend/XmlRpc/Exception.php';
+#require_once 'Zend/XmlRpc/Exception.php';
 
 /**
  * XMLRPC Faults

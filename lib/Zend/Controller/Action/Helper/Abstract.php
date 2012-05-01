@@ -23,12 +23,12 @@
 /**
  * @see Zend_Controller_Exception
  */
-require_once 'Zend/Controller/Action/Exception.php';
+#require_once 'Zend/Controller/Action/Exception.php';
 
 /**
  * @see Zend_Controller_Action
  */
-require_once 'Zend/Controller/Action.php';
+#require_once 'Zend/Controller/Action.php';
 
 
 /**

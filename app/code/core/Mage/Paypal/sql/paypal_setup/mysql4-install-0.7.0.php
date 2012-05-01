@@ -24,7 +24,7 @@ $installer = $this;
 
 $installer->startSetup();
 
-$installer->run("
+/*$installer->run("
 
 -- DROP TABLE IF EXISTS `{$this->getTable('paypal_api_debug')}`;
 CREATE TABLE `{$this->getTable('paypal_api_debug')}` (
@@ -37,7 +37,7 @@ CREATE TABLE `{$this->getTable('paypal_api_debug')}` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     ");
-
+*/
 $installer->endSetup();
 
 $installer->addAttribute('quote_payment', 'paypal_payer_id', array());

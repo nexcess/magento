@@ -23,6 +23,7 @@
  *
  * @category   Varien
  * @package    Varien_Data
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Data_Collection implements IteratorAggregate, Countable
 {

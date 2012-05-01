@@ -19,7 +19,7 @@
  */
 
 /** Zend_Pdf_FileParser */
-require_once 'Zend/Pdf/FileParser.php';
+#require_once 'Zend/Pdf/FileParser.php';
 
 /**
  * Abstract helper class for {@link Zend_Pdf_Font} that parses font files.

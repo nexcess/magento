@@ -28,10 +28,19 @@ class Mage_Core_Model_Mysql4_Design extends Mage_Core_Model_Mysql4_Abstract
 
     public function _beforeSave(Mage_Core_Model_Abstract $object)
     {
-        $object->setDateFrom($this->formatDate($object->getDateFrom()));
-        $object->setDateTo($this->formatDate($object->getDateTo()));
+        if ($object->getDateFrom()) {
+            $object->setDateFrom($this->formatDate($object->getDateFrom()));
+        } else {
+            $object->setDateFrom(null);
+        }
 
-        if (strtotime($object->getDateFrom()) > strtotime($object->getDateTo())){
+        if ($object->getDateTo()) {
+            $object->setDateTo($this->formatDate($object->getDateTo()));
+        } else {
+            $object->setDateTo(null);
+        }
+
+        if (!is_null($object->getDateFrom()) && !is_null($object->getDateTo()) && strtotime($object->getDateFrom()) > strtotime($object->getDateTo())){
             Mage::throwException(Mage::helper('core')->__('Start date can\'t be greater than end date'));
         }
 
@@ -48,29 +57,85 @@ class Mage_Core_Model_Mysql4_Design extends Mage_Core_Model_Mysql4_Abstract
             );
         }
 
+        if (is_null($object->getDateFrom()))
+            $object->setDateFrom(new Zend_Db_Expr('null'));
+        if (is_null($object->getDateTo()))
+            $object->setDateTo(new Zend_Db_Expr('null'));
+
         parent::_beforeSave($object);
     }
 
     private function _checkIntersection($storeId, $dateFrom, $dateTo, $currentId)
     {
-        $condition =
-            '(? between date_from and date_to)
-            OR
-            (# between date_from and date_to)
-            OR
-            (date_from between ? and #)
-            OR
-            (date_to between ? and #)';
-        $condition = $this->_getReadAdapter()->quoteInto($condition, $dateFrom);
-        $condition = str_replace('#', '?', $condition);
-        $condition = $this->_getReadAdapter()->quoteInto($condition, $dateTo);
+        $condition = '(date_to is null AND date_from is null)';
+        if (!is_null($dateFrom)) {
+            $condition .= '
+                 OR
+                (? between date_from and date_to)
+                 OR
+                (? >= date_from and date_to is null)
+                 OR
+                (? <= date_to and date_from is null)
+                ';
+        } else {
+            $condition .= '
+                 OR
+                (date_from is null)
+                ';
+        }
 
+        if (!is_null($dateTo)) {
+            $condition .= '
+                 OR
+                (# between date_from and date_to)
+                 OR
+                (# >= date_from and date_to is null)
+                 OR
+                (# <= date_to and date_from is null)
+                ';
+        } else {
+            $condition .= '
+                 OR
+                (date_to is null)
+                ';
+        }
+
+        if (is_null($dateFrom) && !is_null($dateTo)) {
+            $condition .= '
+                 OR
+                (date_to <= # or date_from <= #)
+                ';
+        }
+        if (!is_null($dateFrom) && is_null($dateTo)) {
+            $condition .= '
+                 OR
+                (date_to >= ? or date_from >= ?)
+                ';
+        }
+
+        if (!is_null($dateFrom) && !is_null($dateTo)) {
+            $condition .= '
+                 OR
+                (date_from between ? and #)
+                 OR
+                (date_to between ? and #)
+                ';
+        } else if (is_null($dateFrom) && is_null($dateTo)) {
+            $condition = false;
+        }
 
         $select = $this->_getReadAdapter()->select()
             ->from(array('main_table'=>$this->getTable('design_change')))
             ->where('main_table.store_id = ?', $storeId)
-            ->where('main_table.design_change_id <> ?', $currentId)
-            ->where($condition);
+            ->where('main_table.design_change_id <> ?', $currentId);
+
+        if ($condition) {
+            $condition = $this->_getReadAdapter()->quoteInto($condition, $dateFrom);
+            $condition = str_replace('#', '?', $condition);
+            $condition = $this->_getReadAdapter()->quoteInto($condition, $dateTo);
+
+            $select->where($condition);
+        }
 
         return $this->_getReadAdapter()->fetchOne($select);
     }
@@ -85,8 +150,8 @@ class Mage_Core_Model_Mysql4_Design extends Mage_Core_Model_Mysql4_Abstract
         $select = $this->_getReadAdapter()->select()
             ->from(array('main_table'=>$this->getTable('design_change')))
             ->where('store_id = ?', $storeId)
-            ->where('date_from <= ?', $date)
-            ->where('date_to >= ?', $date);
+            ->where('(date_from <= ? or date_from is null)', $date)
+            ->where('(date_to >= ? or date_to is null)', $date);
 
         return $this->_getReadAdapter()->fetchRow($select);
     }

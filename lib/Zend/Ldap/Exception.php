@@ -23,7 +23,7 @@
 /**
  * @see Zend_Exception
  */
-require_once 'Zend/Exception.php';
+#require_once 'Zend/Exception.php';
 
 class Zend_Ldap_Exception extends Zend_Exception
 {

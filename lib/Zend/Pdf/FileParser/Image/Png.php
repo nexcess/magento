@@ -19,7 +19,7 @@
  */
 
 /** Zend_Pdf_FileParser_Image */
-require_once 'Zend/Pdf/FileParser/Image.php';
+#require_once 'Zend/Pdf/FileParser/Image.php';
 
 
 /**

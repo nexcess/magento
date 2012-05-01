@@ -20,7 +20,7 @@
  */
 
 /** Zend_View_Helper_HeadScript */
-require_once 'Zend/View/Helper/HeadScript.php';
+#require_once 'Zend/View/Helper/HeadScript.php';
 
 /**
  * Helper for setting and retrieving script elements for inclusion in HTML body 

@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Wishlist
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Wishlist_Model_Mysql4_Item_Collection extends Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
 {
@@ -31,6 +32,12 @@ class Mage_Wishlist_Model_Mysql4_Item_Collection extends Mage_Catalog_Model_Reso
     public function _construct()
     {
         $this->_init('wishlist/item', 'catalog/product');
+    }
+
+    public function useProductItem()
+    {
+        $this->setObject(Mage::getModel('catalog/product'));
+        return $this;
     }
 
     public function addWishlistFilter(Mage_Wishlist_Model_Wishlist    $wishlist)

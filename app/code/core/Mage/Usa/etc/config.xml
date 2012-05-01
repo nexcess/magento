@@ -23,10 +23,6 @@
     <modules>
         <Mage_Usa>
             <version>0.7.0</version>
-            <depends>
-                <Mage_Sales />
-                <Mage_Shipping />
-            </depends>
         </Mage_Usa>
     </modules>
     <global>
@@ -171,14 +167,14 @@
             <usps>
                 <active>0</active>
                 <sallowspecific>0</sallowspecific>
-                <allowed_methods>First-Class,Express Mail,Express Mail PO to PO,Priority Mail,Parcel Post,Express Mail Flat-Rate Envelope,Priority Mail Flat-Rate Box,Bound Printed Matter,Media Mail,Library Mail,Priority Mail Flat-Rate Envelope,Global Express Guaranteed,Global Express Guaranteed Non-Document Rectangular,Global Express Guaranteed Non-Document Non-Rectangular,Express Mail International (EMS),Express Mail International (EMS) Flat Rate Envelope,Priority Mail International,Priority Mail International Flat Rate Box</allowed_methods>
+                <allowed_methods>First-Class,First-Class Mail Letter,First-Class Mail Flat,First-Class Mail Parcel,First-Class Mail International,Express Mail,Express Mail PO to PO,Priority Mail,Parcel Post,Express Mail Flat-Rate Envelope,Priority Mail Flat-Rate Box,Bound Printed Matter,Media Mail,Library Mail,Priority Mail Flat-Rate Envelope,Global Express Guaranteed,Global Express Guaranteed Non-Document Rectangular,Global Express Guaranteed Non-Document Non-Rectangular,Express Mail International (EMS),Express Mail International (EMS) Flat Rate Envelope,Priority Mail International,Priority Mail International Flat Rate Box</allowed_methods>
                 <container>VARIABLE</container>
                 <cutoff_cost></cutoff_cost>
                 <free_method></free_method>
                 <gateway_url>http://production.shippingapis.com/ShippingAPI.dll</gateway_url>
                 <handling></handling>
                 <machinable>true</machinable>
-                <methods>First-Class,Express Mail,Express Mail PO to PO,Priority Mail,Parcel Post,Express Mail Flat-Rate Envelope,Priority Mail Flat-Rate Box,Bound Printed Matter,Media Mail,Library Mail,Priority Mail Flat-Rate Envelope,Global Express Guaranteed,Global Express Guaranteed Non-Document Rectangular,Global Express Guaranteed Non-Document Non-Rectangular,Express Mail International (EMS),Express Mail International (EMS) Flat Rate Envelope,Priority Mail International,Priority Mail International Flat Rate Box</methods>
+                <methods>First-Class,First-Class Mail Letter,First-Class Mail Flat,First-Class Mail Parcel,First-Class Mail International,Express Mail,Express Mail PO to PO,Priority Mail,Parcel Post,Express Mail Flat-Rate Envelope,Priority Mail Flat-Rate Box,Bound Printed Matter,Media Mail,Library Mail,Priority Mail Flat-Rate Envelope,Global Express Guaranteed,Global Express Guaranteed Non-Document Rectangular,Global Express Guaranteed Non-Document Non-Rectangular,Express Mail International (EMS),Express Mail International (EMS) Flat Rate Envelope,Priority Mail International,Priority Mail International Flat Rate Box</methods>
                 <model>usa/shipping_carrier_usps</model>
                 <size>REGULAR</size>
                 <title>United States Postal Service</title>

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Customer_Edit_Tab_Orders extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -37,6 +38,7 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Orders extends Mage_Adminhtml_Block
 
     protected function _prepareCollection()
     {
+        //TODO: add full name logic
         $collection = Mage::getResourceModel('sales/order_collection')
             ->addAttributeToSelect('increment_id')
             ->addAttributeToSelect('created_at')
@@ -94,7 +96,8 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Orders extends Mage_Adminhtml_Block
             $this->addColumn('store_id', array(
                 'header'    => Mage::helper('customer')->__('Bought From'),
                 'index'     => 'store_id',
-                'type'      => 'store'
+                'type'      => 'store',
+                'store_view' => true
             ));
         }
 

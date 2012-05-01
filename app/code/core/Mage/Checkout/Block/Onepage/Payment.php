@@ -24,12 +24,16 @@
  * @category   Mage
  * @category   Mage
  * @package    Mage_Checkout
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Checkout_Block_Onepage_Payment extends Mage_Checkout_Block_Onepage_Abstract
 {
     protected function _construct()
     {
-        $this->getCheckout()->setStepData('payment', array('label'=>$this->__('Payment Information')));
+        $this->getCheckout()->setStepData('payment', array(
+            'label'     => $this->__('Payment Information'),
+            'is_show'   => $this->isShow()
+        ));
         parent::_construct();
     }
 }

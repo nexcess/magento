@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Type_Configurable_Attribute_Collection
     extends Mage_Core_Model_Mysql4_Collection_Abstract
@@ -71,10 +72,18 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Type_Configurable_Attribute
     protected function _afterLoad()
     {
         parent::_afterLoad();
+        Varien_Profiler::start('TTT1:'.__METHOD__);
         $this->_addProductAttributes();
+        Varien_Profiler::stop('TTT1:'.__METHOD__);
+        Varien_Profiler::start('TTT2:'.__METHOD__);
         $this->_addAssociatedProductFilters();
+        Varien_Profiler::stop('TTT2:'.__METHOD__);
+        Varien_Profiler::start('TTT3:'.__METHOD__);
         $this->_loadLabels();
+        Varien_Profiler::stop('TTT3:'.__METHOD__);
+        Varien_Profiler::start('TTT4:'.__METHOD__);
         $this->_loadPrices();
+        Varien_Profiler::stop('TTT4:'.__METHOD__);
         return $this;
     }
 
@@ -87,10 +96,9 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Type_Configurable_Attribute
     {
         foreach ($this->_items as $item) {
             $productAttribute = $this->getProduct()->getTypeInstance()
-                                    ->getAttributeById($item->getAttributeId());
+                ->getAttributeById($item->getAttributeId());
             $item->setProductAttribute($productAttribute);
         }
-
         return $this;
     }
 

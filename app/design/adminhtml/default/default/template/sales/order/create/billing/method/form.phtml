@@ -30,7 +30,7 @@
             <input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" title="<?php echo $this->htmlEscape($_method->getTitle()) ?>" onclick="payment.switchMethod('<?php echo $_code ?>')"<?php if($this->getSelectedMethodCode()==$_code): ?> checked="checked"<?php endif; ?>/>
         <?php else :?>
             <span class="no-display"><input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" checked="checked" /></span>
-        <?endif;?>
+        <?php endif;?>
 
             <label for="p_method_<?php echo $_code ?>"><?php echo $_method->getTitle() ?></label>
         </dt>

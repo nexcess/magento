@@ -181,14 +181,19 @@ var perPageModel = Class.create();
 perPageModel.prototype = {
     initialize : function()
     {
-        this.gridOptions = '<?php echo Mage::getConfig()->getNode('frontend/catalog/per_page_values/grid') ?>';
-        this.listOptions = '<?php echo Mage::getConfig()->getNode('frontend/catalog/per_page_values/list') ?>';
         this.listModeElement = $('catalog_frontend_list_mode');
         if (this.listModeElement) {
-            this.gridPerPageSelect = $('catalog_frontend_grid_per_page').up(1);
-            this.listPerPageSelect = $('catalog_frontend_list_per_page').up(1);
+            this.gridValuesElement = $('catalog_frontend_grid_per_page_values');
+            this.listValuesElement = $('catalog_frontend_list_per_page_values');
+            this.listElement = $('catalog_frontend_list_per_page');
+            this.gridElement = $('catalog_frontend_grid_per_page');
+
+            this.gridOptions = [];
+            this.listOptions = [];
+
             this.refreshPerPageSelect();
             this.bindListModeChange();
+            this.addValidate();
         }
     },
     bindListModeChange : function()
@@ -199,18 +204,52 @@ perPageModel.prototype = {
     {
         if (this.listModeElement.value != '') {
             if (this.listModeElement.value == 'grid') {
-                this.listPerPageSelect.hide();
-                this.gridPerPageSelect.show();
+                this.listElement.up(1).hide();
+                this.listValuesElement.up(1).hide();
+
+                this.gridElement.up(1).show();
+                this.gridValuesElement.up(1).show();
             }
             else if (this.listModeElement.value == 'grid-list' || this.listModeElement.value == 'list-grid') {
-                this.listPerPageSelect.show();
-                this.gridPerPageSelect.show();
+                this.listElement.up(1).show();
+                this.listValuesElement.up(1).show();
+
+                this.gridElement.up(1).show();
+                this.gridValuesElement.up(1).show();
             }
             else if (this.listModeElement.value == 'list') {
-                this.listPerPageSelect.show();
-                this.gridPerPageSelect.hide();
+                this.listElement.up(1).show();
+                this.listValuesElement.up(1).show();
+
+                this.gridElement.up(1).hide();
+                this.gridValuesElement.up(1).hide();
             }
         }
+    },
+    addValidate : function()
+    {
+        Validation.add('validate-per-page-value-list', '<?php echo $this->__('Please enter a valid value, ex: 10,20,30')?>', function(v) {
+            var isValid = !Validation.get('IsEmpty').test(v);
+            var values  = v.split(',');
+            for (var i=0;i<values.length;i++) {
+                if (!/^[0-9]+$/.test(values[i])) {
+                    isValid = false;
+                }
+            }
+            return isValid;
+        });
+        Validation.add('validate-per-page-value', '<?php echo $this->__('Please enter a valid value from list')?>', function(v, elm) {
+            if (Validation.get('IsEmpty').test(v)) {
+                return false;
+            }
+            var values = $(elm.id + '_values').value.split(',');
+            return values.indexOf(v) != -1;
+        });
+
+        this.gridValuesElement.addClassName('validate-per-page-value-list');
+        this.listValuesElement.addClassName('validate-per-page-value-list');
+        this.gridElement.addClassName('validate-per-page-value');
+        this.listElement.addClassName('validate-per-page-value');
     }
 }
 

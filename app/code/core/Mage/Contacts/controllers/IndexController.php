@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Contacts
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Contacts_IndexController extends Mage_Core_Controller_Front_Action
 {
@@ -55,6 +56,9 @@ class Mage_Contacts_IndexController extends Mage_Core_Controller_Front_Action
     {
         $post = $this->getRequest()->getPost();
         if ( $post ) {
+            $translate = Mage::getSingleton('core/translate');
+            /* @var $translate Mage_Core_Model_Translate */
+            $translate->setTranslateInline(false);
             try {
                 $postObject = new Varien_Object();
                 $postObject->setData($post);
@@ -69,15 +73,20 @@ class Mage_Contacts_IndexController extends Mage_Core_Controller_Front_Action
                         null,
                         array('data' => $postObject)
                     );
+                $translate->setTranslateInline(true);
 
-                Mage::getSingleton('customer/session')->addSuccess(Mage::helper('contacts')->__('Your inquiry was submitted and will be responded as soon as possible. Thank you for contacting us.'));
+                Mage::getSingleton('customer/session')->addSuccess(Mage::helper('contacts')->__('Your inquiry was submitted and will be responded to as soon as possible. Thank you for contacting us.'));
                 $this->_redirect('*/*/');
+
                 return;
             } catch (Exception $e) {
+                $translate->setTranslateInline(true);
+
                 Mage::getSingleton('customer/session')->addError(Mage::helper('contacts')->__('Unable to submit your request. Please, try again later'));
                 $this->_redirect('*/*/');
                 return;
             }
+
         } else {
             $this->_redirect('*/*/');
         }

@@ -55,6 +55,10 @@ class Mage_Sendfriend_Model_Sendfriend extends Mage_Core_Model_Abstract
 
     public function send()
     {
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
         $errors = array();
 
         $this->_emailModel = Mage::getModel('core/email_template');
@@ -73,13 +77,20 @@ class Mage_Sendfriend_Model_Sendfriend extends Mage_Core_Model_Abstract
                 $this->_names[$key],
                 array(
                     'name'          => $this->_names[$key],
-                    'product_name'  => $this->_product->_data['name'],
+                    'email'         => $email,
+                    'product_name'  => $this->_product->getName(),
                     'product_url'   => $this->_product->getProductUrl(),
-                    'message'       => $message
+                    'message'       => $message,
+                    'sender_name'   => strip_tags($this->_sender['name']),
+                    'sender_email'  => strip_tags($this->_sender['email']),
+                    'product_image' => Mage::helper('catalog/image')->init($this->_product, 'small_image')->resize(75),
                 )
             );
         }
 
+        $translate->setTranslateInline(true);
+
+        return $this;
     }
 
     public function validate()

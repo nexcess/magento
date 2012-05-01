@@ -21,6 +21,7 @@
 /**
  * Report Products Tags collection
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Reports_Model_Mysql4_Tag_Collection extends Mage_Tag_Model_Mysql4_Tag_Collection

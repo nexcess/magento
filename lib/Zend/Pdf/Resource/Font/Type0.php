@@ -19,13 +19,13 @@
  */
 
 /** Zend_Pdf_Resource_Font */
-require_once 'Zend/Pdf/Resource/Font.php';
+#require_once 'Zend/Pdf/Resource/Font.php';
 
 /** Zend_Pdf_Resource_Font_CidFont */
-require_once 'Zend/Pdf/Resource/Font/CidFont.php';
+#require_once 'Zend/Pdf/Resource/Font/CidFont.php';
 
 /** Zend_Pdf_Resource_Font_CidFont_TrueType */
-require_once 'Zend/Pdf/Resource/Font/CidFont/TrueType.php';
+#require_once 'Zend/Pdf/Resource/Font/CidFont/TrueType.php';
 
 
 /**

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Store_Switcher extends Mage_Adminhtml_Block_Template
 {
@@ -90,5 +91,13 @@ class Mage_Adminhtml_Block_Store_Switcher extends Mage_Adminhtml_Block_Template
     public function isShow()
     {
         return !Mage::app()->isSingleStoreMode();
+    }
+
+    protected function _toHtml()
+    {
+        if (!Mage::app()->isSingleStoreMode()) {
+            return parent::_toHtml();
+        }
+        return '';
     }
 }

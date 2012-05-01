@@ -23,9 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Tag
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
-class Mage_Tag_Block_Customer_View extends Mage_Core_Block_Template
+class Mage_Tag_Block_Customer_View extends Mage_Catalog_Block_Product_Abstract
 {
     protected $_collection;
 
@@ -90,6 +91,9 @@ class Mage_Tag_Block_Customer_View extends Mage_Core_Block_Template
                 ->addStoreFilter(Mage::app()->getStore()->getId())
                 ->setActiveFilter()
                 ->addAttributeToSelect('description')
+                ->addAttributeToSelect('special_price')
+                ->addAttributeToSelect('special_from_date')
+                ->addAttributeToSelect('special_to_date')
                 ->addAttributeToSelect('status');
         }
         return $this->_collection;

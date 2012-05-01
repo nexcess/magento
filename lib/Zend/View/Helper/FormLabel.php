@@ -20,7 +20,7 @@
  */
 
 /** Zend_View_Helper_FormElement **/
-require_once 'Zend/View/Helper/FormElement.php';
+#require_once 'Zend/View/Helper/FormElement.php';
 
 /**
  * Form label helper

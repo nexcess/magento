@@ -124,6 +124,24 @@
                     </catalogrule>
                 </observers>
             </catalog_product_save_after>
+            <catalog_product_massupdate_after>
+                <observers>
+                    <catalogrule>
+                        <type>singleton</type>
+                        <class>catalogrule/observer</class>
+                        <method>applyAllRules</method>
+                    </catalogrule>
+                </observers>
+            </catalog_product_massupdate_after>
+            <catalog_product_import_after>
+                <observers>
+                    <catalogrule>
+                        <type>singleton</type>
+                        <class>catalogrule/observer</class>
+                        <method>applyAllRules</method>
+                    </catalogrule>
+                </observers>
+            </catalog_product_import_after>
         </events>
         <menu>
              <promo translate="title" module="catalogrule">

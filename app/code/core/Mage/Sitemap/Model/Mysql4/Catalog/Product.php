@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Sitemap
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Sitemap_Model_Mysql4_Catalog_Product extends Mage_Core_Model_Mysql4_Abstract

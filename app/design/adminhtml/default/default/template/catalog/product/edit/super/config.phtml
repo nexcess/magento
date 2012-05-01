@@ -41,6 +41,7 @@
         <ul class="messages">
             <li class="notice-msg">
                 <ul><li><?php echo Mage::helper('catalog')->__('Price values for options should be specified in system base currency.')?></li></ul>
+                <ul><li><?php echo Mage::helper('catalog')->__('Attrribute names can be specified per store.')?></li></ul>
             </li>
         </ul>
         <ul id="<?php echo $this->getHtmlId() ?>_attributes" class="super-attributes">
@@ -53,7 +54,7 @@
     </div>
     <div class="values-container right">
         <label for="__id___label" class="bold"><?php echo Mage::helper('catalog')->__('Attribute Name:') ?></label>
-        <input id="__id___label" type="text" class="input-text attribute-label required-entry template no-display" value="'{{label}}'"/>
+        <input id="__id___label" type="text" class="input-text attribute-label required-entry template no-display" value="'{{label}}'" />
         <ul class="attribute-values">
         </ul>
     </div>

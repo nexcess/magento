@@ -30,18 +30,18 @@ class Mage_SalesRule_Model_Mysql4_Rule_Collection extends Mage_Core_Model_Mysql4
     public function setValidationFilter($websiteId, $customerGroupId, $couponCode='', $now=null)
     {
         if (is_null($now)) {
-            $now = Mage::getModel('core/date')->date();
+            $now = Mage::getModel('core/date')->date('Y-m-d');
         }
 
         $this->addBindParam('coupon_code', $couponCode);
         $this->getSelect()->where('is_active=1');
         $this->getSelect()->where('find_in_set(?, website_ids)', (int)$websiteId);
         $this->getSelect()->where('find_in_set(?, customer_group_ids)', (int)$customerGroupId);
-        if ($couponCode == '') {
-            $this->getSelect()->where('coupon_code is null or coupon_code=""');
+        if (empty($couponCode)) {
+            $this->getSelect()->where("coupon_code is null or coupon_code=''");
         }
         else {
-            $this->getSelect()->where('coupon_code is null or coupon_code=:coupon_code');
+            $this->getSelect()->where("coupon_code is null or coupon_code='' or coupon_code=:coupon_code");
         }
         $this->getSelect()->where('from_date is null or from_date<=?', $now);
         $this->getSelect()->where('to_date is null or to_date>=?', $now);

@@ -20,6 +20,8 @@
 
 /**
  * Resource setup model
+ *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Resource_Setup
 {
@@ -89,6 +91,7 @@ class Mage_Core_Model_Resource_Setup
      */
     static public function applyAllUpdates()
     {
+        Mage::app()->setUpdateMode(true);
         $res = Mage::getSingleton('core/resource');
         /*
         if ($res->getAutoUpdate() == Mage_Core_Model_Resource::AUTO_UPDATE_NEVER) {
@@ -117,6 +120,7 @@ class Mage_Core_Model_Resource_Setup
             }
         }
 */
+        Mage::app()->setUpdateMode(false);
         return true;
     }
 
@@ -149,9 +153,8 @@ class Mage_Core_Model_Resource_Setup
      * Install resource
      *
      * @param     string $version
-     * @return    boll
+     * @return    boolean
      */
-
     protected function _installResourceDb($newVersion)
     {
         $oldVersion = $this->_modifyResourceDb('install', '', $newVersion);
@@ -412,7 +415,8 @@ class Mage_Core_Model_Resource_Setup
 
     public function tableExists($table)
     {
-        $result = $this->_conn->fetchOne("show tables like '$table'");
+        $select = $this->getConnection()->quoteInto('SHOW TABLES LIKE ?', $table);
+        $result = $this->getConnection()->fetchOne($select);
         return !empty($result);
     }
 
@@ -479,7 +483,7 @@ class Mage_Core_Model_Resource_Setup
 
     public function run($sql)
     {
-        set_time_limit(120);
+        @set_time_limit(120);
         $this->_conn->multi_query($sql);
         return $this;
     }

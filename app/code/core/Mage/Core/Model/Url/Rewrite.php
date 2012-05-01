@@ -25,6 +25,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
 {
@@ -139,13 +140,19 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
             $this->setStoreId(Mage::app()->getStore()->getId());
         }
 
-        $requestPath = trim($request->getPathInfo(), '/');
-        #$requestPath = $request->getPathInfo();
+        $requestPath = $request->getPathInfo();
+        if ($queryString = $this->_getQueryString()) {
+            $requestPath .= '?'.$queryString;
+        }
+        $requestPath = trim($requestPath, '/');
         $this->setId(null)->loadByRequestPath($requestPath);
 
-        if (!$this->getId() && isset($_GET['from_store'])) {
+        /**
+         * Try to find rewrite by request path at first, if no luck - try to find by id_path
+         */
+        if (!$this->getId() && isset($_GET['___from_store'])) {
             try {
-                $fromStoreId = Mage::app()->getStore($_GET['from_store']);
+                $fromStoreId = Mage::app()->getStore($_GET['___from_store']);
             }
             catch (Exception $e) {
                 return false;
@@ -163,8 +170,17 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
         }
 
         $request->setAlias('rewrite_request_path', $this->getRequestPath());
-        $targetUrl = $request->getBaseUrl(). '/' . $this->getTargetPath();
+        $external = substr($this->getTargetPath(), 0, 6);
+        if ($external==='http:/' || $external==='https:') {
+            header("Location: ".$this->getTargetPath());
+            exit;
+        } else {
+            $targetUrl = $request->getBaseUrl(). '/' . $this->getTargetPath();
+        }
         if ($this->hasOption('R')) {
+            if (Mage::getStoreConfig('web/url/use_store') && $storeCode = Mage::app()->getStore()->getCode()) {
+                $targetUrl = $request->getBaseUrl(). '/' . $storeCode . '/' .$this->getTargetPath();
+            }
             header("Location: ".$targetUrl);
             exit;
         }
@@ -173,6 +189,33 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
         $request->setPathInfo($this->getTargetPath());
 
         return true;
+    }
+
+    protected function _getQueryString()
+    {
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $queryParams = array();
+            parse_str($_SERVER['QUERY_STRING'], $queryParams);
+            $hasChanges = false;
+            foreach ($queryParams as $key=>$value) {
+                if (substr($key, 0, 3) === '___') {
+                    unset($queryParams[$key]);
+                    $hasChanges = true;
+                }
+            }
+            if ($hasChanges) {
+                return http_build_query($queryParams);
+            }
+            else {
+                return $_SERVER['QUERY_STRING'];
+            }
+        }
+        return false;
+    }
+
+    public function getStoreId()
+    {
+        return $this->_getData('store_id');
     }
 
 }

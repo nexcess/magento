@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Model_Translate_Inline
 {
@@ -43,7 +44,11 @@ class Mage_Core_Model_Translate_Inline
 
             $this->_isAllowed = $active && Mage::helper('core')->isDevAllowed($storeId);
         }
-        return $this->_isAllowed;
+
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+
+        return $translate->getTranslateInline() && $this->_isAllowed;
     }
 
     public function processAjaxPost($translate)
@@ -54,8 +59,22 @@ class Mage_Core_Model_Translate_Inline
 
         $resource = Mage::getResourceModel('core/translate_string');
         foreach ($translate as $t) {
-            $resource->saveTranslate($t['original'], $t['custom']);
+            $resource->saveTranslate($t['original'], $t['custom'], null, Mage::getDesign()->getArea() == 'adminhtml' ? 0 : null);
         }
+    }
+
+    public function stripInlineTranslations(&$body)
+    {
+        if (is_array($body)) {
+            foreach ($body as $i=>&$part) {
+                if (strpos($part,'{{{')!==false) {
+                    $part = preg_replace('#'.$this->_tokenRegex.'#', '$1', $part);
+                }
+            }
+        } elseif (is_string($body)) {
+            $body = preg_replace('#'.$this->_tokenRegex.'#', '$1', $body);
+        }
+        return $this;
     }
 
     public function processResponseBody(&$bodyArray)
@@ -63,11 +82,7 @@ class Mage_Core_Model_Translate_Inline
         if (!$this->isAllowed()) {
             // TODO: move translations from exceptions and errors to output
             if (Mage::getDesign()->getArea()==='adminhtml') {
-                foreach ($bodyArray as $i=>&$body) {
-                    if (strpos($body,'{{{')!==false) {
-                        $body = preg_replace('#'.$this->_tokenRegex.'#', '$1', $body);
-                    }
-                }
+                $this->stripInlineTranslations($bodyArray);
             }
             return;
         }

@@ -21,16 +21,50 @@
 
 class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
 {
+    const DEBUG_CONNECT         = 0;
+    const DEBUG_TRANSACTION     = 1;
+    const DEBUG_QUERY           = 2;
+
     const ISO_DATE_FORMAT       = 'yyyy-MM-dd';
     const ISO_DATETIME_FORMAT   = 'yyyy-MM-dd HH-mm-ss';
 
-    protected $_transactionLevel=0;
-    protected $_connectionFlagsSet=false;
+    protected $_transactionLevel    = 0;
+    protected $_connectionFlagsSet  = false;
+
+    /**
+     * Write SQL debug data to file
+     *
+     * @var bool
+     */
+    protected $_debug               = false;
+
+    /**
+     * Path to SQL debug data log
+     *
+     * @var string
+     */
+    protected $_debugFile           = 'var/debug/sql.txt';
+
+    /**
+     * Io File Adapter
+     *
+     * @var Varien_Io_File
+     */
+    protected $_debugIoAdapter;
+
+    /**
+     * Debug timer start value
+     *
+     * @var float
+     */
+    protected $_debugTimer          = 0;
 
     public function beginTransaction()
     {
         if ($this->_transactionLevel===0) {
+            $this->_debugTimer();
             parent::beginTransaction();
+            $this->_debugStat(self::DEBUG_TRANSACTION, 'BEGIN');
         }
         $this->_transactionLevel++;
         return $this;
@@ -39,7 +73,9 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
     public function commit()
     {
         if ($this->_transactionLevel===1) {
+            $this->_debugTimer();
             parent::commit();
+            $this->_debugStat(self::DEBUG_TRANSACTION, 'COMMIT');
         }
         $this->_transactionLevel--;
         return $this;
@@ -48,7 +84,9 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
     public function rollback()
     {
         if ($this->_transactionLevel===1) {
+            $this->_debugTimer();
             return parent::rollback();
+            $this->_debugStat(self::DEBUG_TRANSACTION, 'ROLLBACK');
         }
         $this->_transactionLevel--;
         return $this;
@@ -88,7 +126,9 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
             list($this->_config['host'], $this->_config['port']) = explode(':', $this->_config['host']);
         }
 
+        $this->_debugTimer();
         parent::_connect();
+        $this->_debugStat(self::DEBUG_CONNECT, '');
 
         /** @link http://bugs.mysql.com/bug.php?id=18551 */
         $this->_connection->query("SET SQL_MODE=''");
@@ -106,7 +146,9 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
             $retry = false;
             $tries = 0;
             try {
+                $this->_debugTimer();
                 $result = $this->getConnection()->query($sql);
+                $this->_debugStat(self::DEBUG_QUERY, $sql, array(), $result);
             } catch (PDOException $e) {
                 if ($e->getMessage()=='SQLSTATE[HY000]: General error: 2013 Lost connection to MySQL server during query') {
                     $retry = true;
@@ -135,6 +177,29 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
         }
     }
 
+    /**
+     * Special handling for PDO query().
+     * All bind parameter names must begin with ':'
+     *
+     * @param string|Zend_Db_Select $sql The SQL statement with placeholders.
+     * @param array $bind An array of data to bind to the placeholders.
+     * @return Zend_Db_Pdo_Statement
+     * @throws Zend_Db_Adapter_Exception To re-throw PDOException.
+     */
+    public function query($sql, $bind = array())
+    {
+        $this->_debugTimer();
+        try {
+            $result = parent::query($sql, $bind);
+        }
+        catch (Exception $e) {
+            $this->_debugStat(self::DEBUG_QUERY, $sql, $bind);
+            $this->_debugException($e);
+        }
+        $this->_debugStat(self::DEBUG_QUERY, $sql, $bind, $result);
+        return $result;
+    }
+
     public function multi_query($sql)
     {
         ##$result = $this->raw_query($sql);
@@ -157,6 +222,7 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
     /**
      * Split multi statement query
      *
+ * @author      Magento Core Team <core@magentocommerce.com>
      * @param $sql string
      * @return array
      */
@@ -315,4 +381,88 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
         return new Varien_Db_Select($this);
     }
 
+    /**
+     * Start debug timer
+     *
+     * @return Varien_Db_Adapter_Pdo_Mysql
+     */
+    protected function _debugTimer()
+    {
+        if ($this->_debug) {
+            $this->_debugTimer = microtime(true);
+        }
+        return $this;
+    }
+
+    /**
+     * Start debug timer
+     *
+     * @return Varien_Db_Adapter_Pdo_Mysql
+     */
+    protected function _debugStat($type, $sql, $bind = array(), $result = null)
+    {
+        if (!$this->_debug) {
+            return $this;
+        }
+
+        $code = '## ' . getmypid() . ' ## ';
+        $nl   = "\n";
+        $time = sprintf('%.4f', microtime(true) - $this->_debugTimer);
+        switch ($type) {
+            case self::DEBUG_CONNECT:
+                $code .= 'CONNECT' . $nl;
+                break;
+            case self::DEBUG_TRANSACTION:
+                $code .= 'TRANSACTION ' . $sql . $nl;
+                break;
+            case self::DEBUG_QUERY:
+                $code .= 'QUERY' . $nl;
+                $code .= 'SQL: ' . $sql . $nl;
+                if ($bind) {
+                    $code .= 'BIND: ' . print_r($bind, true) . $nl;
+                }
+                if ($result instanceof Zend_Db_Statement_Pdo) {
+                    $code .= 'AFF: ' . $result->rowCount() . $nl;
+                }
+                break;
+        }
+        $code .= 'TIME: ' . $time . $nl . $nl;
+
+        $this->_debugWriteToFile($code);
+
+        return $this;
+    }
+
+    /**
+     * Write exception and thow
+     *
+     * @param Exception $e
+     * @throws Exception
+     */
+    protected function _debugException(Exception $e)
+    {
+        $nl   = "\n";
+        $code = 'EXCEPTION ' . $e->getMessage() . $nl
+            . 'E TRACE: ' . print_r($e->getTrace(), true) . $nl . $nl;
+        $this->_debugWriteToFile($code);
+
+        throw $e;
+    }
+
+    protected function _debugWriteToFile($str)
+    {
+        if (!$this->_debugIoAdapter) {
+            $this->_debugIoAdapter = new Varien_Io_File();
+            $dir = $this->_debugIoAdapter->dirname($this->_debugFile);
+            $this->_debugIoAdapter->checkAndCreateFolder($dir);
+            $this->_debugIoAdapter->open(array('path' => $dir));
+            $this->_debugFile = basename($this->_debugFile);
+        }
+
+        $this->_debugIoAdapter->streamOpen($this->_debugFile, 'a');
+        $this->_debugIoAdapter->streamLock();
+        $this->_debugIoAdapter->streamWrite($str);
+        $this->_debugIoAdapter->streamUnlock();
+        $this->_debugIoAdapter->streamClose();
+    }
 }

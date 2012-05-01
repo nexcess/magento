@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Block_Category_View extends Mage_Core_Block_Template
 {
@@ -86,7 +87,10 @@ class Mage_Catalog_Block_Category_View extends Mage_Core_Block_Template
      */
     public function getCurrentCategory()
     {
-        return Mage::registry('current_category');
+        if (!$this->hasData('current_category')) {
+            $this->setData('current_category', Mage::registry('current_category'));
+        }
+        return $this->getData('current_category');
     }
 
     public function getCmsBlockHtml()

@@ -24,6 +24,7 @@
  *
  * @category   Varien
  * @package    Varien_Simplexml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Simplexml_Element extends SimpleXMLElement
 {
@@ -279,7 +280,16 @@ class Varien_Simplexml_Element extends SimpleXMLElement
     public function appendChild($source)
     {
         if ($source->children()) {
-            $child = $this->addChild($source->getName());
+            /**
+             * @see http://bugs.php.net/bug.php?id=41867 , fixed in 5.2.4
+             */
+            if (version_compare(phpversion(), '5.2.4', '<')===true) {
+                $name = $source->children()->getName();
+            }
+            else {
+                $name = $source->getName();
+            }
+            $child = $this->addChild($name);
         } else {
             $child = $this->addChild($source->getName(), $this->xmlentities($source));
         }
@@ -290,7 +300,7 @@ class Varien_Simplexml_Element extends SimpleXMLElement
             $child->addAttribute($key, $this->xmlentities($value));
         }
 
-        foreach ($source as $sourceChild) {
+        foreach ($source->children() as $sourceChild) {
             $child->appendChild($sourceChild);
         }
         return $this;
@@ -377,6 +387,48 @@ class Varien_Simplexml_Element extends SimpleXMLElement
             $targetChild->extendChild($childNode, $overwrite);
         }
 
+        return $this;
+    }
+
+    public function setNode($path, $value, $overwrite=true)
+    {
+        $arr1 = explode('/', $path);
+        $arr = array();
+        foreach ($arr1 as $v) {
+            if (!empty($v)) $arr[] = $v;
+        }
+        $last = sizeof($arr)-1;
+        $node = $this;
+        foreach ($arr as $i=>$nodeName) {
+            if ($last===$i) {
+                /*
+                if (isset($xml->$nodeName)) {
+                    if ($overwrite) {
+                        unset($xml->$nodeName);
+                    } else {
+                        continue;
+                    }
+                }
+                $xml->addChild($nodeName, $xml->xmlentities($value));
+                */
+                if (!isset($node->$nodeName) || $overwrite) {
+                    // http://bugs.php.net/bug.php?id=36795
+                    // comment on [8 Feb 8:09pm UTC]
+                    if (isset($node->$nodeName)) {
+                        $node->$nodeName = $node->xmlentities($value);
+                    } else {
+                        $node->$nodeName = $value;
+                    }
+                }
+            } else {
+                if (!isset($node->$nodeName)) {
+                    $node = $node->addChild($nodeName);
+                } else {
+                    $node = $node->$nodeName;
+                }
+            }
+
+        }
         return $this;
     }
 

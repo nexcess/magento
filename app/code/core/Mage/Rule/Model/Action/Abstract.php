@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Rule
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Rule_Model_Action_Abstract extends Varien_Object implements Mage_Rule_Model_Action_Interface
 {

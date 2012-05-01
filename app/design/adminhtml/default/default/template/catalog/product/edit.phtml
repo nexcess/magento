@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php 
+<?php
 /**
  * Template for Mage_Adminhtml_Block_Catalog_Product_Edit
  */
@@ -40,13 +40,10 @@
 			<?php echo $this->getSaveButtonHtml() ?>
 			<?php echo $this->getSaveAndEditButtonHtml() ?>
 		<?php endif; ?>
-	</p>   
+	</p>
 </div>
 <form action="<?php echo $this->getSaveUrl() ?>" method="post" id="product_edit_form" enctype="multipart/form-data">
-<input type="hidden" name="links[related]" id="_related_products" value="">
-<input type="hidden" name="links[upsell]" id="_up_sell_products" value="">
-<input type="hidden" name="links[crosssell]" id="_cross_sell_products" value="">
-<input type="hidden" name="links[grouped]" id="_super_group_product" value="">
+<div style="display:none"></div>
 </form>
 <script type="text/javascript" language="javascript">
 
@@ -85,7 +82,6 @@
         }
         return 1;
     }
-
 
 <?php if($this->getProductSetId() && $this->getIsConfigured()): ?>
     var productLinksController = Class.create();
@@ -174,27 +170,6 @@
             }
         }
     };
-
-    <?php if($_relatedGridJsObject=$this->getLayout()->getBlock('admin.related.products')->getJsObjectName()): ?>
-    Event.observe(window, 'load', function() {
-         var controller = new productLinksController('_related_products', <?php echo $this->getRelatedProductsJSON() ?>, <?php echo $_relatedGridJsObject ?>);
-    });
-    <?php endif; ?>
-    <?php if($_upsellGridJsObject=$this->getLayout()->getBlock('admin.upsell.products')->getJsObjectName()): ?>
-    Event.observe(window, 'load', function() {
-         var controller = new productLinksController('_up_sell_products', <?php echo $this->getUpSellProductsJSON() ?>, <?php echo $_upsellGridJsObject ?>);
-    });
-    <?php endif; ?>
-    <?php if($_crosssellGridJsObject=$this->getLayout()->getBlock('admin.crosssell.products')->getJsObjectName()): ?>
-    Event.observe(window, 'load', function() {
-         var controller = new productLinksController('_cross_sell_products', <?php echo $this->getCrossSellProductsJSON() ?>, <?php echo $_crosssellGridJsObject ?>);
-    });
-    <?php endif; ?>
-    <?php if($this->getIsGrouped() && $_superGroupGridJsObject=$this->getLayout()->getBlock('admin.super.group.product')->getJsObjectName()): ?>
-    Event.observe(window, 'load', function() {
-         var controller = new productLinksController('_super_group_product', <?php echo $this->getSuperGroupProductJSON() ?>, <?php echo $_superGroupGridJsObject ?>);
-    });
-    <?php endif; ?>
 <?php endif; ?>
 
 Event.observe(window, 'load', function() {

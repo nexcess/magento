@@ -24,12 +24,12 @@
 /**
  * Zend_InfoCard_Cipher_Pki_Adapter_Abstract
  */
-require_once 'Zend/InfoCard/Cipher/Pki/Adapter/Abstract.php';
+#require_once 'Zend/InfoCard/Cipher/Pki/Adapter/Abstract.php';
 
 /**
  * Zend_InfoCard_Cipher_Pki_Rsa_Interface
  */
-require_once 'Zend/InfoCard/Cipher/Pki/Rsa/Interface.php';
+#require_once 'Zend/InfoCard/Cipher/Pki/Rsa/Interface.php';
 
 /**
  * RSA Public Key Encryption Cipher Object for the InfoCard component. Relies on OpenSSL

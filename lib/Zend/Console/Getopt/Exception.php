@@ -22,7 +22,7 @@
 /**
  * @see Zend_Console_Getopt_Exception
  */
-require_once 'Zend/Exception.php';
+#require_once 'Zend/Exception.php';
 
 
 /**

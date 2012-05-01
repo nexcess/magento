@@ -19,10 +19,10 @@
 
 
 /** Zend_Pdf_Trailer */
-require_once 'Zend/Pdf/Const.php';
+#require_once 'Zend/Pdf/Const.php';
 
 /** Zend_Pdf_Trailer */
-require_once 'Zend/Pdf/Trailer.php';
+#require_once 'Zend/Pdf/Trailer.php';
 
 
 /**

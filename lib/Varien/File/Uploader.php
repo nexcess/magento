@@ -23,6 +23,7 @@
  *
  * @category   Varien
  * @package    Varien_File
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Varien_File_Uploader

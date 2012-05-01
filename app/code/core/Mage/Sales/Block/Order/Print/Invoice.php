@@ -23,9 +23,10 @@
  *
  * @category   Mage
  * @package    Mage_Sales
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
-class Mage_Sales_Block_Order_Print_Invoice extends Mage_Core_Block_Template
+class Mage_Sales_Block_Order_Print_Invoice extends Mage_Sales_Block_Items_Abstract
 {
 
     public function __construct()
@@ -67,6 +68,18 @@ class Mage_Sales_Block_Order_Print_Invoice extends Mage_Core_Block_Template
     public function getInvoice()
     {
         return Mage::registry('current_invoice');
+    }
+
+    public function getOrderOptions($item)
+    {
+        if($options = $item->getOrderItem()->getProductOptions()) {
+            if (isset($options['options'])) {
+                return $options['options'];
+            } elseif (isset($options['admin_options'])) {
+                return $options['admin_options'];
+            }
+        }
+        return array();
     }
 }
 

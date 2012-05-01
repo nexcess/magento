@@ -20,9 +20,9 @@
  */
 
 
-require_once 'Zend/Locale.php';
-require_once 'Zend/Locale/Math.php';
-require_once 'Zend/Locale/Format.php';
+#require_once 'Zend/Locale.php';
+#require_once 'Zend/Locale/Math.php';
+#require_once 'Zend/Locale/Format.php';
 
 
 /**
@@ -83,7 +83,7 @@ abstract class Zend_Measure_Abstract
         }
 
         if (!$this->_Locale = Zend_Locale::isLocale($locale, true)) {
-            require_once 'Zend/Measure/Exception.php';
+            #require_once 'Zend/Measure/Exception.php';
             throw new Zend_Measure_Exception("Language ($locale) is unknown");
         }
 
@@ -94,7 +94,7 @@ abstract class Zend_Measure_Abstract
         }
 
         if (!array_key_exists($type, $this->_UNITS)) {
-            require_once 'Zend/Measure/Exception.php';
+            #require_once 'Zend/Measure/Exception.php';
             throw new Zend_Measure_Exception("Type ($type) is unknown");
         }
         $this->setValue($value, $type, $this->_Locale);
@@ -139,7 +139,7 @@ abstract class Zend_Measure_Abstract
         }
 
         if (!Zend_Locale::isLocale($locale)) {
-            require_once 'Zend/Measure/Exception.php';
+            #require_once 'Zend/Measure/Exception.php';
             throw new Zend_Measure_Exception("Language ($locale) is unknown");
         }
 
@@ -148,14 +148,14 @@ abstract class Zend_Measure_Abstract
         }
 
         if (empty($this->_UNITS[$type])) {
-            require_once 'Zend/Measure/Exception.php';
+            #require_once 'Zend/Measure/Exception.php';
             throw new Zend_Measure_Exception("Type ($type) is unknown");
         }
 
         try {
             $value = Zend_Locale_Format::getNumber($value, array('locale' => $locale));
         } catch(Exception $e) {
-            require_once 'Zend/Measure/Exception.php';
+            #require_once 'Zend/Measure/Exception.php';
             throw new Zend_Measure_Exception($e->getMessage());
         }
 
@@ -184,7 +184,7 @@ abstract class Zend_Measure_Abstract
     public function setType($type)
     {
         if (empty($this->_UNITS[$type])) {
-            require_once 'Zend/Measure/Exception.php';
+            #require_once 'Zend/Measure/Exception.php';
             throw new Zend_Measure_Exception("Type ($type) is unknown");
         }
 

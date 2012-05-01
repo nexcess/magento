@@ -26,6 +26,7 @@
  *
  * @category   Varien
  * @package    Varien_Convert
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Varien_Convert_Validator_Dryrun extends Varien_Convert_Validator_Abstract
 {

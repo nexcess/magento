@@ -33,7 +33,7 @@ class Mage_Adminhtml_Promo_CatalogController extends Mage_Adminhtml_Controller_A
     public function indexAction()
     {
         if (Mage::app()->loadCache('catalog_rules_dirty')) {
-            Mage::getSingleton('adminhtml/session')->addNotice(Mage::helper('catalogrule')->__('There are rules that has been changed but not applied. To see immediate effect in catalog, please click Apply Rules'));
+            Mage::getSingleton('adminhtml/session')->addNotice(Mage::helper('catalogrule')->__('There are rules that have been changed but not applied. Please, click Apply Rules in order to see immediate effect in catalogue.'));
         }
 
         $this->_initAction()
@@ -114,6 +114,22 @@ class Mage_Adminhtml_Promo_CatalogController extends Mage_Adminhtml_Controller_A
             $model->loadPost($data);
             Mage::getSingleton('adminhtml/session')->setPageData($model->getData());
             try {
+                if ($this->getRequest()->getParam('discount_amount') < 0) {
+                    Mage::throwException(Mage::helper('salesrule')->__('Invalid discount amount.'));
+                }
+
+                // validate from and to dates
+                $dateValidator = Mage::getModel('core/date');
+                foreach (array('from_date', 'to_date') as $param) {
+                    $value = $this->getRequest()->getParam($param);
+                    if (!empty($value)) {
+                        list($y, $m, $d) = $dateValidator->parseDateTime($value, 'm/d/y');
+                        if (!$dateValidator->checkDateTime($y, $m, $d)) {
+                            Mage::throwException(Mage::helper('salesrule')->__('Invalid date "%s".', $value));
+                        }
+                    }
+                }
+
                 $model->save();
                 Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('catalogrule')->__('Rule was successfully saved'));
                 Mage::getSingleton('adminhtml/session')->setPageData(false);

@@ -35,8 +35,8 @@
 <?php if($_addresses = $this->getPrimaryAddresses()): ?>
     <?php foreach ($_addresses as $_address): ?>
     <address>
-        <?php echo $_address->toString("{{firstname}} {{lastname}}<br/>{{street}}<br/>{{city}}, {{regionName}} {{postcode}}<br/>T: {{telephone}}") ?>
-        <br/><a href="<?php echo $this->getAddressEditUrl($_address) ?>"><?php echo $this->__('Edit Address') ?></a>
+        <?php echo $_address->format('html') ?>
+        <br /><a href="<?php echo $this->getAddressEditUrl($_address) ?>"><?php echo $this->__('Edit Address') ?></a>
     </address>
     <?php endforeach; ?>
 <?php endif; ?>

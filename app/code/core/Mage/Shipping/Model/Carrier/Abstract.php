@@ -160,7 +160,7 @@ abstract class Mage_Shipping_Model_Carrier_Abstract extends Varien_Object
     {
         if ($method == $this->getConfigData('free_method') &&
             $this->getConfigData('free_shipping_enable') &&
-            $this->getConfigData('free_shipping_subtotal') <= $this->_rawRequest->getValue())
+            $this->getConfigData('free_shipping_subtotal') <= $this->_rawRequest->getValueWithDiscount())
         {
             $price = '0.00';
         } else {
@@ -206,6 +206,17 @@ abstract class Mage_Shipping_Model_Carrier_Abstract extends Varien_Object
     }
 
     /**
+     *  Return weight in pounds
+     *
+     *  @param    integer Weight in someone measure
+     *  @return	  float Weight in pounds
+     */
+    public function convertWeightToLbs($weight)
+    {
+        return $weight;
+    }
+
+    /**
      * set the number of boxes for shipping
      *
      * @return weight
@@ -216,6 +227,7 @@ abstract class Mage_Shipping_Model_Carrier_Abstract extends Varien_Object
         reset num box first before retrieve again
         */
         $this->_numBoxes = 1;
+        $weight = $this->convertWeightToLbs($weight);
         $maxPackageWeight = $this->getConfigData('max_package_weight');
         if($weight > $maxPackageWeight) {
             $this->_numBoxes = ceil($weight/$maxPackageWeight);

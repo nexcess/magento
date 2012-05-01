@@ -23,7 +23,17 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author     Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Product_Type_Virtual extends Mage_Catalog_Model_Product_Type_Abstract
 {
+    /**
+     * Check is virtual product
+     *
+     * @return bool
+     */
+    public function isVirtual()
+    {
+        return true;
+    }
 }

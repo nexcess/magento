@@ -21,6 +21,7 @@
 /**
  * Installation begin block
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Install_Block_Begin extends Mage_Install_Block_Abstract
 {

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Pviewed extends Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Abstract
@@ -71,7 +72,6 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Pviewed extends Mage_Admin
                     ->addAttributeToSelect('price')
                     ->addAttributeToSelect('small_image')
                     ->addIdFilter($productIds)
-                    ->addAttributeToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE)
                     ->load();
             }
             $this->setData('item_collection', $productCollection);
@@ -90,12 +90,13 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Sidebar_Pviewed extends Mage_Admin
     }
 
     /**
-     * Retrieve product identifier of block item
+     * Retrieve identifier of block item
      *
-     * @param   mixed $item
-     * @return  int
+     * @param Varien_Object $item
+     * @return int
      */
-    public function getProductId($item) {
+    public function getIdentifierId($item)
+    {
         return $item->getId();
     }
 }

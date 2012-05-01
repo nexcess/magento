@@ -19,13 +19,13 @@
 
 
 /** Zend_Pdf_ElementFactory */
-require_once 'Zend/Pdf/ElementFactory.php';
+#require_once 'Zend/Pdf/ElementFactory.php';
 
 /** Zend_Pdf_Element_Object */
-require_once 'Zend/Pdf/Element/Object.php';
+#require_once 'Zend/Pdf/Element/Object.php';
 
 /** Zend_Pdf_Element_Dictionary */
-require_once 'Zend/Pdf/Element/Dictionary.php';
+#require_once 'Zend/Pdf/Element/Dictionary.php';
 
 
 /**

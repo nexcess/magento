@@ -25,22 +25,22 @@
 /**
  * @see Zend_Config
  */
-require_once 'Zend/Config.php';
+#require_once 'Zend/Config.php';
 
 /**
  * @see Zend_Db
  */
-require_once 'Zend/Db.php';
+#require_once 'Zend/Db.php';
 
 /**
  * @see Zend_Db_Select
  */
-require_once 'Zend/Db/Select.php';
+#require_once 'Zend/Db/Select.php';
 
 /**
  * @see Zend_Loader
  */
-require_once 'Zend/Loader.php';
+#require_once 'Zend/Loader.php';
 
 
 /**
@@ -166,7 +166,7 @@ abstract class Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Exception
                  */
-                require_once 'Zend/Db/Exception.php';
+                #require_once 'Zend/Db/Exception.php';
                 throw new Zend_Db_Exception('Adapter parameters must be in an array or a Zend_Config object');
             }
         }
@@ -208,7 +208,7 @@ abstract class Zend_Db_Adapter_Abstract
                     $this->_caseFolding = $case;
                     break;
                 default:
-                    require_once 'Zend/Db/Adapter/Exception.php';
+                    #require_once 'Zend/Db/Adapter/Exception.php';
                     throw new Zend_Db_Adapter_Exception('Case must be one of the following constants: '
                         . 'Zend_Db::CASE_NATURAL, Zend_Db::CASE_LOWER, Zend_Db::CASE_UPPER');
             }
@@ -239,7 +239,7 @@ abstract class Zend_Db_Adapter_Abstract
     {
         // we need at least a dbname
         if (! array_key_exists('dbname', $config)) {
-            require_once 'Zend/Db/Adapter/Exception.php';
+            #require_once 'Zend/Db/Adapter/Exception.php';
             throw new Zend_Db_Adapter_Exception("Configuration array must have a key for 'dbname' that names the database instance");
         }
 
@@ -247,7 +247,7 @@ abstract class Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Exception
              */
-            require_once 'Zend/Db/Adapter/Exception.php';
+            #require_once 'Zend/Db/Adapter/Exception.php';
             throw new Zend_Db_Adapter_Exception("Configuration array must have a key for 'password' for login credentials");
         }
 
@@ -255,7 +255,7 @@ abstract class Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Exception
              */
-            require_once 'Zend/Db/Adapter/Exception.php';
+            #require_once 'Zend/Db/Adapter/Exception.php';
             throw new Zend_Db_Adapter_Exception("Configuration array must have a key for 'username' for login credentials");
         }
     }
@@ -325,7 +325,7 @@ abstract class Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Profiler_Exception
                  */
-                require_once 'Zend/Db/Profiler/Exception.php';
+                #require_once 'Zend/Db/Profiler/Exception.php';
                 throw new Zend_Db_Profiler_Exception('Profiler argument must be an instance of either Zend_Db_Profiler'
                     . ' or Zend_Config when provided as an object');
             }
@@ -351,7 +351,7 @@ abstract class Zend_Db_Adapter_Abstract
         }
 
         if (!$profilerInstance instanceof Zend_Db_Profiler) {
-            require_once 'Zend/Db/Profiler/Exception.php';
+            #require_once 'Zend/Db/Profiler/Exception.php';
             throw new Zend_Db_Profiler_Exception('Class ' . get_class($profilerInstance) . ' does not extend '
                 . 'Zend_Db_Profiler');
         }

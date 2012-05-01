@@ -20,7 +20,7 @@
 ?>
 <form id="co-shipping-method-form" action="">
 <div class="inner-box">
-    <div  class="default-box" style="padding:10px;" id="checkout-shipping-method-load">
+    <div class="default-box" style="padding:10px;" id="checkout-shipping-method-load">
         <?php echo $this->getChildHtml('available') ?>
     </div>
 </div>
@@ -33,12 +33,12 @@
 </form>
 <div class="inner-box">
     <div class="button-set no-border">
-        <span id="shipping-method-buttons-container">
+        <div id="shipping-method-buttons-container">
             <a href="#" onclick="checkout.back(); return false;" class="back left"><?php echo $this->__('Back') ?></a>
             <button class="form-button right" onclick="shippingMethod.save()"><span><?php echo $this->__('Continue') ?></span></button>
             <span id="shipping-method-please-wait" style="display:none;" class="opc-please-wait">
-                <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt=""/> &nbsp; <?php echo $this->__('Loading next step...') ?> &nbsp;
+                <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt="" /> &nbsp; <?php echo $this->__('Loading next step...') ?> &nbsp;
             </span>
-        </span>
+        </div>
     </div>
 </div>

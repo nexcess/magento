@@ -20,10 +20,10 @@
  */
 
 /** Zend_View_Helper_Placeholder_Container_Standalone */
-require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
+#require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
 
 /** Zend_View_Exception */
-require_once 'Zend/View/Exception.php';
+#require_once 'Zend/View/Exception.php';
 
 /**
  * Zend_Layout_View_Helper_HeadMeta
@@ -101,7 +101,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
             case 'HttpEquiv':
                 return 'http-equiv';
             default:
-                require_once 'Zend/View/Exception.php';
+                #require_once 'Zend/View/Exception.php';
                 throw new Zend_View_Exception(sprintf('Invalid type "%s" passed to _normalizeType', $type));
         }
     }
@@ -139,7 +139,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
             }
 
             if (2 > $argc) {
-                require_once 'Zend/View/Exception.php';
+                #require_once 'Zend/View/Exception.php';
                 throw new Zend_View_Exception('Too few arguments provided; requires key value, and content');
             }
 
@@ -193,7 +193,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
     public function append($value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid value passed to append; please use appendMeta()');
         }
 
@@ -211,7 +211,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
     public function offsetSet($index, $value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid value passed to offsetSet; please use offsetSetMeta()');
         }
 
@@ -228,7 +228,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
     public function offsetUnset($index)
     {
         if (!in_array($index, $this->getContainer()->getKeys())) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid index passed to offsetUnset.');
         }
         
@@ -245,7 +245,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
     public function prepend($value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid value passed to prepend; please use prependMeta()');
         }
 
@@ -262,7 +262,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
     public function set($value)
     {
         if (!$this->_isValid($value)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception('Invalid value passed to set; please use setMeta()');
         }
 
@@ -288,7 +288,7 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
     public function itemToString(stdClass $item)
     {
         if (!in_array($item->type, $this->_typeKeys)) {
-            require_once 'Zend/View/Exception.php';
+            #require_once 'Zend/View/Exception.php';
             throw new Zend_View_Exception(sprintf('Invalid type "%s" provided for meta', $item->type));
         }
         $type = $item->type;

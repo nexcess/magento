@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Install
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Install_Model_Installer_Db extends Mage_Install_Model_Installer_Abstract
 {
@@ -49,7 +50,14 @@ class Mage_Install_Model_Installer_Db extends Mage_Install_Model_Installer_Abstr
 
         try {
             $connection = Mage::getSingleton('core/resource')->createConnection('install', $this->_getConnenctionType(), $config);
-            $result = $connection->query('SELECT 1');
+            $result = $connection->query($connection->quoteInto('SHOW VARIABLES LIKE ?', 'version'));
+            $row = $result->fetch();
+            $version = $row['Value'];
+            $requiredVersion = (string)Mage::getSingleton('install/config')->getNode('check/mysql/version');
+
+            if (version_compare($version, $requiredVersion) == -1) {
+                Mage::throwException(Mage::helper('install')->__('Database server version does not match system requirements (required: %s, actual: %s)', $requiredVersion, $version));
+            }
         }
         catch (Exception $e){
             $this->_getInstaller()->getDataModel()->addError($e->getMessage());

@@ -23,7 +23,7 @@ class Mage_Payment_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 {
     protected $_formBlockType = 'payment/form_cc';
     protected $_infoBlockType = 'payment/info_cc';
-    protected $_canSaveCc = true;
+    protected $_canSaveCc     = false;
 
     /**
      * Assign data to info model instance
@@ -104,7 +104,8 @@ class Mage_Payment_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
                     'VI' => '/^4[0-9]{12}([0-9]{3})?$/', // Visa
                     'MC' => '/^5[1-5][0-9]{14}$/',       // Master Card
                     'AE' => '/^3[47][0-9]{13}$/',        // American Express
-                    'DI' => '/^6011[0-9]{12}$/'          // Discovery
+                    'DI' => '/^6011[0-9]{12}$/',          // Discovery
+                    'SS' => '/^((6759[0-9]{12})|(49[013][1356][0-9]{13})|(633[34][0-9]{12})|(633110[0-9]{10})|(564182[0-9]{10}))([0-9]{2,3})?$/'
                 );
 
                 foreach ($ccTypeRegExpList as $ccTypeMatch=>$ccTypeRegExp) {
@@ -141,7 +142,7 @@ class Mage_Payment_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     protected function _validateExpDate($expYear, $expMonth)
     {
         $date = Mage::app()->getLocale()->date();
-        if (($date->compareYear($expYear)>0) || ($date->compareYear($expYear) == 0 && $date->compareMonth($expMonth)>0)) {
+        if (!$expYear || !$expMonth || !($date->compareYear($expYear)<0) || ($date->compareYear($expYear) == 0 && $date->compareMonth($expMonth)>0)) {
             return false;
         }
         return true;

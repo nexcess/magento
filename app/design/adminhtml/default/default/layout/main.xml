@@ -92,6 +92,7 @@ Default layout, loads most of the pages
 
             <block type="adminhtml/page_header" name="header" as="header"></block>
             <block type="adminhtml/page_menu" name="menu" as="menu"></block>
+            <block type="adminhtml/notification_toolbar" name="notification_toolbar" as="notification_toolbar" acl="system/adminnotification/show_toolbar" template="notification/toolbar.phtml"></block>
             <block type="adminhtml/widget_breadcrumbs" name="breadcrumbs" as="breadcrumbs"></block>
 
             <block type="page/js_translate" name="js_translate" as="js_translate" template="page/js/translate.phtml"/>
@@ -102,6 +103,8 @@ Default layout, loads most of the pages
             <block type="adminhtml/page_footer" name="footer" as="footer"/>
             <block type="core/profiler" name="profiler" as="profiler"/>
             <block type="core/text_list" name="before_body_end" as="before_body_end"/>
+
+            <block type="adminhtml/notification_window" name="notification_window" as="notification_window" acl="system/adminnotification/show_toolbar" template="notification/window.phtml" />
         </block>
     </default>
 
@@ -121,25 +124,25 @@ Layout for pop up windows
 No page found
 -->
 
-    <admin_noroute>
+    <adminhtml_noroute>
         <reference name="content">
             <block type="core/text" name="content.noRoute">
                 <action method="setText" translate="text" module="adminhtml"><text><![CDATA[<h1 class="page-heading">404 Error</h1><p>Page not found.</p>]]></text></action>
             </block>
         </reference>
-    </admin_noroute>
+    </adminhtml_noroute>
 
 <!--
 Access denied
 -->
 
-    <admin_denied>
+    <adminhtml_denied>
         <reference name="content">
             <block type="core/text" name="content.denied">
                 <action method="setText" translate="text" module="adminhtml"><text><![CDATA[<h1 class="page-heading">Access denied</h1><p>Access denied.</p>]]></text></action>
             </block>
         </reference>
-    </admin_denied>
+    </adminhtml_denied>
 
 <!--
 Base preview layout (?)

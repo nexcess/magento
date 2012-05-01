@@ -24,7 +24,7 @@
 /**
  * Zend_InfoCard_Xml_Exception
  */
-require_once 'Zend/InfoCard/Xml/Exception.php';
+#require_once 'Zend/InfoCard/Xml/Exception.php';
 
 /**
  * @category   Zend

@@ -23,31 +23,34 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 
 class Mage_Catalog_Block_Product_Link_Crosssell extends Mage_Catalog_Block_Product_Abstract
 {
     protected $_itemCollection;
-	protected function _prepareData()
-	{
-		$this->_itemCollection = Mage::registry('product')->getCrossSellProductCollection()
-			->addAttributeToSelect('name')
-            ->addAttributeToSelect('price')
-            ->addAttributeToSelect('image')
-            ->addAttributeToSelect('small_image')
-            ->addAttributeToSelect('tax_class_id')
-			->addAttributeToSort('position', 'asc')
-			->addStoreFilter()
-			->load();
-	}
+    protected function _prepareData()
+    {
+        $this->_itemCollection = Mage::registry('product')->getCrossSellProductCollection()
+            ->addAttributeToSelect(Mage::getSingleton('catalog/config')->getProductAttributes())
+            ->addAttributeToSort('position', 'asc')
+            ->addStoreFilter()
+            ->load();
 
-	protected function	_beforeToHtml()
-	{
-		$this->_prepareData();
-		return parent::_beforeToHtml();
-	}
+        foreach ($this->_itemCollection as $product) {
+            $product->setDoNotUseCategoryId(true);
+        }
 
-	public function getItems() {
-		return $this->_itemCollection;
-	}
+        return $this;
+    }
+
+    protected function	_beforeToHtml()
+    {
+        $this->_prepareData();
+        return parent::_beforeToHtml();
+    }
+
+    public function getItems() {
+        return $this->_itemCollection;
+    }
 }// Mage_Catalog_Block_Product_Link_Crosssell END

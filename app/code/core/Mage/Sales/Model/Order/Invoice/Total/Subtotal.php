@@ -34,6 +34,11 @@ class Mage_Sales_Model_Order_Invoice_Total_Subtotal extends Mage_Sales_Model_Ord
 
         foreach ($invoice->getAllItems() as $item) {
             $item->calcRowTotal();
+
+            if ($item->getOrderItem()->isDummy()) {
+                continue;
+            }
+
             $subtotal+= $item->getRowTotal();
             $baseSubtotal+= $item->getBaseRowTotal();
         }

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Page
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Page_Block_Html_Head extends Mage_Core_Block_Template
 {
@@ -123,19 +124,19 @@ class Mage_Page_Block_Html_Head extends Mage_Core_Block_Template
                 $html .= '<!--[if '.$if.']>'."\n";
             }
             if (!empty($items['script'])) {
-                foreach ($this->getChunkedItems($items['script'], $baseJs.'proxy.php?c=auto&f=') as $item) {
+                foreach ($this->getChunkedItems($items['script'], $baseJs.'index.php?c=auto&amp;f=') as $item) {
                     $html .= sprintf($script, $item, '')."\n";
                 }
 //                foreach (array_chunk($items['script'], 15) as $chunk) {
-//                    $html .= sprintf($script, $baseJs.'proxy.php/x.js?f='.join(',',$chunk), '')."\n";
+//                    $html .= sprintf($script, $baseJs.'index.php/x.js?f='.join(',',$chunk), '')."\n";
 //                }
             }
             if (!empty($items['stylesheet'])) {
-                foreach ($this->getChunkedItems($items['stylesheet'], $baseJs.'proxy.php?c=auto&f=') as $item) {
+                foreach ($this->getChunkedItems($items['stylesheet'], $baseJs.'index.php?c=auto&amp;f=') as $item) {
                     $html .= sprintf($stylesheet, $item, '')."\n";
                 }
 //                foreach (array_chunk($items['stylesheet'], 15) as $chunk) {
-//                    $html .= sprintf($stylesheet, $baseJs.'proxy.php/x.css?f='.join(',',$chunk), '')."\n";
+//                    $html .= sprintf($stylesheet, $baseJs.'index.php/x.css?f='.join(',',$chunk), '')."\n";
 //                }
             }
             if (!empty($items['other'])) {
@@ -200,7 +201,7 @@ class Mage_Page_Block_Html_Head extends Mage_Core_Block_Template
         if (empty($this->_data['title'])) {
             $this->_data['title'] = $this->getDefaultTitle();
         }
-        return $this->_data['title'];
+        return htmlspecialchars(html_entity_decode($this->_data['title'], ENT_QUOTES, 'UTF-8'));
     }
 
     public function getDefaultTitle()

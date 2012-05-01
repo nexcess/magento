@@ -24,11 +24,11 @@
     </div>
     <div class="my-review-detail">
         <div class="product-image">
-            <p><a href="<?php echo $this->getProductData()->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($this->getProductData(), 'small_image')->resize(125, 125); ?>" alt="<?php echo $this->htmlEscape($this->getProductData()->getName()) ?>" height="100" width="100" /></a><br />
+            <p><a href="<?php echo $this->getProductData()->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($this->getProductData(), 'small_image')->resize(125, 125); ?>" alt="<?php echo $this->htmlEscape($this->getProductData()->getName()) ?>" height="100" width="100" /></a></p>
             <?php if( $this->getRating() && $this->getRating()->getSize()): ?>
-            <small><?php echo $this->__('Average Customer Rating') ?>:</small></p>
+                <small><?php echo $this->__('Average Customer Rating') ?>:</small>
+                <?php echo $this->getReviewsSummaryHtml($this->getProductData()) ?>
             <?php endif; ?>
-            <?php echo $this->helper('review/product')->getSummaryHtml($this->getProductData()) ?>
         </div>
     <div class="details">
         <h3><?php echo $this->htmlEscape($this->getProductData()->getName()) ?></h3>

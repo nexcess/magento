@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_GiftMessage
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_GiftMessage_Block_Message_Inline extends Mage_Core_Block_Template
 {

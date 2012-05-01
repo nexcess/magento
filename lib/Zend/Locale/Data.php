@@ -24,7 +24,7 @@
 /**
  * include needed classes
  */
-require_once 'Zend/Locale.php';
+#require_once 'Zend/Locale.php';
 
 
 /**
@@ -142,7 +142,7 @@ class Zend_Locale_Data
         if (empty(self::$_ldml[(string) $locale])) {
             $filename = dirname(__FILE__) . '/Data/' . $locale . '.xml';
             if (!file_exists($filename)) {
-                require_once 'Zend/Locale/Exception.php';
+                #require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception("Missing locale file '$filename' for '$locale' locale.");
             }
 
@@ -279,7 +279,7 @@ class Zend_Locale_Data
         }
 
         if (!($locale = Zend_Locale::isLocale($locale))) {
-            require_once 'Zend/Locale/Exception.php';
+            #require_once 'Zend/Locale/Exception.php';
             throw new Zend_Locale_Exception("Locale ($locale) is a unknown locale");
         }
         return $locale;
@@ -749,7 +749,7 @@ class Zend_Locale_Data
                 break;
 
             default :
-                require_once 'Zend/Locale/Exception.php';
+                #require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception("Unknown list ($path) for parsing locale data.");
                 break;
         }
@@ -990,6 +990,10 @@ class Zend_Locale_Data
                 $temp = self::_getFile($locale, '/ldml/numbers/currencies/currency[@type=\'' . $value . '\']/symbol', '', $value);
                 break;
 
+            case 'currencysymbolchoice':
+                $temp = self::_getFile($locale, '/ldml/numbers/currencies/currency[@type=\'' . $value . '\']/symbol/@choice', '', $value);
+                break;
+
             case 'question':
                 $temp = self::_getFile($locale, '/ldml/posix/messages/' . $value . 'str',  '', $value);
                 break;
@@ -1141,7 +1145,7 @@ class Zend_Locale_Data
                 break;
 
             default :
-                require_once 'Zend/Locale/Exception.php';
+                #require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception("Unknown detail ($path) for parsing locale data.");
                 break;
         }

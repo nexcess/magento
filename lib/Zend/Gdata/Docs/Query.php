@@ -22,7 +22,7 @@
 /**
  * Zend_Gdata_Query
  */
-require_once('Zend/Gdata/Query.php');
+#require_once('Zend/Gdata/Query.php');
 
 /**
  * Assists in constructing queries for Google Document List documents
@@ -199,7 +199,7 @@ class Zend_Gdata_Docs_Query extends Zend_Gdata_Query
         if ($this->_visibility !== null) {
             $uri .= '/' . $this->_visibility;
         } else {
-            require_once 'Zend/Gdata/App/Exception.php';
+            #require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception(
                 'A visibility must be provided for cell queries.');
         }
@@ -207,7 +207,7 @@ class Zend_Gdata_Docs_Query extends Zend_Gdata_Query
         if ($this->_projection !== null) {
             $uri .= '/' . $this->_projection;
         } else {
-            require_once 'Zend/Gdata/App/Exception.php';
+            #require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception(
                 'A projection must be provided for cell queries.');
         }

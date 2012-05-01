@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Media
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 interface Mage_Media_Model_Image_Config_Interface
 {

@@ -84,7 +84,10 @@ All tags page
         <!-- Mage_Tag -->
         <reference name="content">
             <block type="tag/product_result" name="tag_products" template="catalogsearch/result.phtml">
-                <action method="initList"><template>catalog/product/list.phtml</template></action>
+                <block type="catalog/product_list" name="search_result_list" template="catalog/product/list.phtml"></block>
+                <action method="setListOrders"/>
+                <action method="setListModes"/>
+                <action method="setListCollection"/>
             </block>
         </reference>
     </tag_product_list>

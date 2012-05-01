@@ -22,13 +22,31 @@
 <config>
     <modules>
         <Mage_Checkout>
-            <version>0.7.0</version>
-            <depends>
-                <Mage_Sales />
-            </depends>
+            <version>0.9.1</version>
         </Mage_Checkout>
     </modules>
     <global>
+        <fieldsets>
+            <customer_account>
+                <prefix><to_order>customer_prefix</to_order></prefix>
+                <firstname><to_order>customer_firstname</to_order></firstname>
+                <middlename><to_order>customer_middlename</to_order></middlename>
+                <lastname><to_order>customer_lastname</to_order></lastname>
+                <suffix><to_order>customer_suffix</to_order></suffix>
+                <email><to_order>customer_email</to_order></email>
+                <group_id><to_order>customer_group_id</to_order></group_id>
+                <tax_class_id><to_order>customer_tax_class_id</to_order></tax_class_id>
+            </customer_account>
+            <checkout_onepage_billing>
+                <prefix><to_customer>*</to_customer></prefix>
+                <firstname><to_customer>*</to_customer></firstname>
+                <middlename><to_customer>*</to_customer></middlename>
+                <lastname><to_customer>*</to_customer></lastname>
+                <suffix><to_customer>*</to_customer></suffix>
+                <email><to_customer>*</to_customer></email>
+                <dob><to_customer>*</to_customer></dob>
+            </checkout_onepage_billing>
+        </fieldsets>
         <blocks>
             <checkout><class>Mage_Checkout_Block</class></checkout>
         </blocks>
@@ -39,9 +57,32 @@
             </checkout>
             <checkout_mysql4>
                 <class>Mage_Checkout_Model_Mysql4</class>
+                <entities>
+                    <agreement><table>checkout_agreement</table></agreement>
+                    <agreement_store><table>checkout_agreement_store</table></agreement_store>
+                </entities>
             </checkout_mysql4>
         </models>
-
+        <resources>
+            <checkout_setup>
+                <setup>
+                    <module>Mage_Checkout</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </checkout_setup>
+            <checkout_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </checkout_write>
+            <checkout_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </checkout_read>
+        </resources>
         <cache>
             <types>
                 <checkout_quote><label>Shopping Cart data</label></checkout_quote>
@@ -78,7 +119,7 @@
                     <set_checkout_quote_id>
                         <type>singleton</type>
                         <class>checkout/observer</class>
-                        <method>sales_quote_save_after</method>
+                        <method>salesQuoteSaveAfter</method>
                     </set_checkout_quote_id>
                 </observers>
             </sales_quote_save_after>
@@ -110,6 +151,18 @@
         </layout>
     </frontend>
     <adminhtml>
+        <menu>
+             <sales>
+                <children>
+                    <checkoutagreement translate="title" module="salesrule">
+                        <sort_order>100</sort_order>
+                        <title>Checkout agreements</title>
+                        <action>adminhtml/checkout_agreement/</action>
+                        <resource>checkout/agreement</resource>
+                    </checkoutagreement>
+                </children>
+             </sales>
+        </menu>
         <translate>
             <modules>
                 <Mage_Checkout>
@@ -134,6 +187,9 @@
             <cart_link>
                 <use_qty>1</use_qty>
             </cart_link>
+            <sidebar>
+                <display>1</display>
+            </sidebar>
         </checkout>
     </default>
 </config>

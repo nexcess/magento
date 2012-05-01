@@ -22,17 +22,17 @@
 /**
  * @see Zend_Pdf
  */
-require_once 'Zend/Pdf.php';
+#require_once 'Zend/Pdf.php';
 
 /**
  * @see Zend_Pdf_Element
  */
-require_once 'Zend/Pdf/Element.php';
+#require_once 'Zend/Pdf/Element.php';
 
 /**
  * @see Zend_Memory
  */
-require_once 'Zend/Memory.php';
+#require_once 'Zend/Memory.php';
 
 /**
  * PDF file 'stream' element implementation

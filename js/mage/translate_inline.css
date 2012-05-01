@@ -1,6 +1,6 @@
 .translate-inline { /* background:black; font-weight:bold; color:red; */ border:dotted 1px red;}
 .translate-inline-script, .translate-inline-title { background:yellow; color:black; font-weight:bold; }
-#translate-inline-trig { position:absolute; display:none; opacity:.8; filter:alpha(opacity=80); cursor:pointer; margin-top:10px;}
+#translate-inline-trig { position:absolute;left:-1000px; opacity:.8; filter:alpha(opacity=80); cursor:pointer; margin-top:10px; z-index:1000;}
 
 .magento_table_container { background:#cbdee6; margin:10px; padding:8px 10px; }
 .magento_table_container table { width:100%; }

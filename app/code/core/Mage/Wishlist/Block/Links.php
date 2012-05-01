@@ -22,20 +22,22 @@
 /**
  * Links block
  *
- * @category   Mage
- * @package    Mage_Wishlist
+ * @category    Mage
+ * @package     Mage_Wishlist
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Wishlist_Block_Links extends Mage_Core_Block_Template
 {
-
-    protected $_wishlist = null;
-
+    /**
+     * Add link on wishlist page in parent block
+     *
+     * @return Mage_Wishlist_Block_Links
+     */
     public function addWishlistLink()
     {
-        if ($this->helper('wishlist')->isAllow()){
-
+        $parentBlock = $this->getParentBlock();
+        if ($parentBlock && $this->helper('wishlist')->isAllow()) {
             $count = $this->helper('wishlist')->getItemCount();
-            #$count = $this->getWishlistItems()->getSize();
             if( $count > 1 ) {
                 $text = $this->__('My Wishlist (%d items)', $count);
             } elseif( $count == 1 ) {
@@ -43,8 +45,8 @@ class Mage_Wishlist_Block_Links extends Mage_Core_Block_Template
             } else {
                 $text = $this->__('My Wishlist');
             }
-            $this->getParentBlock()->addLink($text, 'wishlist', $text, true, array(), 30, null, 'class="top-link-wishlist"');
+            $parentBlock->addLink($text, 'wishlist', $text, true, array(), 30, null, 'class="top-link-wishlist"');
         }
+        return $this;
     }
-
 }

@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 abstract class Mage_Catalog_Model_Layer_Filter_Abstract extends Varien_Object
 {
@@ -121,13 +122,7 @@ abstract class Mage_Catalog_Model_Layer_Filter_Abstract extends Varien_Object
 
     protected function _getFilterEntityIds()
     {
-        $ids = $this->getData('_entity_ids');
-        if (is_null($ids)) {
-            $ids = $this->getLayer()->getProductCollection()->getAllIdsSql();
-            $this->setData('_entity_ids', $ids);
-        }
-
-        return $ids;
+        return $this->getLayer()->getProductCollection()->getAllIdsCache();
     }
 
     public function setAttributeModel($attribute)

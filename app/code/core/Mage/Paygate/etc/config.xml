@@ -23,9 +23,7 @@
    <modules>
       <Mage_Paygate>
          <version>0.7.0</version>
-         <depends>
-            <Mage_Sales />
-         </depends>
+
       </Mage_Paygate>
    </modules>
    <global>
@@ -123,6 +121,9 @@
                 <vendor/>
                 <verbosity>MEDIUM</verbosity>
                 <allowspecific>0</allowspecific>
+        		<proxy_host/>
+        		<proxy_port/>
+        		<use_proxy>0</use_proxy>
             </verisign>
         </payment>
     </default>

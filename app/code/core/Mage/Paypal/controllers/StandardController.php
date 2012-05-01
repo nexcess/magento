@@ -21,9 +21,28 @@
 /**
  * Paypal Standard Checkout Controller
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Paypal_StandardController extends Mage_Core_Controller_Front_Action
 {
+    /**
+     * Order instance
+     */
+    protected $_order;
+
+    /**
+     *  Get order
+     *
+     *  @param    none
+     *  @return	  Mage_Sales_Model_Order
+     */
+    public function getOrder()
+    {
+        if ($this->_order == null) {
+        }
+        return $this->_order;
+    }
+
     protected function _expireAjax()
     {
         if (!Mage::getSingleton('checkout/session')->getQuote()->hasItems()) {
@@ -61,6 +80,15 @@ class Mage_Paypal_StandardController extends Mage_Core_Controller_Front_Action
     {
         $session = Mage::getSingleton('checkout/session');
         $session->setQuoteId($session->getPaypalStandardQuoteId(true));
+
+        // cancel order
+        if ($session->getLastRealOrderId()) {
+            $order = Mage::getModel('sales/order')->loadByIncrementId($session->getLastRealOrderId());
+            if ($order->getId()) {
+                $order->cancel()->save();
+            }
+        }
+
         /*we are calling getPaypalStandardQuoteId with true parameter, the session object will reset the session if parameter is true.
         so we don't need to manually unset the session*/
         //$session->unsPaypalStandardQuoteId();
@@ -96,9 +124,9 @@ class Mage_Paypal_StandardController extends Mage_Core_Controller_Front_Action
             $order->sendNewOrderEmail();
         }
 
-        Mage::getSingleton('checkout/session')->unsQuoteId();
+        //Mage::getSingleton('checkout/session')->unsQuoteId();
 
-        $this->_redirect('checkout/onepage/success');
+        $this->_redirect('checkout/onepage/success', array('_secure'=>true));
     }
 
     /**

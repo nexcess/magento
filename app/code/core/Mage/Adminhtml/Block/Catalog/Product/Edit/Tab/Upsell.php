@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Upsell extends Mage_Adminhtml_Block_Widget_Grid
 {
@@ -75,6 +76,7 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Upsell extends Mage_Adminhtm
     {
         $collection = Mage::getModel('catalog/product_link')->useUpSellLinks()
             ->getProductCollection()
+            ->addFilterByRequiredOptions()
             ->setProduct($this->_getProduct())
             ->addAttributeToSelect('*');
         $this->setCollection($collection);
@@ -172,7 +174,7 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Upsell extends Mage_Adminhtm
 
     public function getGridUrl()
     {
-        return $this->getUrl('*/*/upsell', array('_current'=>true));
+        return $this->_getData('grid_url') ? $this->_getData('grid_url') : $this->getUrl('*/*/upsell', array('_current'=>true));
     }
 
     protected function _getSelectedProducts()

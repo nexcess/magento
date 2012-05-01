@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Reports
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Reports_Model_Mysql4_Invoiced_Collection extends Mage_Sales_Model_Entity_Order_Collection
 {
@@ -48,15 +49,15 @@ class Mage_Reports_Model_Mysql4_Invoiced_Collection extends Mage_Sales_Model_Ent
             $this->addAttributeToFilter('store_id', array('in' => (array)$storeIds))
                 ->addExpressionAttributeToSelect(
                     'invoiced',
-                    'SUM({{base_total_invoiced}}',
+                    'SUM({{base_total_invoiced}})',
                     array('base_total_invoiced'))
                 ->addExpressionAttributeToSelect(
                     'invoiced_captured',
-                    'SUM({{base_total_paid}}',
+                    'SUM({{base_total_paid}})',
                     array('base_total_paid'))
                 ->addExpressionAttributeToSelect(
                     'invoiced_not_captured',
-                    'SUM({{base_total_invoiced}}-{{base_total_paid}}',
+                    'SUM({{base_total_invoiced}}-{{base_total_paid}})',
                     array('base_total_invoiced', 'base_total_paid'));
         } else {
             $this->addExpressionAttributeToSelect(

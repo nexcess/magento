@@ -30,10 +30,10 @@
     <?php endif; ?>
 <form action="<?php echo $this->getUrl('*/*/update') ?>" method="post">
     <table cellspacing="0" width="100%" class="data-table box-table" id="wishlist-table">
-    <col width="130"/>
-    <col width="300"/>
-    <col/>
-    <col/>
+    <col width="130" />
+    <col width="300" />
+    <col />
+    <col />
         <thead>
             <tr>
                 <th><?php echo $this->__('Product') ?></th>
@@ -46,19 +46,19 @@
         <?php foreach($this->getWishlist() as $item): ?>
             <tr>
                 <td>
-                    <div><a href="<?php echo $item->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize(113, 113); ?>" alt="<?php echo $this->htmlEscape($item->getName()) ?>" width="113"/></a></div>
+                    <div><a href="<?php echo $item->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize(113, 113); ?>" alt="<?php echo $this->htmlEscape($item->getName()) ?>" width="113" /></a></div>
                     <div><a href="<?php echo $item->getProductUrl() ?>" title="<?php echo $this->htmlEscape($item->getName()) ?>"><?php echo $this->htmlEscape($item->getName()) ?></a></div>
-                    <?php echo $this->helper('catalog/product')->getPriceHtml($item) ?>
+                    <?php echo $this->getPriceHtml($item) ?>
                 </td>
                 <td align="center">
-                    <textarea name="description[<?php echo $item->getWishlistItemId() ?>]" style="width:95%;height:160px;" onfocus="focusComment(this)" onblur="focusComment(this)"><?php echo ( $this->getEscapedDescription($item) ) ? $this->getEscapedDescription($item) : $this->helper('wishlist')->defaultCommentString() ?></textarea>
+                    <textarea name="description[<?php echo $item->getWishlistItemId() ?>]" rows="3" cols="3" style="width:95%;height:160px;" onfocus="focusComment(this)" onblur="focusComment(this)"><?php echo ( $this->getEscapedDescription($item) ) ? $this->getEscapedDescription($item) : $this->helper('wishlist')->defaultCommentString() ?></textarea>
                 </td>
                 <td>
                     <?php echo $this->getFormatedDate($item->getAddedAt()) ?>
                 </td>
                 <td class="a-center">
                 <?php if($item->isSaleable()): ?>
-                    <a href="#" onclick="setLocation('<?php echo $this->getItemAddToCartUrl($item) ?>');return false;" class="link-cart"><?php echo $this->__('Add to Cart') ?></a><br/>
+                    <a href="#" onclick="setLocation('<?php echo $this->getItemAddToCartUrl($item) ?>');return false;" class="link-cart"><?php echo $this->__('Add to Cart') ?></a><br />
                 <?php endif; ?>
                     <a href="#" onclick="confirmRemoveWishlistItem('<?php echo $this->getItemRemoveUrl($item) ?>');return false;" class="link-remove" ><?php echo $this->__('Remove Item') ?></a>
                 </td>

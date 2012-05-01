@@ -21,8 +21,9 @@
 /**
  * Simple product type implementation
  *
- * @category   Mage
- * @package    Mage_Catalog
+ * @category    Mage
+ * @package     Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Product_Type_Simple extends Mage_Catalog_Model_Product_Type_Abstract
 {

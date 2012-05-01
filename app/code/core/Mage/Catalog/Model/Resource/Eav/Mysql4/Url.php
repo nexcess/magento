@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Resource_Eav_Mysql4_Url extends Mage_Core_Model_Mysql4_Abstract
 {
@@ -52,7 +53,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Url extends Mage_Core_Model_Mysql4_
      *
      * @var int
      */
-    protected $_productLimit = 500;
+    protected $_productLimit = 250;
 
     /**
      * Load core Url rewrite model
@@ -71,13 +72,13 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Url extends Mage_Core_Model_Mysql4_
      */
     public function getStores($storeId = null)
     {
-    	if (is_null($this->_stores)) {
-    	    $this->_stores = $this->_prepareStoreRootCategories(Mage::app()->getStores());
-    	}
-    	if ($storeId && isset($this->_stores[$storeId])) {
-    	    return $this->_stores[$storeId];
-    	}
-    	return $this->_stores;
+        if (is_null($this->_stores)) {
+            $this->_stores = $this->_prepareStoreRootCategories(Mage::app()->getStores());
+        }
+        if ($storeId && isset($this->_stores[$storeId])) {
+            return $this->_stores[$storeId];
+        }
+        return $this->_stores;
     }
 
     /**
@@ -527,6 +528,7 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Url extends Mage_Core_Model_Mysql4_
 
     protected function _getCategories($categoryIds, $storeId = null, $path = null)
     {
+        $isActiveAttribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_category', 'is_active');
         $categories = array();
 
         if (!is_array($categoryIds)) {
@@ -534,18 +536,27 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Url extends Mage_Core_Model_Mysql4_
         }
 
         $select = $this->_getWriteAdapter()->select()
-            ->from($this->getTable('catalog/category'), array('entity_id', 'parent_id', 'is_active', 'path'));
+            ->from(array('main_table'=>$this->getTable('catalog/category')), array('main_table.entity_id', 'main_table.parent_id', 'is_active'=>'IFNULL(c.value, d.value)', 'main_table.path'));
+
         if (is_null($path)) {
-            $select->where('entity_id IN(?)', $categoryIds);
+            $select->where('main_table.entity_id IN(?)', $categoryIds);
         }
         else {
-            $select->where('path LIKE ?', $path . '%')
-                ->order('path');
+            $select->where('main_table.path LIKE ?', $path . '%')
+                ->order('main_table.path');
+        }
+        $table = $this->getTable('catalog/category') . '_int';
+        $select->joinLeft(array('d'=>$table), "d.attribute_id = '{$isActiveAttribute->getId()}' AND d.store_id = 0 AND d.entity_id = main_table.entity_id", array())
+            ->joinLeft(array('c'=>$table), "c.attribute_id = '{$isActiveAttribute->getId()}' AND c.store_id = '{$storeId}' AND c.entity_id = main_table.entity_id", array());
+
+        if (!is_null($storeId)) {
+            $rootCategoryPath = $this->getStores($storeId)->getRootCategoryPath();
+            $rootCategoryPathLength = strlen($rootCategoryPath);
         }
 
         $rowSet = $this->_getWriteAdapter()->fetchAll($select);
         foreach ($rowSet as $row) {
-            if (!is_null($storeId) && strpos($row['path'], $this->getStores($storeId)->getRootCategoryPath()) === false) {
+            if (!is_null($storeId) && substr($row['path'], 0, $rootCategoryPathLength) != $rootCategoryPath) {
                 continue;
             }
 

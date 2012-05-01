@@ -26,6 +26,7 @@
  *
  * @category   Mage
  * @package    Mage_Dataflow
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Dataflow_Model_Convert_Validator_Dryrun extends Mage_Dataflow_Model_Convert_Validator_Abstract
 {
@@ -33,7 +34,7 @@ class Mage_Dataflow_Model_Convert_Validator_Dryrun extends Mage_Dataflow_Model_C
     public function validate()
     {
         if ($this->getVar('dry_run') || $this->getProfile()->getDryRun()) {
-            $this->addException(__("Dry run set, stopping execution"), Mage_Dataflow_Model_Convert_Exceptin::FATAL);
+            $this->addException(Mage::helper('dataflow')->__("Dry run set, stopping execution"), Mage_Dataflow_Model_Convert_Exceptin::FATAL);
         }
         return $this;
     }

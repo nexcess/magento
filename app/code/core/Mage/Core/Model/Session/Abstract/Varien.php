@@ -23,9 +23,9 @@ class Mage_Core_Model_Session_Abstract_Varien extends Varien_Object
 {
     public function start($sessionName=null)
     {
-    	if (isset($_SESSION)) {
-    		return $this;
-    	}
+        if (isset($_SESSION)) {
+            return $this;
+        }
 
         Varien_Profiler::start(__METHOD__.'/setOptions');
         if (is_writable(Mage::getBaseDir('session'))) {
@@ -33,25 +33,37 @@ class Mage_Core_Model_Session_Abstract_Varien extends Varien_Object
         }
         Varien_Profiler::stop(__METHOD__.'/setOptions');
 
-        session_module_name('files');
-/*
-        $sessionResource = Mage::getResourceSingleton('core/session');
-        $sessionResource->setSaveHandler();
-*/
+        if ($this->getSessionSaveMethod() == 'files') {
+            session_module_name('files');
+        }
+        else {
+            ini_set('session.save_handler', 'user');
+            $sessionResource = Mage::getResourceSingleton('core/session');
+            /* @var $sessionResource Mage_Core_Model_Mysql4_Session */
+            $sessionResource->setSaveHandler();
+        }
 
-		if (!is_null($this->getCookieLifetime())) {
-			ini_set('session.gc_maxlifetime', $this->getCookieLifetime());
-		}
-		if (!is_null($this->getCookiePath())) {
-			ini_set('session.cookie_path', $this->getCookiePath());
-		}
-		if (!is_null($this->getCookieDomain()) && strpos($this->getCookieDomain(), '.')!==false) {
-			ini_set('session.cookie_domain', $this->getCookieDomain());
-		}
+        if (intval($this->getCookieLifetime()) > 0) {
+            ini_set('session.gc_maxlifetime', $this->getCookieLifetime());
+            ini_set('session.cookie_lifetime', $this->getCookieLifetime());
+        } else {
+            /*
+            * if cookie life time is empty or 0, we put 0
+            * session will be time out when we close the browser
+            */
+            ini_set('session.gc_maxlifetime', 3600);
+            ini_set('session.cookie_lifetime', 3600);
+        }
+        if (!is_null($this->getCookiePath())) {
+            ini_set('session.cookie_path', $this->getCookiePath());
+        }
+        if (!is_null($this->getCookieDomain()) && strpos($this->getCookieDomain(), '.')!==false) {
+            ini_set('session.cookie_domain', $this->getCookieDomain());
+        }
 
-		if (!empty($sessionName)) {
-		    session_name($sessionName);
-		}
+        if (!empty($sessionName)) {
+            session_name($sessionName);
+        }
 
         // potential custom logic for session id (ex. switching between hosts)
         $this->setSessionId();
@@ -59,17 +71,42 @@ class Mage_Core_Model_Session_Abstract_Varien extends Varien_Object
         Varien_Profiler::start(__METHOD__.'/start');
 
         session_start();
+
         Varien_Profiler::stop(__METHOD__.'/start');
+
         return $this;
+    }
+
+    public function revalidateCookie()
+    {
+        if (empty($_SESSION['_cookie_revalidate'])) {
+            $time = time() + round(ini_get('session.gc_maxlifetime') / 4);
+            $_SESSION['_cookie_revalidate'] = $time;
+        }
+        else {
+            if ($_SESSION['_cookie_revalidate'] < time()) {
+                setcookie(
+                    session_name(),
+                    session_id(),
+                    time() + ini_get('session.gc_maxlifetime'),
+                    ini_get('session.cookie_path'),
+                    ini_get('session.cookie_domain')
+                );
+
+                $time = time() + round(ini_get('session.gc_maxlifetime') / 4);
+                $_SESSION['_cookie_revalidate'] = $time;
+            }
+        }
     }
 
     public function init($namespace, $sessionName=null)
     {
-    	if (!isset($_SESSION)) {
-    		$this->start($sessionName);
-    	}
+        if (!isset($_SESSION)) {
+            $this->start($sessionName);
+            $this->revalidateCookie($namespace);
+        }
         if (!isset($_SESSION[$namespace])) {
-        	$_SESSION[$namespace] = array();
+            $_SESSION[$namespace] = array();
         }
         $this->_data = &$_SESSION[$namespace];
 
@@ -100,12 +137,23 @@ class Mage_Core_Model_Session_Abstract_Varien extends Varien_Object
 
     public function unsetAll()
     {
-    	$this->unsetData();
-    	return $this;
+        $this->unsetData();
+        return $this;
     }
 
     public function clear()
     {
         return $this->unsetAll();
+    }
+
+    /**
+     * Retrieve session save method
+     * Default files
+     *
+     * @return string
+     */
+    public function getSessionSaveMethod()
+    {
+        return 'files';
     }
 }

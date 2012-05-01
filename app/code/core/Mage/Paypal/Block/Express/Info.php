@@ -30,7 +30,9 @@ class Mage_Paypal_Block_Express_Info extends Mage_Payment_Block_Info
     public function getEmail()
     {
         $p = $this->getInfo();
-        if ($p instanceof Mage_Sales_Model_Quote_Payment) {
+        if ($p->getAdditionalData()) {
+            $email = $p->getAdditionalData();
+        } elseif ($p instanceof Mage_Sales_Model_Quote_Payment) {
             $email = $p->getQuote()->getBillingAddress()->getEmail();
         } elseif ($p instanceof Mage_Sales_Model_Order_Payment) {
             if ($p->getOrder()->getBillingAddress()->getEmail()) {
@@ -43,7 +45,7 @@ class Mage_Paypal_Block_Express_Info extends Mage_Payment_Block_Info
         }
         return $email;
     }
-    
+
     public function toPdf()
     {
         $this->setTemplate('paypal/express/pdf/info.phtml');

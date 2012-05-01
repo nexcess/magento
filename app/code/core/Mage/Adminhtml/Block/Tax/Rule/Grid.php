@@ -31,48 +31,100 @@ class Mage_Adminhtml_Block_Tax_Rule_Grid extends Mage_Adminhtml_Block_Widget_Gri
 
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('tax/rule')
-            ->getCollection()
-            ->joinClassTable()
-            ->joinRateTypeTable();
+        $collection = Mage::getModel('tax/calculation_rule')
+            ->getCollection();
         $this->setCollection($collection);
-        return parent::_prepareCollection();
+        parent::_prepareCollection();
+        if ($this->getCollection()) {
+            $this->getCollection()
+                ->addCustomerTaxClassesToResult()
+                ->addProductTaxClassesToResult()
+                ->addRatesToResult();
+        }
+        return $this;
+    }
+
+    protected function _addColumnFilterToCollection($column)
+    {
+        if ($this->getCollection()) {
+            switch ($column->getId()) {
+                case 'tax_rates':
+                    $this->getCollection()->joinCalculationData('rate');
+                    break;
+
+                case 'customer_tax_classes':
+                    $this->getCollection()->joinCalculationData('ctc');
+                    break;
+
+                case 'product_tax_classes':
+                    $this->getCollection()->joinCalculationData('ptc');
+                    break;
+
+            }
+        }
+        return parent::_addColumnFilterToCollection($column);
     }
 
     protected function _prepareColumns()
     {
-        $this->addColumn('tax_rule_id',
+        $this->addColumn('code',
             array(
-                'header'=>Mage::helper('tax')->__('ID'),
-                'align' =>'right',
-                'width' => '50px',
-                'index' => 'tax_rule_id'
+                'header'=>Mage::helper('tax')->__('Name'),
+                'align' =>'left',
+                'index' => 'code',
+                'filter_index' => 'code',
             )
         );
 
-        $this->addColumn('customer_class_name',
+        $this->addColumn('customer_tax_classes',
             array(
                 'header'=>Mage::helper('tax')->__('Customer Tax Class'),
+                'sortable'  => false,
                 'align' =>'left',
-                'index' => 'class_customer_name',
-                'filter_index' => 'class_customer_name',
+                'index' => 'customer_tax_classes',
+                'filter_index' => 'ctc.customer_tax_class_id',
+                'type'    => 'options',
+                'options' => Mage::getModel('tax/class')->getCollection()->setClassTypeFilter('CUSTOMER')->toOptionHash(),
             )
         );
 
-        $this->addColumn('product_class_name',
+        $this->addColumn('product_tax_classes',
             array(
                 'header'=>Mage::helper('tax')->__('Product Tax Class'),
+                'sortable'  => false,
                 'align' =>'left',
-                'index' => 'class_product_name',
-                'filter_index' => 'class_product_name',
+                'index' => 'product_tax_classes',
+                'filter_index' => 'ptc.product_tax_class_id',
+                'type'    => 'options',
+                'options' => Mage::getModel('tax/class')->getCollection()->setClassTypeFilter('PRODUCT')->toOptionHash(),
             )
         );
 
-        $this->addColumn('type_name',
+        $this->addColumn('tax_rates',
             array(
-                'header'=>Mage::helper('tax')->__('Tax Rate'),
-                'align' =>'left',
-                'index' => 'rate_type_name'
+                'sortable'  => false,
+                'header'  => Mage::helper('tax')->__('Tax Rate'),
+                'align'   => 'left',
+                'index'   => 'tax_rates',
+                'filter_index' => 'rate.tax_calculation_rate_id',
+                'type'    => 'options',
+                'options' => Mage::getModel('tax/calculation_rate')->getCollection()->toOptionHash(),
+            )
+        );
+
+        $this->addColumn('priority',
+            array(
+                'header'=>Mage::helper('tax')->__('Priority'),
+                'width' => '50px',
+                'index' => 'priority'
+            )
+        );
+
+        $this->addColumn('position',
+            array(
+                'header'=>Mage::helper('tax')->__('Sort Order'),
+                'width' => '50px',
+                'index' => 'position'
             )
         );
 
@@ -83,7 +135,7 @@ class Mage_Adminhtml_Block_Tax_Rule_Grid extends Mage_Adminhtml_Block_Widget_Gri
 
     public function getRowUrl($row)
     {
-        return $this->getUrl('*/*/edit', array('rule' => $row->getTaxRuleId()));
+        return $this->getUrl('*/*/edit', array('rule' => $row->getId()));
     }
 
 }

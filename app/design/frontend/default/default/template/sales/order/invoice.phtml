@@ -49,78 +49,7 @@ function giftMessageToogle(giftMessageIdentifier)
 }
 </script>
 <?php endif; ?>
-<?php  $_order = $this->getOrder() ?>
-<a href="<?php echo $this->getPrintAllInvoicesUrl($_order) ?>" target="_blank"><?php echo $this->__('Print All Invoices') ?></a>
-<?php foreach ($_order->getInvoiceCollection() as $_invoice): ?>
-<br />
-<div class="head">
-    <h3><?php echo $this->__('Invoice #') ?><?php echo $_invoice->getIncrementId(); ?></h3>
-    <a href="<?php echo $this->getPrintInvoiceUrl($_invoice) ?>" target="_blank"><?php echo $this->__('Print Invoice') ?></a>
-</div>
-
-<h4><?php echo $this->__('Items Invoiced') ?></h4>
-<table cellspacing="0" class="data-table" id="my-orders-table-<?php echo $_invoice->getId(); ?>">
-    <col/>
-    <col width="15%"/>
-    <col width="10%"/>
-    <col width="20%"/>
-    <thead>
-        <tr>
-            <th><?php echo $this->__('Product Name') ?></th>
-            <th width="10%"><?php echo $this->__('SKU') ?></th>
-            <th width="10%"><?php echo $this->__('Price') ?></th>
-            <th class="a-center" width="10%"><?php echo $this->__('Qty Invoiced') ?></th>
-            <th class="a-right" width="15%"><?php echo $this->__('Subtotal') ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php $_items = $_invoice->getAllItems(); ?>
-        <?php $_count = count($_items) ?>
-        <?php $_index = 0; ?>
-        <?php foreach ($_items as $_item): ?>
-            <tr <?php echo ($_index++ > $_count ? ' class="last"' : '') ?> id="order-item-row-<?php echo $_item->getId() ?>">
-                <td>
-                    <?php echo $this->htmlEscape($_item->getName()) ?>
-                    <?php echo $_item->getDescription() ?>
-                </td>
-                <td><?php echo $_item->getSku() ?></td>
-                <td class="a-right nowrap"><?php echo $_order->formatPrice($_item->getPrice()) ?> </td>
-                <td class="a-center"><?php echo $_item->getQty()*1 ?> </td>
-                <td class="last a-right nowrap"><?php echo $_order->formatPrice($_item->getRowTotal()) ?> </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="4" class="a-right"><?php echo $this->__('Order Subtotal') ?></td>
-            <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getSubtotal()) ?></td>
-        </tr>
-        <?php if ($_invoice->getDiscountAmount() > 0): ?>
-            <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Discount :') ?></td>
-                <td class="last a-right"><?php echo $_order->formatPrice(0.00 - $_invoice->getDiscountAmount()) ?></td>
-            </tr>
-        <?php endif; ?>
-        <?php if ($_invoice->getTaxAmount() > 0): ?>
-            <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Tax') ?></td>
-                <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getTaxAmount()) ?></td>
-            </tr>
-        <?php endif; ?>
-        <?php if ($_invoice->getShippingAmount() || $_invoice->getShippingDescription()): ?>
-            <tr>
-                <td colspan="4" class="a-right"><?php echo $this->__('Shipping & Handling') ?></td>
-                <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getShippingAmount()) ?></td>
-            </tr>
-        <?php endif; ?>
-        <tr>
-            <td colspan="4" class="a-right"><?php echo $this->__('Grand Total') ?></td>
-            <td class="last a-right"><?php echo $_order->formatPrice($_invoice->getGrandTotal()) ?></td>
-        </tr>
-    </tfoot>
-</table>
-<script type="text/javascript">decorateTable('my-orders-table-<?php echo $_invoice->getId(); ?>')</script>
-<?php endforeach; ?>
+    <?php echo $this->getChildHtml('invoice_items') ?>
 <div class="button-set">
     <a href="<?php echo $this->getBackUrl() ?>" class="left">&laquo; <?php echo $this->__('Back to My Orders') ?></a>
 </div>

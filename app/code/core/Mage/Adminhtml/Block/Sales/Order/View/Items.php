@@ -23,36 +23,20 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Block_Sales_Order_View_Items extends Mage_Adminhtml_Block_Sales_Order_Abstract
+class Mage_Adminhtml_Block_Sales_Order_View_Items extends Mage_Adminhtml_Block_Sales_Items_Abstract
 {
     /**
-     * Initialize template
+     * Retrieve required options from parent
      */
-    protected function _construct()
+    protected function _beforeToHtml()
     {
-        parent::_construct();
-        $this->setTemplate('sales/order/view/items.phtml');
-    }
-
-    protected function _getInfoBlock()
-    {
-        $block = $this->getData('_info_block');
-        if (is_null($block)) {
-            $block = $this->getLayout()->createBlock('adminhtml/sales_order_view_items_info');
-            $this->setData('_info_block', $block);
+        if (!$this->getParentBlock()) {
+            Mage::throwException(Mage::helper('adminhtml')->__('Invalid parrent block for this block'));
         }
-        return $block;
-    }
-
-    /**
-     * REtrieve order instance
-     *
-     * @return Mage_Sales_Model_Order
-     */
-    public function getOrder()
-    {
-        return Mage::registry('sales_order');
+        $this->setOrder($this->getParentBlock()->getOrder());
+        parent::_beforeToHtml();
     }
 
     /**
@@ -63,37 +47,5 @@ class Mage_Adminhtml_Block_Sales_Order_View_Items extends Mage_Adminhtml_Block_S
     public function getItemsCollection()
     {
         return $this->getOrder()->getItemsCollection();
-    }
-
-    /**
-     * Retrieve HTML for information column
-     *
-     * @param   Mage_Sales_Model_Order_Item $item
-     * @return  string
-     */
-    public function renderInfoColumn($item)
-    {
-        $html = $this->_getInfoBlock()
-            ->setEntity($item)
-            ->toHtml();
-        return $html;
-    }
-
-    protected function _getQtyBlock()
-    {
-        $block = $this->getData('_qty_block');
-        if (is_null($block)) {
-            $block = $this->getLayout()->createBlock('adminhtml/sales_order_item_qty');
-            $this->setData('_qty_block', $block);
-        }
-        return $block;
-    }
-
-    public function getQtyHtml($item)
-    {
-        $html = $this->_getQtyBlock()
-            ->setItem($item)
-            ->toHtml();
-        return $html;
     }
 }

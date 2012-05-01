@@ -24,11 +24,11 @@
 <?php if( $this->getCollection() && $this->count()): ?>
     <?php echo $this->getToolbarHtml() ?>
         <table class="data-table box-table" id="my-reviews-table" cellspacing="0">
-            <col width="60"/>
-            <col width="200"/>
-            <col width="80"/>
-            <col/>
-            <col width="100"/>
+            <col width="60" />
+            <col width="200" />
+            <col width="80" />
+            <col />
+            <col width="100" />
             <tbody>
                 <?php foreach ($this->getCollection() as $_review): ?>
                 <tr>
@@ -53,5 +53,5 @@
     <p><?php echo $this->__('You have submitted no reviews.') ?></p>
 <?php endif; ?>
 <div class="button-set">
-    <a href="<?php echo $this->getUrl('customer/account/') ?>" class="left">&laquo;<?php echo $this->__('Back') ?></a>
+    <a href="<?php echo $this->getBackUrl() ?>" class="left">&laquo;<?php echo $this->__('Back') ?></a>
 </div>

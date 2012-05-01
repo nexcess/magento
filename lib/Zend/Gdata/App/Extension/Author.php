@@ -22,7 +22,7 @@
 /**
  * @see Zend_Gdata_App_Extension
  */
-require_once 'Zend/Gdata/App/Extension/Person.php';
+#require_once 'Zend/Gdata/App/Extension/Person.php';
 
 /**
  * Represents the atom:author element

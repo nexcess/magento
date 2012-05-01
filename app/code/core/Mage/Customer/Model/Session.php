@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Model_Session extends Mage_Core_Model_Session_Abstract
 {
@@ -90,7 +91,7 @@ class Mage_Customer_Model_Session extends Mage_Core_Model_Session_Abstract
      */
     public function isLoggedIn()
     {
-        return (bool)$this->getId();
+        return (bool)$this->getId() && (bool)$this->getCustomer()->getId();
     }
 
     /**

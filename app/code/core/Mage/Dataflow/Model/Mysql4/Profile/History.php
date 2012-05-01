@@ -23,6 +23,7 @@
  *
  * @category   Mage
  * @package    Mage_Dataflow
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Dataflow_Model_Mysql4_Profile_History extends Mage_Core_Model_Mysql4_Abstract
 {

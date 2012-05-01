@@ -29,12 +29,18 @@ if (!file_exists($mageFilename)) {
     if (is_dir('downloader')) {
         header("Location: downloader");
     } else {
-        echo "app/Mage.php not found";
+        echo $mageFilename." was not found";
     }
     exit;
 }
 
 require_once $mageFilename;
 
+Varien_Profiler::enable();
+
+Mage::setIsDeveloperMode(true);
+
+ini_set('display_errors', 1);
+
 umask(0);
-Mage::run('default');
+Mage::run();

@@ -21,6 +21,7 @@
 /**
  * Newsletter module observer
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Newsletter_Model_Observer
 {

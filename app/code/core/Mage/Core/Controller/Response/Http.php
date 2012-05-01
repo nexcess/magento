@@ -22,6 +22,7 @@
 /**
  * Custom Zend_Controller_Response_Http class (formally)
  *
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Core_Controller_Response_Http extends Zend_Controller_Response_Http
 {

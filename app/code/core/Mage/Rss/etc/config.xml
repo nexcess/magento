@@ -23,12 +23,6 @@
    <modules>
       <Mage_Rss>
          <version>0.8.0</version>
-         <depends>
-            <Mage_Catalog />
-            <Mage_CatalogInventory />
-            <Mage_Sales />
-            <Mage_Wishlist />
-         </depends>
       </Mage_Rss>
    </modules>
    <global>
@@ -46,7 +40,40 @@
       </blocks>
    </global>
 
+   <admin>
+      <routers>
+         <rss>
+            <use>admin</use>
+            <args>
+               <module>Mage_Rss</module>
+               <frontName>rss</frontName>
+            </args>
+         </rss>
+      </routers>
+   </admin>
+
+   <adminhtml>
+        <translate>
+            <modules>
+                <Mage_Rss>
+                    <files>
+                        <default>Mage_Rss.csv</default>
+                    </files>
+                </Mage_Rss>
+            </modules>
+        </translate>
+    </adminhtml>
+
    <frontend>
+        <translate>
+            <modules>
+                <Mage_Rss>
+                    <files>
+                        <default>Mage_Rss.csv</default>
+                    </files>
+                </Mage_Rss>
+            </modules>
+        </translate>
       <secure_url>
           <rss_catalog_review>/rss/catalog/review</rss_catalog_review>
            <rss_order_new>/rss/catalog/review</rss_order_new>

@@ -24,6 +24,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Customer_Block_Address_Renderer_Default extends Mage_Core_Block_Abstract implements Mage_Customer_Block_Address_Renderer_Interface
 {
@@ -56,24 +57,24 @@ class Mage_Customer_Block_Address_Renderer_Default extends Mage_Core_Block_Abstr
         return $this;
     }
 
+    public function getFormat(Mage_Customer_Model_Address_Abstract $address=null)
+    {
+        $countryFormat = is_null($address) ? false : $address->getCountryModel()->getFormat($this->getType()->getCode());
+        $format = $countryFormat ? $countryFormat->getFormat() : $this->getType()->getDefaultFormat();
+        return $format;
+    }
+
     /**
      * Render address
      *
      * @param Mage_Customer_Model_Address_Abstract $address
      * @return string
      */
-    public function render(Mage_Customer_Model_Address_Abstract $address)
+    public function render(Mage_Customer_Model_Address_Abstract $address, $format=null)
     {
-        $format        = $this->getType()->getDefaultFormat();
-        $countryFormat = $address->getCountryModel()->getFormat($this->getType()->getCode());
-
         $address->getRegion();
         $address->getCountry();
         $address->explodeStreetAddress();
-
-        if ($countryFormat) {
-            $format = $countryFormat->getFormat();
-        }
 
         $formater = new Varien_Filter_Template();
         $data = $address->getData();
@@ -83,6 +84,9 @@ class Mage_Customer_Block_Address_Renderer_Default extends Mage_Core_Block_Abstr
             }
         }
         $formater->setVariables(array_merge($data, array('country'=>$address->getCountryModel()->getName())));
+
+        $format = !is_null($format) ? $format : $this->getFormat($address);
+
         return $formater->filter($format);
     }
 

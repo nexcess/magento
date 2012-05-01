@@ -64,10 +64,14 @@
         </tr>
         <?php endif; ?>
         <?php if ((float) $_source->getTaxAmount()): ?>
-        <tr>
-            <td class="label"><?php echo Mage::helper('sales')->__('Tax') ?></td>
-            <td><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
-        </tr>
+            <?php if ($this->getChild('order_totals_tax')): ?>
+                <?php echo $this->getChildHtml('order_totals_tax'); ?>
+            <?php else: ?>
+            <tr>
+                <td class="label"><?php echo Mage::helper('sales')->__('Tax') ?></td>
+                <td><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
+            </tr>
+            <?php endif; ?>
         <?php endif; ?>
 
         <?php if ((float) $_source->getShippingAmount() || $_source->getShippingDescription()): ?>

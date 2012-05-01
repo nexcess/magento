@@ -24,17 +24,17 @@
 /**
  * Zend_InfoCard_Cipher_Symmetric_Adapter_Abstract
  */
-require_once 'Zend/InfoCard/Cipher/Symmetric/Adapter/Abstract.php';
+#require_once 'Zend/InfoCard/Cipher/Symmetric/Adapter/Abstract.php';
 
 /**
  * Zend_InfoCard_Cipher_Symmetric_Aes256cbc_Interface
  */
-require_once 'Zend/InfoCard/Cipher/Symmetric/Aes256cbc/Interface.php';
+#require_once 'Zend/InfoCard/Cipher/Symmetric/Aes256cbc/Interface.php';
 
 /**
  * Zend_InfoCard_Cipher_Exception
  */
-require_once 'Zend/InfoCard/Cipher/Exception.php';
+#require_once 'Zend/InfoCard/Cipher/Exception.php';
 
 /**
  * Implements AES256 with CBC encryption implemented using the mCrypt extension

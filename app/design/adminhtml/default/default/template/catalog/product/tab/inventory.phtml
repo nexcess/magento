@@ -25,8 +25,23 @@
     <fieldset>
 
         <legend><?php echo Mage::helper('catalog')->__('Inventory') ?></legend>
-        <table cellspacing="0" class="form-list">
-<?php if(!$this->getProduct()->isConfigurable() && !$this->getProduct()->isGrouped()): ?>
+        <table cellspacing="0" class="form-list" id="table_cataloginventory">
+        <tr>
+            <td class="label"><label for="inventory_manage_stock"><?php echo Mage::helper('catalog')->__('Manage Stock') ?></label></td>
+            <td class="value"><select id="inventory_manage_stock" name="<?php echo $this->getFieldSuffix() ?>[stock_data][manage_stock]" class="select">
+                <option value="1"><?php echo Mage::helper('catalog')->__('Yes') ?></option>
+                <option value="0"<?php if ($this->getConfigFieldValue('manage_stock') == 0): ?> selected="selected"<?php endif; ?>><?php echo Mage::helper('catalog')->__('No') ?></option>
+            </select>
+            <input type="hidden" id="inventory_manage_stock_default" value="<?php echo $this->getDefaultConfigValue('manage_stock'); ?>" />
+
+            <?php $_checked = ($this->getFieldValue('use_config_manage_stock') || $this->IsNew()) ? 'checked' : '' ?>
+            <input type="checkbox" id="inventory_use_config_manage_stock" name="<?php echo $this->getFieldSuffix() ?>[stock_data][use_config_manage_stock]" value="1" <?php echo $_checked ?> onclick="toggleValueElements(this, this.parentNode);"/>
+            <label for="inventory_use_config_manage_stock" class="normal"><?php echo Mage::helper('catalog')->__('Use Config Settings') ?></label>
+            <script type="text/javascript">toggleValueElements($('inventory_use_config_manage_stock'), $('inventory_use_config_manage_stock').parentNode);</script></td>
+            <td class="value scope-label"><?php echo Mage::helper('catalog')->__('[GLOBAL]') ?></td>
+        </tr>
+
+<?php if(!$this->getProduct()->isComposite()): ?>
         <tr>
             <td class="label"><label for="inventory_qty"><?php echo Mage::helper('catalog')->__('Qty') ?><span class="required">*</span></label></td>
             <td class="value"><input type="text" class="input-text required-entry validate-number" id="inventory_qty" name="<?php echo $this->getFieldSuffix() ?>[stock_data][qty]" value="<?php echo $this->getFieldValue('qty')*1 ?>"/>
@@ -113,5 +128,34 @@
             <td class="value scope-label"><?php echo Mage::helper('catalog')->__('[GLOBAL]') ?></td>
         </tr>
         </table>
+        <script type="text/javascript">
+function changeManageStockOption()
+{
+    $$('#table_cataloginventory tr').each(manageStockEach);
+    return true;
+}
+function manageStockEach(el)
+{
+    if ($('inventory_use_config_manage_stock').checked) {
+        var manageStock = $('inventory_manage_stock_default').value;
+    }
+    else {
+        var manageStock = $('inventory_manage_stock').value;
+    }
+    if (el == $('inventory_manage_stock').up(1)) {
+        return;
+    }
+    if (manageStock == 1) {
+        el.show();
+    }
+    else {
+        el.hide();
+    }
+    return;
+}
+Event.observe($('inventory_manage_stock'), 'change', changeManageStockOption);
+Event.observe($('inventory_use_config_manage_stock'), 'change', changeManageStockOption);
+changeManageStockOption();
+        </script>
     </fieldset>
 </div>
