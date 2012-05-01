@@ -14,18 +14,18 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 $installer = $this;
 /* @var $installer Mage_Sales_Model_Mysql4_Setup */
 
-$installer->run("
-ALTER TABLE `{$installer->getTable('sales_flat_quote_item')}` DROP COLUMN `super_product_id`, CHANGE COLUMN `parent_product_id` `parent_item_id` INTEGER UNSIGNED DEFAULT NULL;
-ALTER TABLE `{$installer->getTable('sales_flat_quote_item')}` ADD CONSTRAINT `FK_SALES_FLAT_QUOTE_ITEM_PARENT_ITEM` 
-    FOREIGN KEY `FK_SALES_FLAT_QUOTE_ITEM_PARENT_ITEM` (`parent_item_id`)
-    REFERENCES `{$installer->getTable('sales_flat_quote_item')}` (`item_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE;
-");
+$installer->startSetup();
+$installer->getConnection()->dropColumn($installer->getTable('sales_flat_quote_item'), 'super_product_id');
+$installer->getConnection()->changeColumn($installer->getTable('sales_flat_quote_item'), 'parent_product_id', 'parent_item_id', 'INTEGER UNSIGNED DEFAULT NULL');
+$installer->getConnection()->addConstraint('FK_SALES_FLAT_QUOTE_ITEM_PARENT_ITEM',
+    $installer->getTable('sales_flat_quote_item'), 'parent_item_id',
+    $installer->getTable('sales_flat_quote_item'), 'item_id'
+);
+$installer->endSetup();

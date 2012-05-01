@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -163,6 +163,19 @@ class Mage_Catalog_Model_Product_Option_Value extends Mage_Core_Model_Abstract
     {
         $this->getResource()->deleteValues($option_type_id);
         return $this;
+    }
+
+    /**
+     * Prepare array of option values for duplicate
+     *
+     * @return array
+     */
+    public function prepareValueForDuplicate()
+    {
+        $this->setOptionId(null);
+        $this->setOptionTypeId(null);
+
+        return $this->__toArray();
     }
 
 }

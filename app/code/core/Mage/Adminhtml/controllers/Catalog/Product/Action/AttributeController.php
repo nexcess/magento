@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -37,96 +37,122 @@ class Mage_Adminhtml_Catalog_Product_Action_AttributeController extends Mage_Adm
 
     public function editAction()
     {
-        if(!$this->_validateProducts()) {
+        if (!$this->_validateProducts()) {
             return;
         }
-        /* OLD FUNCTINALITY
-        if($countNotInStore = count($this->_getHelper()->getProductsNotInStoreIds())) {
-            // If we have selected products, that not exists in selected store we'll show warning
-            $this->_getSession()->addWarning(
-                $this->__('There is %d product(s) that will be not updated for selected store', $countNotInStore)
-            );
-        } */
 
         $this->loadLayout();
-
-        // Store switcher
-        $this->_addLeft(
-                $this->getLayout()->createBlock('adminhtml/store_switcher')
-                    ->setDefaultStoreName($this->__('Default Values'))
-                    ->setSwitchUrl($this->getUrl('*/*/*', array('_current'=>true, 'store'=>null)))
-        );
-
-        $this->_addLeft(
-            $this->getLayout()->createBlock(
-                'adminhtml/catalog_product_edit_action_attribute_tabs',
-                'attributes_tabs'
-            )
-        );
-
-        $this->_addContent(
-            $this->getLayout()->createBlock('adminhtml/catalog_product_edit_action_attribute')
-        );
-
         $this->renderLayout();
     }
 
     public function saveAction()
     {
-        if(!$this->_validateProducts()) {
+        if (!$this->_validateProducts()) {
             return;
         }
 
-        // Attributes values for massupdate
-        $data = $this->getRequest()->getParam('attributes');
-
-        if(!is_array($data)) {
-            $data = array();
-        }
+        /* Collect Data */
+        $inventoryData = $this->getRequest()->getParam('inventory', array());
+        $attributesData = $this->getRequest()->getParam('attributes', array());
+        $websiteRemoveData = $this->getRequest()->getParam('remove_website_ids', array());
+        $websiteAddData = $this->getRequest()->getParam('add_website_ids', array());
 
         try {
-            $productIds = array();
-            $product = Mage::getModel('catalog/product');
+            if ($attributesData) {
+                $product = Mage::getModel('catalog/product');
+                if ($inventoryData) {
+                    $stockItem = Mage::getModel('cataloginventory/stock_item');
+                }
+                foreach ($this->_getHelper()->getProductIds() as $productId) {
+                    $product->setData(array());
+                    $product->setStoreId($this->_getHelper()->getSelectedStoreId())
+                        ->load($productId)
+                        ->setIsMassupdate(true)
+                        ->setExcludeUrlRewrite(true);
 
-            foreach ($this->_getHelper()->getProductIds() as $productId) {
-                $product->setData(array());
-                $product->setStoreId($this->_getHelper()->getSelectedStoreId())
-                    ->load($productId)
-                    ->addData($data)
-                    ->setIsMassupdate(true);
+                    if (!$product->getId()) {
+                        continue;
+                    }
 
-                if (!$product->getId()) {
-                    continue;
+                    $product->addData($attributesData);
+                    if ($inventoryData) {
+                        $product->setStockData($inventoryData);
+                    }
+
+                    $dataChanged = false;
+                    foreach ($attributesData as $k => $v) {
+                        if ($product->dataHasChangedFor($k)) {
+                            $dataChanged = true;
+                        }
+                    }
+
+                    if ($dataChanged) {
+                        $product->save();
+                    }
+                    elseif ($inventoryData) {
+                        $stockItem->setData(array());
+                        $stockItem->loadByProduct($productId)
+                            ->setProductId($productId);
+                        $stockDataChanged = false;
+                        foreach ($inventoryData as $k => $v) {
+                            $stockItem->setDataUsingMethod($k, $v);
+                            if ($stockItem->dataHasChangedFor($k)) {
+                                $stockDataChanged = true;
+                            }
+                        }
+                        if ($stockDataChanged) {
+                            $stockItem->save();
+                        }
+                    }
+                }
+            }
+            elseif ($inventoryData) {
+                $stockItem = Mage::getModel('cataloginventory/stock_item');
+
+                foreach ($this->_getHelper()->getProductIds() as $productId) {
+                    $stockItem->setData(array());
+                    $stockItem->loadByProduct($productId)
+                        ->setProductId($productId);
+
+                    $stockDataChanged = false;
+                    foreach ($inventoryData as $k => $v) {
+                        $stockItem->setDataUsingMethod($k, $v);
+                        if ($stockItem->dataHasChangedFor($k)) {
+                            $stockDataChanged = true;
+                        }
+                    }
+                    if ($stockDataChanged) {
+                        $stockItem->save();
+                    }
+                }
+            }
+
+            if ($websiteAddData || $websiteRemoveData) {
+                $productWebsite = Mage::getModel('catalog/product_website');
+                /* @var $productWebsite Mage_Catalog_Model_Product_Website */
+
+                if ($websiteRemoveData) {
+                    $productWebsite->removeProducts($websiteRemoveData, $this->_getHelper()->getProductIds());
+                }
+                if ($websiteAddData) {
+                    $productWebsite->addProducts($websiteAddData, $this->_getHelper()->getProductIds());
                 }
 
-                $product->save();
-                $productIds[] = $product->getId();
+                $this->_getSession()->addNotice(
+                    $this->__('Please refresh "Catalog Rewrites" and "Layered Navigation Indices" in System -> <a href="%s">Cache Management</a>', $this->getUrl('adminhtml/system_cache'))
+                );
             }
-
-            $productWebsiteModel = Mage::getModel('catalog/product_website');
-
-            if ($removeWebsiteIds = $this->getRequest()->getParam('remove_website_ids', false)) {
-                $productWebsiteModel->removeProducts($removeWebsiteIds, $productIds);
-            }
-
-            if ($addWebsiteIds = $this->getRequest()->getParam('add_website_ids', false)) {
-                $productWebsiteModel->addProducts($addWebsiteIds, $productIds);
-            }
-
-            Mage::dispatchEvent('catalog_product_massupdate_after', array('products'=>$productIds));
 
             $this->_getSession()->addSuccess(
                 $this->__('Total of %d record(s) were successfully updated',
-                count($productIds))
+                count($this->_getHelper()->getProductIds()))
             );
         }
         catch (Mage_Core_Exception $e) {
             $this->_getSession()->addError($e->getMessage());
         }
         catch (Exception $e) {
-            $this->_getSession()->addError(
-                $this->__('There was an error while updating product(s) attributes')
-            );
+            $this->_getSession()->addException($e, $this->__('There was an error while updating product(s) attributes'));
         }
 
         $this->_redirect('*/catalog_product/', array('store'=>$this->_getHelper()->getSelectedStoreId()));
@@ -139,7 +165,7 @@ class Mage_Adminhtml_Catalog_Product_Action_AttributeController extends Mage_Adm
      */
     protected function _validateProducts()
     {
-        if(!is_array($this->_getHelper()->getProductIds())) {
+        if (!is_array($this->_getHelper()->getProductIds())) {
             $this->_getSession()->addError($this->__('Please select products for attributes update'));
             $this->_redirect('*/catalog_product/', array('_current'=>true));
             return false;

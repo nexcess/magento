@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -230,16 +230,10 @@ class Mage_Sales_Model_Order_Payment extends Mage_Payment_Model_Info
      */
     protected function _invoice()
     {
-        $convertor = Mage::getModel('sales/convert_order');
-        $invoice = $convertor->toInvoice($this->getOrder());
-        foreach ($this->getOrder()->getAllItems() as $orderItem) {
-            $invoiceItem = $convertor->itemToInvoiceItem($orderItem)
-               ->setQty($orderItem->getQtyToInvoice());
-            $invoice->addItem($invoiceItem);
-        }
-        $invoice->collectTotals()
-            ->register()
-            ->capture();
+        $invoice = $this->getOrder()->prepareInvoice();
+
+        $invoice->register()->capture();
+
         $this->getOrder()->addRelatedObject($invoice);
         return $invoice;
     }

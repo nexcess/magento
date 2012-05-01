@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -196,6 +196,22 @@ class Mage_Catalog_Model_Convert_Adapter_Product
     }
 
     /**
+     *  Init stores
+     *
+     *  @param    none
+     *  @return	  void
+     */
+    protected function _initStores ()
+    {
+        if (is_null($this->_stores)) {
+            $this->_stores = Mage::app()->getStores(true, true);
+            foreach ($this->_stores as $code => $store) {
+                $this->_storesIdCode[$store->getId()] = $code;
+            }
+        }
+    }
+
+    /**
      * Retrieve store object by code
      *
      * @param string $store
@@ -203,11 +219,24 @@ class Mage_Catalog_Model_Convert_Adapter_Product
      */
     public function getStoreByCode($store)
     {
-        if (is_null($this->_stores)) {
-            $this->_stores = Mage::app()->getStores(true, true);
-        }
+        $this->_initStores();
         if (isset($this->_stores[$store])) {
             return $this->_stores[$store];
+        }
+        return false;
+    }
+
+    /**
+     * Retrieve store object by code
+     *
+     * @param string $store
+     * @return Mage_Core_Model_Store
+     */
+    public function getStoreById($id)
+    {
+        $this->_initStores();
+        if (isset($this->_storesIdCode[$id])) {
+            return $this->getStoreByCode($this->_storesIdCode[$id]);
         }
         return false;
     }
@@ -423,11 +452,15 @@ class Mage_Catalog_Model_Convert_Adapter_Product
         }
 
         if (empty($importData['store'])) {
-            $message = Mage::helper('catalog')->__('Skip import row, required field "%s" not defined', 'store');
-            Mage::throwException($message);
+            if (!is_null($this->getBatchParams('store'))) {
+                $store = $this->getStoreById($this->getBatchParams('store'));
+            } else {
+                $message = Mage::helper('catalog')->__('Skip import row, required field "%s" not defined', 'store');
+                Mage::throwException($message);
+            }
+        } else {
+            $store = $this->getStoreByCode($importData['store']);
         }
-
-        $store = $this->getStoreByCode($importData['store']);
 
         if ($store === false) {
             $message = Mage::helper('catalog')->__('Skip import row, store "%s" field not exists', $importData['store']);
@@ -537,7 +570,7 @@ class Mage_Catalog_Model_Convert_Adapter_Product
                 $setValue = array();
             }
 
-            if ($attribute->getBackendType() == 'decimal') {
+            if ($value && $attribute->getBackendType() == 'decimal') {
                 $setValue = $this->getNumber($value);
             }
 

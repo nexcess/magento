@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -26,12 +26,13 @@
  * @package    Mage_Adminhtml
  * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tab_Attributes extends Mage_Adminhtml_Block_Catalog_Form
+class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tab_Attributes
+    extends Mage_Adminhtml_Block_Catalog_Form
+    implements Mage_Adminhtml_Block_Widget_Tab_Interface
 {
-
-    public function __construct()
+    protected function _construct()
     {
-        parent::__construct();
+        parent::_construct();
         $this->setShowGlobalIcon(true);
     }
 
@@ -89,4 +90,26 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tab_Attributes 
                 <script type="text/javascript">initDisableFields(\''.$element->getId().'\')</script>';
     }
 
+    /**
+     * ######################## TAB settings #################################
+     */
+    public function getTabLabel()
+    {
+        return Mage::helper('catalog')->__('Attributes');
+    }
+
+    public function getTabTitle()
+    {
+        return Mage::helper('catalog')->__('Attributes');
+    }
+
+    public function canShowTab()
+    {
+        return true;
+    }
+
+    public function isHidden()
+    {
+        return false;
+    }
 }

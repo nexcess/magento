@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -46,11 +46,35 @@ class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml
             $storeIds = '';
         }
 
-        $collection = Mage::getResourceModel('reports/quote_collection')
-            ->prepareForAbandonedReport($storeIds);
+        $collection = Mage::getResourceModel('reports/quote_collection');
+
+        $filter = $this->getParam($this->getVarNameFilter(), array());
+        if ($filter) {
+            $filter = base64_decode($filter);
+            parse_str(urldecode($filter), $data);
+        }
+
+        if (!empty($data)) {
+            $collection->prepareForAbandonedReport($storeIds, $data);
+        } else {
+            $collection->prepareForAbandonedReport($storeIds);
+        }
 
         $this->setCollection($collection);
         return parent::_prepareCollection();
+    }
+
+    protected function _addColumnFilterToCollection($column)
+    {
+        $field = ( $column->getFilterIndex() ) ? $column->getFilterIndex() : $column->getIndex();
+        $skip = array('subtotal', 'customer_name', 'email'/*, 'created_at', 'updated_at'*/);
+
+        if (in_array($field, $skip)) {
+            return $this;
+        }
+
+        parent::_addColumnFilterToCollection($column);
+        return $this;
     }
 
     protected function _prepareColumns()
@@ -107,6 +131,7 @@ class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml
             'width'     =>'170px',
             'type'      =>'datetime',
             'index'     =>'created_at',
+            'filter_index'=>'main_table.created_at',
             'sortable'  =>false
         ));
 
@@ -115,6 +140,7 @@ class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml
             'width'     =>'170px',
             'type'      =>'datetime',
             'index'     =>'updated_at',
+            'filter_index'=>'main_table.updated_at',
             'sortable'  =>false
         ));
 
@@ -132,8 +158,7 @@ class Mage_Adminhtml_Block_Report_Shopcart_Abandoned_Grid extends Mage_Adminhtml
     public function getRowClickCallback(){
         return "function(grid, evt) {
             var trElement = Event.findElement(evt, 'tr');
-            console.log(trElement);
-            if(trElement){
+            if(trElement && trElement.id != ''){
                 var newWindow = window.open(trElement.id, '_blank');
                 newWindow.focus();
             }}";

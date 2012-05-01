@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -358,6 +358,27 @@ class Mage_Catalog_Model_Product_Option extends Mage_Core_Model_Abstract
             ->getValuesByOption($optionIds, $this->getId(), $store_id);
 
         return $collection;
+    }
+
+    /**
+     * Prepare array of options for duplicate
+     *
+     * @return array
+     */
+    public function prepareOptionForDuplicate()
+    {
+        $this->setProductId(null);
+        $this->setOptionId(null);
+        $newOption = $this->__toArray();
+        if ($_values = $this->getValues()) {
+            $newValuesArray = array();
+            foreach ($_values as $_value) {
+                $newValuesArray[] = $_value->prepareValueForDuplicate();
+            }
+            $newOption['values'] = $newValuesArray;
+        }
+
+        return $newOption;
     }
 
 }

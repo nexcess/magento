@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -808,6 +808,7 @@ class Mage_Core_Model_App
         if (!$this->_frontController) {
             $this->_initFrontController();
         }
+        
         return $this->_frontController;
     }
 
@@ -1084,6 +1085,7 @@ class Mage_Core_Model_App
                 continue;
             }
             foreach ($events[$eventName]['observers'] as $obsName=>$obs) {
+            
                 $observer->setData(array('event'=>$event));
                 Varien_Profiler::start('OBSERVER: '.$obsName);
                 switch ($obs['type']) {

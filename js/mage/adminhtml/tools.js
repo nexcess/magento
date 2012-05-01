@@ -11,7 +11,7 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 function setLocation(url){
@@ -94,7 +94,7 @@ function imagePreview(element){
 function toggleValueElements(checkbox, container){
     if(container && checkbox){
         //var elems = container.getElementsBySelector('select', 'input');
-        var elems = Element.getElementsBySelector(container, ['select', 'input', 'textarea', 'button']);
+        var elems = Element.getElementsBySelector(container, ['select', 'input', 'textarea', 'button', 'img']);
         elems.each(function (elem) {
             if(elem!=checkbox) {
                 elem.disabled=checkbox.checked;
@@ -102,6 +102,9 @@ function toggleValueElements(checkbox, container){
                     elem.addClassName('disabled');
                 } else {
                     elem.removeClassName('disabled');
+                }
+                if(elem.tagName == 'IMG') {
+                    checkbox.checked ? elem.hide() : elem.show();
                 }
             };
         })
@@ -203,7 +206,7 @@ if (!navigator.appVersion.match('MSIE 6.')) {
 
     function floatingTopButtonToolbarToggle() {
 
-        if (!header || !header_copy.parentNode) {
+        if (!header || !header_copy || !header_copy.parentNode) {
             return;
         }
         var s;

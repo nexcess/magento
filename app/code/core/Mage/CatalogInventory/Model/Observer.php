@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogInventory
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -27,6 +27,14 @@
  */
 class Mage_CatalogInventory_Model_Observer
 {
+    /**
+     * Product qty's checked
+     * data is valid if you check quote item qty and use singleton instance
+     *
+     * @var array
+     */
+    protected $_checkedProductsQty = array();
+
     /**
      * Add stock information to product
      *
@@ -155,8 +163,8 @@ class Mage_CatalogInventory_Model_Observer
                 if (!$stockItem instanceof Mage_CatalogInventory_Model_Stock_Item) {
                     Mage::throwException(Mage::helper('cataloginventory')->__('Stock item for Product in option is not valid'));
                 }
-
-                $result = $stockItem->checkQuoteItemQty($optionQty);
+                $qtyForCheck = $this->_getProductQtyForCheck($option->getProduct()->getId(), $optionQty);
+                $result = $stockItem->checkQuoteItemQty($optionQty, $qtyForCheck);
 
                 if (!is_null($result->getItemIsQtyDecimal())) {
                     $option->setIsQtyDecimal($result->getItemIsQtyDecimal());
@@ -173,6 +181,8 @@ class Mage_CatalogInventory_Model_Observer
 
                 if ($result->getHasError()) {
                     $option->setHasError(true);
+                    $item->setHasError(true)
+                        ->setMessage($result->getQuoteMessage());
                     $item->getQuote()->setHasError(true)
                         ->addMessage($result->getQuoteMessage(), $result->getQuoteMessageIndex());
                 }
@@ -185,7 +195,14 @@ class Mage_CatalogInventory_Model_Observer
                 Mage::throwException(Mage::helper('cataloginventory')->__('Stock item for Product is not valid'));
             }
 
-            $result = $stockItem->checkQuoteItemQty($qty);
+            if ($item->getParentItem()) {
+            	$qtyForCheck = $item->getParentItem()->getQty()*$qty;
+            }
+            else {
+            	$qtyForCheck = $this->_getProductQtyForCheck($item->getProduct()->getId(), $qty);
+            }
+
+            $result = $stockItem->checkQuoteItemQty($qty, $qtyForCheck);
             if (!is_null($result->getItemIsQtyDecimal())) {
                 $item->setIsQtyDecimal($result->getItemIsQtyDecimal());
             }
@@ -210,22 +227,23 @@ class Mage_CatalogInventory_Model_Observer
         }
 
         return $this;
+    }
 
-        /**
-         * Try retrieve stock item object from product
-         */
-        if ($item->getProduct() && $item->getProduct()->getStockItem()) {
-            $stockItem = $item->getProduct()->getStockItem();
+    /**
+     * Get product qty includes information from all quote items
+     * Need be used only in sungleton mode
+     *
+     * @param int $productId
+     * @param float $itemQty
+     */
+    protected function _getProductQtyForCheck($productId, $itemQty)
+    {
+        $qty = $itemQty;
+        if (isset($this->_checkedProductsQty[$productId])) {
+        	$qty+= $this->_checkedProductsQty[$productId];
         }
-        elseif ($item->getStockItem()){
-            $stockItem = $item->getStockItem();
-        }
-        else{
-            $stockItem = Mage::getModel('cataloginventory/stock_item');
-        }
-
-        $stockItem->checkQuoteItemQty($item);
-        return $this;
+    	$this->_checkedProductsQty[$productId] = $qty;
+        return $qty;
     }
 
     /**

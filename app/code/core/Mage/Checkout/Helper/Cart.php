@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -55,25 +55,32 @@ class Mage_Checkout_Helper_Cart extends Mage_Core_Helper_Url
             /**
              * go to category view page
              */
-            $continueShoppingUrl = $currentCategory->getUrl();
+          
+            //$continueShoppingUrl = $currentCategory->getUrl();
+            $continueShoppingUrl = $this->_getRequest()->getRequestUri();
         } else {
             $continueShoppingUrl = $this->_getUrl('*/*/*', array('_current'=>true));
         }
-
+	
         $params = array(
             Mage_Core_Controller_Front_Action::PARAM_NAME_URL_ENCODED => Mage::helper('core')->urlEncode($continueShoppingUrl),
             'product' => $product->getId()
         );
+        
+       // $params = array("me"=>$this->_getRequest()->getRequestUri());
 
         if ($this->_getRequest()->getRouteName() == 'checkout'
             && $this->_getRequest()->getControllerName() == 'cart') {
             $params['in_cart'] = 1;
         }
-
+        
+       
+        	
+    
         if (count($additional)){
             $params = array_merge($params, $additional);
         }
-
+       
         return $this->_getUrl('checkout/cart/add', $params);
     }
 

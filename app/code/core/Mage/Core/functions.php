@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -63,7 +63,7 @@ function __autoload($class)
     //$a = explode('_', $class);
     //Varien_Profiler::start('AUTOLOAD');
     //Varien_Profiler::start('AUTOLOAD: '.$a[0]);
-
+	
     include($classFile);
 
     //Varien_Profiler::stop('AUTOLOAD');

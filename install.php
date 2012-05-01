@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -82,7 +82,10 @@
  * --db_pass                    // required, Database User Password
  * --db_prefix                  // optional, Database Tables Prefix
  *                              // No table prefix will be used if not specified
+ * Session options:
+ * --session_save <files|db>    // optional, where to store session data - in db or files. files by default
  * Web access options:
+ * --admin_frontname <path>     // optional, admin panel path, "admin" by default
  * --url                        // required, URL the store is supposed to be available at
  * --use_rewrites               // optional, Use Web Server (Apache) Rewrites,
  *                              // You could enable this option to use web server rewrites functionality for improved SEO
@@ -112,8 +115,6 @@ if (version_compare(phpversion(), '5.2.0', '<')===true) {
 require 'app/Mage.php';
 
 try {
-    Mage::setIsDeveloperMode(true);
-
     $app = Mage::app('default');
 
     $installer = Mage::getSingleton('install/installer_console');
@@ -132,11 +133,13 @@ try {
     Mage::printException($e);
 }
 
-print get_class($app);
-
 // print all errors if there were any
-if ($installer instanceof Mage_Core_Model_Installer_Console) {
-    foreach ($installer->getErrors() as $error) {
-        echo 'ERROR: ' . $error . "\n";
+if ($installer instanceof Mage_Install_Model_Installer_Console) {
+    if ($installer->getErrors()) {
+        echo "\nFAILED\n";
+        foreach ($installer->getErrors() as $error) {
+            echo $error . "\n";
+        }
     }
 }
+exit; // dont delete this

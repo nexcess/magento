@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -498,6 +498,9 @@ abstract class Mage_Core_Controller_Varien_Action
         if (empty($successUrl)) {
             $successUrl = $defaultUrl;
         }
+        if (!$this->_isUrlInternal($successUrl)) {
+        	$successUrl = Mage::app()->getStore()->getBaseUrl();
+        }
         $this->getResponse()->setRedirect($successUrl);
         return $this;
     }
@@ -512,6 +515,9 @@ abstract class Mage_Core_Controller_Varien_Action
         $errorUrl = $this->getRequest()->getParam(self::PARAM_NAME_ERROR_URL);
         if (empty($errorUrl)) {
             $errorUrl = $defaultUrl;
+        }
+        if (!$this->_isUrlInternal($errorUrl)) {
+        	$errorUrl = Mage::app()->getStore()->getBaseUrl();
         }
         $this->getResponse()->setRedirect($errorUrl);
         return $this;
@@ -530,6 +536,7 @@ abstract class Mage_Core_Controller_Varien_Action
         if (empty($refererUrl)) {
             $refererUrl = empty($defaultUrl) ? Mage::getBaseUrl() : $defaultUrl;
         }
+
         $this->getResponse()->setRedirect($refererUrl);
         return $this;
     }
@@ -541,17 +548,30 @@ abstract class Mage_Core_Controller_Varien_Action
      */
     protected function _getRefererUrl()
     {
-        $refererUrl = $this->getRequest()->getServer('HTTP_REFERER');
+    	$refererUrl = $this->getRequest()->getServer('HTTP_REFERER');
         if ($url = $this->getRequest()->getParam(self::PARAM_NAME_REFERER_URL)) {
             $refererUrl = $url;
         }
         if ($url = $this->getRequest()->getParam(self::PARAM_NAME_BASE64_URL)) {
-            $refererUrl = base64_decode($url);
+            $refererUrl = Mage::helper('core')->urlDecode($url);
         }
         if ($url = $this->getRequest()->getParam(self::PARAM_NAME_URL_ENCODED)) {
             $refererUrl = Mage::helper('core')->urlDecode($url);
         }
+
+        if (!$this->_isUrlInternal($refererUrl)) {
+        	$refererUrl = Mage::app()->getStore()->getBaseUrl();
+        }
         return $refererUrl;
+    }
+
+    protected function _isUrlInternal($url)
+    {
+        if (strpos($url, 'http') !== false
+            && strpos($url, Mage::app()->getStore()->getBaseUrl()) !== 0) {
+        	return false;
+        }
+        return true;
     }
 
     /**

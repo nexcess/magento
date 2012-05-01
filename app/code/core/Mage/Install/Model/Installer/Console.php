@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Install
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -85,6 +85,8 @@ class Mage_Install_Model_Installer_Console extends Mage_Install_Model_Installer_
                 'admin_username'    => array('required' => true, 'comment' => ''),
                 'admin_password'    => array('required' => true, 'comment' => ''),
                 'encryption_key'    => array('comment' => ''),
+                'session_save'      => array('comment' => ''),
+                'admin_frontname'   => array('comment' => ''),
             );
         }
         return $this->_options;
@@ -287,6 +289,8 @@ class Mage_Install_Model_Installer_Console extends Mage_Install_Model_Installer_
             'unsecure_base_url' => $this->_args['url'],
             'secure_base_url'   => $this->_args['secure_base_url'],
             'use_secure_admin'  => $this->_checkFlag($this->_args['use_secure_admin']),
+            'session_save'      => $this->_checkSessionSave($this->_args['session_save']),
+            'admin_frontname'   => $this->_checkAdminFrontname($this->_args['admin_frontname']),
         ));
 
         /**

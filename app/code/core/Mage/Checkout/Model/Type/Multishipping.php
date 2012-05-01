@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -327,9 +327,10 @@ class Mage_Checkout_Model_Type_Multishipping extends Mage_Checkout_Model_Type_Ab
         $order->setPayment($convertQuote->paymentToOrderPayment($this->getQuote()->getPayment()));
 
         foreach ($address->getAllItems() as $item) {
-            $orderItem = $convertQuote->itemToOrderItem($item)
-                ->setProductType($item->getProductType())
-                ->setProductOptions($item->getProduct()->getTypeInstance()->getOrderOptions());
+            $orderItem = $convertQuote->itemToOrderItem($item->getQuoteItem());
+            if ($item->getQuoteItem()->getParentItem()) {
+                $orderItem->setParentItem($order->getItemByQuoteItemId($item->getQuoteItem()->getParentItem()->getId()));
+            }
             $order->addItem($orderItem);
         }
 
@@ -349,11 +350,11 @@ class Mage_Checkout_Model_Type_Multishipping extends Mage_Checkout_Model_Type_Ab
             if ($addressValidation !== true) {
                 Mage::throwException($helper->__('Please check shipping addresses information.'));
             }
-        	$method= $address->getShippingMethod();
-        	$rate  = $address->getShippingRateByCode($method);
-        	if (!$method || !$rate) {
-        	    Mage::throwException($helper->__('Please specify shipping methods for all addresses.'));
-        	}
+            $method= $address->getShippingMethod();
+            $rate  = $address->getShippingRateByCode($method);
+            if (!$method || !$rate) {
+                Mage::throwException($helper->__('Please specify shipping methods for all addresses.'));
+            }
         }
         $addressValidation = $this->getQuote()->getBillingAddress()->validate();
         if ($addressValidation !== true) {

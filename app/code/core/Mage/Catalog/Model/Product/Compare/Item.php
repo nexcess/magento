@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -80,19 +80,22 @@ class Mage_Catalog_Model_Product_Compare_Item extends Mage_Core_Model_Abstract
         $customer = Mage::getSingleton('customer/session')->getCustomer();
         $visitorItemCollection = Mage::getResourceModel('catalog/product_compare_item_collection')
             ->setObject('catalog/product_compare_item')
+            ->useProductItem(true)
             ->setVisitorId(Mage::getSingleton('log/visitor')->getId())
             ->load();
 
         $customerItemCollection = $this->getResourceCollection()
             ->setCustomerId($customer->getId())
-            ->load();;
+            ->useProductItem(true)
+            ->load();
 
         $customerProductIds = $customerItemCollection->getProductIds();
 
-        foreach($visitorItemCollection as $item) {
-            if(in_array($item->getProductId(), $customerProductIds)) {
+        foreach ($visitorItemCollection as $item) {
+            if (in_array($item->getProductId(), $customerProductIds)) {
                 $item->delete();
-            } else {
+            }
+            else {
                 $item->setCustomerId($customer->getId())
                     ->setVisitorId(0)
                     ->save();

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -87,6 +87,32 @@ class Mage_Catalog_Model_Api_Resource extends Mage_Api_Model_Resource_Abstract
         }
 
         return $storeId;
+    }
+
+    /**
+     *  Return loaded product instance
+     *
+     *  @param    int|string $productId (SKU or ID)
+     *  @param    int|string $store
+     *  @return	  object Mage_Catalog_Model_Product instance
+     */
+    protected function _getProduct ($productId, $store = null)
+    {
+        $product = Mage::getModel('catalog/product');
+
+        /* @var $product Mage_Catalog_Model_Product */
+
+        if (is_string($productId)) {
+            $idBySku = $product->getIdBySku($productId);
+            if ($idBySku) {
+                $productId = $idBySku;
+            }
+        }
+        if ($store !== null) {
+            $product->setStoreId($this->_getStoreId($store));
+        }
+        $product->load($productId);
+        return $product;
     }
 
     /**

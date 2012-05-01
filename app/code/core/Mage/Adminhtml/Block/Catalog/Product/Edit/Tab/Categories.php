@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -90,9 +90,11 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Categories extends Mage_Admi
     protected function _isParentSelectedCategory($node)
     {
         foreach ($this->_getSelectedNodes() as $selected) {
-            $pathIds = explode('/', $selected->getPathId());
-            if (in_array($node->getId(), $pathIds)) {
-                return true;
+            if ($selected) {
+                $pathIds = explode('/', $selected->getPathId());
+                if (in_array($node->getId(), $pathIds)) {
+                    return true;
+                }
             }
         }
 

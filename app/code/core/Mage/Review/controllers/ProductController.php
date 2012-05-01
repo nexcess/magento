@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Review
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -58,7 +58,7 @@ class Mage_Review_ProductController extends Mage_Core_Controller_Front_Action
         $arrRatingId= $this->getRequest()->getParam('ratings', array());
 
         if ($productId && !empty($data)) {
-            $session    = Mage::getSingleton('review/session');
+            $session    = Mage::getSingleton('core/session');
             $review     = Mage::getModel('review/review')->setData($data);
             $validateRes= $review->validate();
 
@@ -108,8 +108,19 @@ class Mage_Review_ProductController extends Mage_Core_Controller_Front_Action
     {
         if ($product = $this->_initProduct()) {
             Mage::register('productId', $product->getId());
-            $this->loadLayout();
-            $this->_initLayoutMessages('review/session');
+
+            $this->_initProductLayout($product);
+
+            // update breadcrumbs
+            if ($breadcrumbsBlock = $this->getLayout()->getBlock('breadcrumbs')) {
+                $breadcrumbsBlock->addCrumb('product', array(
+                    'label'    => $product->getName(),
+                    'link'     => $product->getProductUrl(),
+                    'readonly' => true,
+                ));
+                $breadcrumbsBlock->addCrumb('reviews', array('label' => Mage::helper('review')->__('Product Reviews')));
+            }
+
             $this->renderLayout();
         } else {
             $this->_forward('noRoute');
@@ -121,5 +132,19 @@ class Mage_Review_ProductController extends Mage_Core_Controller_Front_Action
         $this->loadLayout();
         $this->_initLayoutMessages('review/session');
         $this->renderLayout();
+    }
+
+    protected function _initProductLayout($product)
+    {
+        $update = $this->getLayout()->getUpdate();
+
+        $update->addHandle('default');
+        $this->addActionLayoutHandles();
+
+        $update->addHandle('PRODUCT_TYPE_'.$product->getTypeId());
+        $this->loadLayoutUpdates();
+
+        $update->addUpdate($product->getCustomLayoutUpdate());
+        $this->generateLayoutXml()->generateLayoutBlocks();
     }
 }

@@ -14,7 +14,7 @@
  *
  * @category   Varien
  * @package    Varien_Data
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -51,10 +51,11 @@ class Varien_Data_Form_Element_Date extends Varien_Data_Form_Element_Abstract
 
         $this->addClass('input-text');
 
-        $html = '<input type="text" name="'.$this->getName().'" id="'.$this->getHtmlId().'" value="'.$this->getEscapedValue().'" ' . $this->serialize($this->getHtmlAttributes()) . ' style="width:100px"/> ' .( !$this->getDisabled() ? '<img src="' . $this->getImage() . '" alt="" align="absmiddle" id="'.$this->getHtmlId().'_trig" title="' . __('Select Date') . '" />' : '');
+        $html = '<input type="text" name="'.$this->getName().'" id="'.$this->getHtmlId().'" value="'.$this->getEscapedValue().'" ' . $this->serialize($this->getHtmlAttributes()) . ' style="width:100px"/> <img src="' . $this->getImage() . '" alt="" align="absmiddle" id="'.$this->getHtmlId().'_trig" title="' . __('Select Date') . '"' . ($this->getDisabled() ? ' style="display:none;"' : '') . ' />';
         $html.= '<script type="text/javascript">
             Calendar.setup({
                 inputField : "'.$this->getHtmlId().'",
+                lang : "fr",
                 ';
 
 

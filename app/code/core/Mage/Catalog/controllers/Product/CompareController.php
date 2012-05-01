@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -34,7 +34,7 @@
 
         if($this->getRequest()->getParam(self::PARAM_NAME_BASE64_URL)) {
             Mage::getSingleton('catalog/session')->setBeforeCompareUrl(
-                base64_decode($this->getRequest()->getParam(self::PARAM_NAME_BASE64_URL))
+                Mage::helper('core')->urlDecode($this->getRequest()->getParam(self::PARAM_NAME_BASE64_URL))
             );
         }
 
@@ -60,7 +60,7 @@
                 ->setStoreId(Mage::app()->getStore()->getId())
                 ->load($productId);
 
-            if ($product->getId() && !$product->isSuper()) {
+            if ($product->getId()/* && !$product->isSuper()*/) {
                 Mage::getSingleton('catalog/product_compare_list')->addProduct($product);
                 Mage::getSingleton('catalog/session')->addSuccess(
                     $this->__('Product %s successfully added to compare list', $product->getName())
@@ -107,22 +107,30 @@
     public function clearAction()
     {
         $items = Mage::getResourceModel('catalog/product_compare_item_collection')
-            ->setStoreId(Mage::app()->getStore()->getId());
+            //->useProductItem(true)
+            //->setStoreId(Mage::app()->getStore()->getId())
+            ;
 
-        if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+        if (Mage::getSingleton('customer/session')->isLoggedIn()) {
             $items->setCustomerId(Mage::getSingleton('customer/session')->getCustomerId());
-        } else {
+        }
+        else {
             $items->setVisitorId(Mage::getSingleton('log/visitor')->getId());
         }
 
-        $items->load();
-        //$items->walk('delete');
-        $compareItem = Mage::getModel('catalog/product_compare_item');
-        foreach ($items as $item) {
-            $compareItem->setId($item->getCatalogCompareItemId())
-                ->delete();
+        $session = Mage::getSingleton('catalog/session');
+        /* @var $session Mage_Catalog_Model_Session */
+
+        try {
+            $items->clear();
+            $session->addSuccess($this->__('Compare list successfully cleared'));
         }
-        Mage::getSingleton('catalog/session')->addSuccess($this->__('Compare list successfully cleared'));
+        catch (Mage_Core_Exception $e) {
+            $session->addError($e->getMessage());
+        }
+        catch (Exception $e) {
+            $session->addException($e, $this->__('There was an error while cleared compare list'));
+        }
 
         $this->_redirectReferer();
     }

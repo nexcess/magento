@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -155,9 +155,6 @@ class Mage_Core_Model_Url extends Varien_Object
 
     public function getConfigData($key, $prefix=null)
     {
-//        if (!isset(self::$_configDataCache)) {
-//           $this->loadCache();
-//        }
         if (is_null($prefix)) {
             $prefix = 'web/'.($this->getSecure() ? 'secure' : 'unsecure').'/';
         }
@@ -323,16 +320,20 @@ class Mage_Core_Model_Url extends Varien_Object
         return $path;
     }
 
-    public function getRoutePath()
+    public function getRoutePath($routeParams=array())
     {
         if (!$this->hasData('route_path')) {
+            if (!empty($routeParams['_use_rewrite'])
+                && ($routePath = $this->getRequest()->getAlias(Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS))) {
+                $this->setData('route_path', $routePath);
+                return $routePath;
+            }
             $routePath = $this->getActionPath();
             if ($this->getRouteParams()) {
                 foreach ($this->getRouteParams() as $key=>$value) {
                     if (is_null($value) || false===$value || ''===$value || !is_scalar($value)) {
                         continue;
                     }
-                    #$routePath .= $key.'/'.urlencode($value).'/';
                     $routePath .= $key.'/'.$value.'/';
                 }
             }
@@ -447,6 +448,10 @@ class Mage_Core_Model_Url extends Varien_Object
             unset($data['_current']);
         }
 
+        if (isset($data['_use_rewrite'])) {
+        	unset($data['_use_rewrite']);
+        }
+
         foreach ($data as $k=>$v) {
             $this->setRouteParam($k, $v);
         }
@@ -486,7 +491,7 @@ class Mage_Core_Model_Url extends Varien_Object
             $this->setRouteParams($routeParams, false);
         }
 
-        $url = $this->getBaseUrl().$this->getRoutePath();
+        $url = $this->getBaseUrl().$this->getRoutePath($routeParams);
         return $url;
     }
 
@@ -557,12 +562,21 @@ class Mage_Core_Model_Url extends Varien_Object
         return $this->_getData('query');
     }
 
-    public function setQueryParams(array $data)
+    public function setQueryParams(array $data, $useCurrent = false)
     {
+        $this->unsetData('query');
+        if ($useCurrent) {
+            $params = $this->_getData('query_params');
+        	foreach ($data as $param => $value) {
+        		$params[$param] = $value;
+        	}
+        	$this->setData('query_params', $params);
+        	return $this;
+        }
+
         if ($this->_getData('query_params')==$data) {
             return $this;
         }
-        $this->unsetData('query');
         return $this->setData('query_params', $data);
     }
 
@@ -633,11 +647,6 @@ class Mage_Core_Model_Url extends Varien_Object
 
         $url = $this->getRouteUrl($routePath, $routeParams);
 
-        $session = Mage::getSingleton('core/session');
-        if ($sessionId = $session->getSessionIdForHost($url)) {
-            $this->setQueryParam($session->getSessionIdQueryParam(), $sessionId);
-        }
-
         /**
          * Apply query params, need call after getRouteUrl for rewrite _current values
          */
@@ -645,9 +654,17 @@ class Mage_Core_Model_Url extends Varien_Object
             if (is_string($routeParams['_query'])) {
                 $this->setQuery($routeParams['_query']);
             } elseif (is_array($routeParams['_query'])) {
-                $this->setQueryParams($routeParams['_query']);
+                $this->setQueryParams($routeParams['_query'], !empty($routeParams['_current']));
+            }
+            if ($routeParams['_query'] === false) {
+            	$this->setQueryParams(array());
             }
             unset($routeParams['_query']);
+        }
+
+        $session = Mage::getSingleton('core/session');
+        if ($sessionId = $session->getSessionIdForHost($url)) {
+            $this->setQueryParam($session->getSessionIdQueryParam(), $sessionId);
         }
 
         if ($query = $this->getQuery($escapeQuery)) {

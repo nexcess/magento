@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -51,6 +51,19 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
             self::$_urlRewrite = Mage::getModel('core/url_rewrite');
         }
         return self::$_urlRewrite;
+    }
+
+    /**
+     * 'no_selection' shouldn't be a valid image attribute value
+     * @param string $image
+     * @return string
+     */
+    protected function _validImage($image)
+    {
+        if($image == 'no_selection') {
+            $image = null;
+        }
+        return $image;
     }
 
     /**
@@ -116,11 +129,11 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
 
     public function formatUrlKey($str)
     {
-    	$urlKey = preg_replace('#[^0-9a-z]+#i', '-', $str);
-    	$urlKey = strtolower($urlKey);
-    	$urlKey = trim($urlKey, '-');
+        $urlKey = preg_replace('#[^0-9a-z]+#i', '-', Mage::helper('catalog/product_url')->format($str));
+        $urlKey = strtolower($urlKey);
+        $urlKey = trim($urlKey, '-');
 
-    	return $urlKey;
+        return $urlKey;
     }
 
     public function getUrlPath($product, $category=null)
@@ -142,7 +155,7 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
     public function getImageUrl($product)
     {
         $url = false;
-        if (!$product->getImage()) {
+        if (!$this->_validImage($product->getImage())) {
             $url = Mage::getDesign()->getSkinUrl('images/no_image.jpg');
         }
         elseif ($attribute = $product->getResource()->getAttribute('image')) {
@@ -154,7 +167,7 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
     public function getCustomImageUrl($product, $size, $extension=null, $watermark=null)
     {
         $url = false;
-        if ($attribute = $product->getResource()->getAttribute('image')) {
+        if ($attribute = $this->_validImage($product->getResource()->getAttribute('image'))) {
             $url = Mage::getModel('media/image')
                     ->setConfig(Mage::getSingleton('catalog/product_media_config'))
                     ->getSpecialLink($attribute, $size, $extension, $watermark);
@@ -165,7 +178,7 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
     public function getSmallImageUrl($product)
     {
         $url = false;
-        if (!$product->getSmallImage()) {
+        if (!$this->_validImage($product->getSmallImage())) {
             $url = Mage::getDesign()->getSkinUrl('images/no_image.jpg');
         }
         elseif ($attribute = $product->getResource()->getAttribute('small_image')) {
@@ -177,7 +190,7 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
     public function getCustomSmallImageUrl($product, $size, $extension=null, $watermark=null)
     {
         $url = false;
-        if ($attribute = $product->getData('small_image')) {
+        if ($attribute = $this->_validImage($product->getData('small_image'))) {
             try {
                 $url = Mage::getModel('media/image')
                         ->setConfig(Mage::getSingleton('catalog/product_media_config'))
@@ -192,7 +205,7 @@ class Mage_Catalog_Model_Product_Url extends Varien_Object
     public function getThumbnailUrl($product)
     {
         $url = false;
-        if (!$product->getThumbnail()) {
+        if (!$this->_validImage($product->getThumbnail())) {
             $url = Mage::getDesign()->getSkinUrl('images/no_image.jpg');
         }
         elseif ($attribute = $product->getResource()->getAttribute('thumbnail')) {

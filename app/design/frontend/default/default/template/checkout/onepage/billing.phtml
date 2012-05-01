@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -89,7 +89,7 @@
             <?php if ($this->isCustomerLoggedIn() && $this->customerHasAddresses()):?>
                 <li><input type="checkbox" name="billing[save_in_address_book]" value="1" title="<?php echo $this->__('Save in address book') ?>" id="billing:save_in_address_book" onchange="shipping.setSameAsBilling(false);"<?php if ($this->getAddress()->getSaveInAddressBook()):?> checked="checked"<?php endif;?> /> <label for="billing:save_in_address_book"><?php echo $this->__('Save in address book') ?></label></li>
             <?php else:?>
-                <input type="hidden" name="billing[save_in_address_book]" value="1" />
+                <li><input type="hidden" name="billing[save_in_address_book]" value="1" /></li>
             <?php endif;?>
         </ul>
     </fieldset>

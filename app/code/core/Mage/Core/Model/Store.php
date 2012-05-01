@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -365,7 +365,6 @@ class Mage_Core_Model_Store extends Mage_Core_Model_Abstract
             || !$this->getConfig(self::XML_PATH_USE_REWRITES)
             || !Mage::app()->isInstalled()) {
             $url .= basename($_SERVER['SCRIPT_FILENAME']).'/';
-            #$url .= 'index.php/';
         }
         return $url;
     }
@@ -489,6 +488,9 @@ class Mage_Core_Model_Store extends Mage_Core_Model_Abstract
     {
         // try to get currently set code among allowed
         $code = $this->_getSession()->getCurrencyCode();
+        if (empty($code)) {
+            $code = $this->getDefaultCurrencyCode();
+        }
         if (in_array($code, $this->getAvailableCurrencyCodes(true))) {
             return $code;
         }
@@ -705,10 +707,17 @@ class Mage_Core_Model_Store extends Mage_Core_Model_Abstract
      */
     public function getCurrentUrl($fromStore = true)
     {
-        $url = $this->getBaseUrl() . ltrim(Mage::app()->getRequest()->getRequestString(), '/');
+        $query = ltrim(Mage::app()->getRequest()->getRequestString(), '/');
 
-        $parsedUrl = parse_url($url);
-        $parsedQuery = isset($parsedUrl['query']) ? parse_str($parsedUrl['query']) : array();
+        $parsedUrl = parse_url($this->getUrl(''));
+        $parsedQuery = array();
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $parsedQuery);
+        }
+
+        foreach (Mage::app()->getRequest()->getParams() as $k => $v) {
+            $parsedQuery[$k] = $v;
+        }
 
         if (!Mage::getStoreConfigFlag(Mage_Core_Model_Store::XML_PATH_STORE_IN_URL, $this->getCode())) {
             $parsedQuery['___store'] = $this->getCode();
@@ -719,7 +728,7 @@ class Mage_Core_Model_Store extends Mage_Core_Model_Abstract
 
         return $parsedUrl['scheme'] . '://' . $parsedUrl['host']
             . (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '')
-            . $parsedUrl['path']
+            . $parsedUrl['path'] . str_replace('%2F', '/', rawurlencode(rawurldecode($query)))
             . ($parsedQuery ? '?'.http_build_query($parsedQuery, '', '&amp;') : '');
     }
 

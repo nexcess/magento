@@ -14,7 +14,7 @@
  *
  * @category    Mage
  * @package     Mage_Bundle
- * @copyright   Copyright (c) 2004-2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright   Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -89,7 +89,7 @@ class Mage_Bundle_Block_Checkout_Cart_Item_Renderer extends Mage_Checkout_Block_
         return $bundleProduct->getPriceModel()->getSelectionFinalPrice(
             $bundleProduct, $selectionProduct,
             $this->getQty(),
-            $this->getSelectionQty($selectionProduct->getSelectionId())
+            $this->_getSelectionQty($selectionProduct->getSelectionId())
         );
     }
 

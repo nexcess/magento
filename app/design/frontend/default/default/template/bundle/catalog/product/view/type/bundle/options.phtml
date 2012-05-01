@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -23,17 +23,16 @@
 $_product = $this->getProduct();
 $_options = Mage::helper('core')->decorateArray($this->getOptions());
 ?>
-
-<?php if($_product->isSaleable()):?>
+<?php if ($_product->isSaleable()):?>
     <?php if (count($_options)): ?>
-    <dl<?php if ($this->decoratedIsLast){?> class="last"<?php }?>>
-    <?php foreach ($_options as $_option): ?>
-        <?php if (!$_option->getSelections()): ?>
-            <?php continue; ?>
-        <?php endif; ?>
-        <?php echo $this->getOptionHtml($_option) ?>
-    <?php endforeach; ?>
-    </dl>
+        <dl>
+        <?php foreach ($_options as $_option): ?>
+            <?php if (!$_option->getSelections()): ?>
+                <?php continue; ?>
+            <?php endif; ?>
+            <?php echo $this->getOptionHtml($_option) ?>
+        <?php endforeach; ?>
+        </dl>
     <?php else: ?>
         <p><?php echo $this->__('No options of this product are available.') ?></p>
     <?php endif; ?>

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogIndex
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -40,5 +40,16 @@ class Mage_CatalogIndex_Model_Attribute extends Mage_Core_Model_Abstract
     public function getCount($attribute, $entityFilter)
     {
         return $this->_getResource()->getCount($attribute, $entityFilter);
+    }
+
+    public function checkCount($optionIds, $attribute, $entityFilter)
+    {
+        return $this->_getResource()->checkCount($optionIds, $attribute, $entityFilter);
+    }
+
+    public function applyFilterToCollection($collection, $attribute, $value)
+    {
+        $this->_getResource()->applyFilterToCollection($collection, $attribute, $value);
+        return $this;
     }
 }

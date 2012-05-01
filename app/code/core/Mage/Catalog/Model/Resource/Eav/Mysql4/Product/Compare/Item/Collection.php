@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -156,5 +156,23 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Compare_Item_Collection ext
         }
 
         return $ids;
+    }
+
+    public function clear()
+    {
+        $where = array();
+        if ($this->getCustomerId()) {
+            $where[] = $this->getConnection()->quoteInto('customer_id=?', $this->getCustomerId());
+        }
+        if ($this->getVisitorId()) {
+            $where[] = $this->getConnection()->quoteInto('visitor_id=?', $this->getVisitorId());
+        }
+        if (!$where) {
+            return $this;
+        }
+
+        $this->getConnection()->delete($this->getTable('catalog/compare_item'), $where);
+
+        return $this;
     }
 }

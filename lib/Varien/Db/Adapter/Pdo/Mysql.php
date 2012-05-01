@@ -14,7 +14,7 @@
  *
  * @category   Varien
  * @package    Varien_Db
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -372,6 +372,73 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
     }
 
     /**
+     * Change column
+     *
+     * @param string $tableName
+     * @param string $oldColumnName
+     * @param string $newColumnName
+     * @param string $definition
+     */
+    public function changeColumn($tableName, $oldColumnName, $newColumnName, $definition)
+    {
+        if (!$this->tableColumnExists($tableName, $oldColumnName)) {
+            Mage::throwException('Column "' . $oldColumnName . '" does not exists on table "' . $tableName . '"');
+        }
+
+        $sql = 'ALTER TABLE ' . $this->quoteIdentifier($tableName)
+            . 'CHANGE COLUMN ' . $this->quoteIdentifier($oldColumnName)
+            . ' ' . $this->quoteIdentifier($newColumnName) . ' ' . $definition;
+        return $this->raw_query($sql);
+    }
+
+    public function getKeyList($tableName)
+    {
+        $keyList = array();
+        $create  = $this->raw_fetchRow('SHOW CREATE TABLE ' . $this->quoteIdentifier($tableName), 'Create Table');
+        $matches = array();
+        preg_match_all('#KEY `([^`]+)` \(([^)]+)\)#s', $create, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $v) {
+            $keyList[$v[1]] = split(',', str_replace($this->getQuoteIdentifierSymbol(), '', $v[2]));
+        }
+
+        return $keyList;
+    }
+
+    /**
+     * Add Index Key
+     *
+     * @param string $tableName
+     * @param string $indexName
+     * @param string|array $fields
+     * @return
+     */
+    public function addKey($tableName, $indexName, $fields)
+    {
+        $keyList = $this->getKeyList($tableName);
+
+        $sql = 'ALTER TABLE '.$this->quoteIdentifier($tableName);
+        if (isset($keyList[$indexName])) {
+            $sql .= ' DROP INDEX ' . $this->quoteIdentifier($indexName) . ',';
+        }
+
+        if (is_array($fields)) {
+            $fieldSql = array();
+            foreach ($fields as $field) {
+                $fieldSql[] = $this->quoteIdentifier($field);
+            }
+            $fieldSql = join(',', $fieldSql);
+        }
+        else {
+            $fieldSql = $this->quoteIdentifier($fields);
+        }
+
+        $sql .= ' ADD INDEX ' . $this->quoteIdentifier($indexName) . ' (' . $fieldSql . ')';
+
+        return $this->raw_query($sql);
+    }
+
+    /**
      * Creates and returns a new Zend_Db_Select object for this adapter.
      *
      * @return Varien_Db_Select
@@ -441,6 +508,10 @@ class Varien_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
      */
     protected function _debugException(Exception $e)
     {
+        if (!$this->_debug) {
+            throw $e;
+        }
+
         $nl   = "\n";
         $code = 'EXCEPTION ' . $e->getMessage() . $nl
             . 'E TRACE: ' . print_r($e->getTrace(), true) . $nl . $nl;

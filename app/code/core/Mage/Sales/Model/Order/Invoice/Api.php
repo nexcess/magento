@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -146,28 +146,7 @@ class Mage_Sales_Model_Order_Invoice_Api extends Mage_Sales_Model_Api_Resource
              $this->_fault('data_invalid', Mage::helper('sales')->__('Can not do invoice for order.'));
         }
 
-        $convertor   = Mage::getModel('sales/convert_order');
-        /* @var $convertor Mage_Sales_Model_Convert_Order */
-        $invoice    = $convertor->toInvoice($order);
-        /* @var $invoice Mage_Sales_Model_Order_Invoice */
-
-        foreach ($order->getAllItems() as $orderItem) {
-            /* @var $orderItem Mage_Sales_Model_Order_Item */
-            if (!$orderItem->getQtyToInvoice()) {
-                continue;
-            }
-
-            $item = $convertor->itemToInvoiceItem($orderItem);
-            if (isset($itemsQty[$orderItem->getId()])) {
-                $qty = $itemsQty[$orderItem->getId()];
-            }
-            else {
-                $qty = $orderItem->getQtyToInvoice();
-            }
-            $item->setQty($qty);
-        	$invoice->addItem($item);
-        }
-        $invoice->collectTotals();
+        $invoice = $order->prepareInvoice($itemsQty);
 
         $invoice->register();
 

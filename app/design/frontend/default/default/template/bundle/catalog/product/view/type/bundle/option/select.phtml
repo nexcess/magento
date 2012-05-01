@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -30,14 +30,14 @@
             <?php $_canChangeQty = $_default->getSelectionCanChangeQty() ?>
         <?php else: ?>
             <?php if (!$_showSingle): ?>
-                <?php $_defaultQty = '' ?>
+                <?php $_defaultQty = '0' ?>
                 <?php $_canChangeQty = false ?>
             <?php else: ?>
                 <?php $_defaultQty = $_selections[0]->getSelectionQty()*1 ?>
                 <?php $_canChangeQty = $_selections[0]->getSelectionCanChangeQty() ?>
             <?php endif; ?>
         <?php endif; ?>
-        <label for="bundle-option-<?php echo $_option->getId() ?>-qty-input"><?php echo $this->__('Qty:') ?>&nbsp;</label><input onkeyup="bundle.changeOptionQty(this)" <?php echo $_canChangeQty?'':'disabled="disabled"' ?> id="bundle-option-<?php echo $_option->getId() ?>-qty-input" class="input-text qty" type="text" name="bundle_option_qty[<?php echo $_option->getId() ?>]" value="<?php echo $_defaultQty ?>" />
+        <label for="bundle-option-<?php echo $_option->getId() ?>-qty-input"><?php echo $this->__('Qty:') ?>&nbsp;</label><input onkeyup="bundle.changeOptionQty(this)" <?php echo $_canChangeQty?'':'disabled="disabled"' ?> id="bundle-option-<?php echo $_option->getId() ?>-qty-input" class="input-text qty<?php echo $_canChangeQty?'':' qty-disabled' ?>" type="text" name="bundle_option_qty[<?php echo $_option->getId() ?>]" value="<?php echo $_defaultQty ?>" />
     </span>
 </dt>
 <dd<?php if ($_option->decoratedIsLast){?> class="last"<?php }?>>
@@ -51,9 +51,5 @@
                 <option value="<?php echo $_selection->getSelectionId() ?>"<?php echo ($_selection->getIsDefault() && $_selection->isSaleable())?' selected="selected" ':'' ?><?php echo !$_selection->isSaleable()?' disabled="disabled" ':'' ?>><?php echo $this->getSelectionTitlePrice($_selection, false) ?></option>
             <?php endforeach;?>
         </select>
-        <?php if($_option->getRequired()): ?>
-            <span id="bundle-option-<?php echo $_option->getId() ?>-container"></span>
-            <?php echo $this->setValidationContainer('bundle-option-'.$_option->getId(), 'bundle-option-'.$_option->getId().'-container') ?>
-        <?php endif; ?>
     <?php endif; ?>
 </dd>

@@ -1,5 +1,5 @@
 <?php  $_order = $this->getOrder() ?>
-
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 <div class="page-head button-level">
     <h3><?php echo $this->__('Order #%s - %s', $_order->getRealOrderId(), $_order->getStatusLabel()) ?></h3>
     <?php if($this->helper('rss/order')->isStatusNotificationAllow()): ?>
@@ -39,7 +39,11 @@
     </div>
     <div class="col-2">
         <h4><?php echo $this->__('Shipping Method') ?><?php /* | <a href="#"><?php echo $this->__('Track Order') ?></a>*/ ?></h4>
-        <?php echo $_order->getShippingDescription() ?>
+        <?php if ($_order->getShippingDescription()): ?>
+            <?php echo $_order->getShippingDescription() ?>
+        <?php else: ?>
+            <?php echo $this->helper('sales')->__('No shipping information available'); ?>
+        <?php endif; ?>
     </div>
 </div>
 <?php endif; ?>

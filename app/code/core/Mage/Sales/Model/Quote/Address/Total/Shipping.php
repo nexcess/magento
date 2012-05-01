@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -43,15 +43,26 @@ class Mage_Sales_Model_Quote_Address_Total_Shipping extends Mage_Sales_Model_Quo
 
         foreach ($items as $item) {
             /**
+             * Skip if this item is virtual
+             */
+
+            if ($item->getProduct()->getTypeInstance()->isVirtual()) {
+                continue;
+            }
+            /**
              * Children weight we calculate for parent
              */
-            if ($item->getParentItemId()) {
+            if ($item->getParentItem()) {
                 continue;
             }
 
             if ($item->getHasChildren() && $item->isShipSeparately()) {
                 foreach ($item->getChildren() as $child) {
+                    if ($child->getProduct()->getTypeInstance()->isVirtual()) {
+                        continue;
+                    }
                     $addressQty += $item->getQty()*$child->getQty();
+
                     if (!$item->getProduct()->getWeightType()) {
                         $itemWeight = $child->getWeight();
                         $itemQty    = $item->getQty()*$child->getQty();
@@ -90,7 +101,9 @@ class Mage_Sales_Model_Quote_Address_Total_Shipping extends Mage_Sales_Model_Quo
                 }
             }
             else {
-                $addressQty += $item->getQty();
+                if (!$item->getProduct()->getTypeInstance()->isVirtual()) {
+                    $addressQty += $item->getQty();
+                }
                 $itemWeight = $item->getWeight();
                 $rowWeight  = $itemWeight*$item->getQty();
                 $addressWeight+= $rowWeight;
@@ -122,6 +135,7 @@ class Mage_Sales_Model_Quote_Address_Total_Shipping extends Mage_Sales_Model_Quo
         $address->setBaseShippingAmount(0);
 
         $method = $address->getShippingMethod();
+
         if ($method) {
             foreach ($address->getAllShippingRates() as $rate) {
                 if ($rate->getCode()==$method) {

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -62,6 +62,19 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Items_Grid extends Mage_Adminhtml_
     public function getItemEditablePrice($item)
     {
         return $item->getCalculationPrice()*1;
+    }
+
+    public function getOriginalEditablePrice($item)
+    {
+        if ($item->hasOriginalCustomPrice()) {
+            return $item->getOriginalCustomPrice()*1;
+        } else {
+            $result = $item->getCalculationPrice()*1;
+            if (Mage::helper('tax')->priceIncludesTax($this->getStore()) && $item->getTaxPercent()) {
+                $result = $result + ($result*($item->getTaxPercent()/100));
+            }
+            return $result;
+        }
     }
 
     public function getItemOrigPrice($item)
@@ -196,5 +209,35 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Items_Grid extends Mage_Adminhtml_
     public function getMoveToCustomerStorage()
     {
         return $this->_moveToCustomerStorage;
+    }
+
+    public function displaySubtotalInclTax($item)
+    {
+        $tax = ($item->getTaxBeforeDiscount() ? $item->getTaxBeforeDiscount() : ($item->getTaxAmount() ? $item->getTaxAmount() : 0));
+        return $this->formatPrice($item->getRowTotal()+$tax);
+    }
+
+    public function displayOriginalPriceInclTax($item)
+    {
+        $tax = 0;
+        if ($item->getTaxPercent()) {
+            $tax = $item->getPrice()*($item->getTaxPercent()/100);
+        }
+        return $this->convertPrice($item->getPrice()+($tax/$item->getQty()));
+    }
+
+    public function displayRowTotalWithDiscountInclTax($item)
+    {
+        $tax = ($item->getTaxAmount() ? $item->getTaxAmount() : 0);
+        return $this->formatPrice($item->getRowTotalWithDiscount()+$tax);
+    }
+
+    public function getInclExclTaxMessage()
+    {
+        if (Mage::helper('tax')->priceIncludesTax($this->getStore())) {
+            return Mage::helper('sales')->__('* - Enter custom price including tax');
+        } else {
+            return Mage::helper('sales')->__('* - Enter custom price excluding tax');
+        }
     }
 }

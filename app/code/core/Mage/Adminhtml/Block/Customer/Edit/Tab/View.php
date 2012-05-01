@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -143,6 +143,18 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_View extends Mage_Adminhtml_Block_T
             return Mage::helper('customer')->__('Offline');
         }
         return Mage::helper('customer')->__('Online');
+    }
+
+    public function getIsConfirmedStatus()
+    {
+        $this->getCustomer();
+        if (!$this->_customer->getConfirmation()) {
+            return Mage::helper('customer')->__('Confirmed');
+        }
+        if ($this->_customer->isConfirmationRequired()) {
+            return Mage::helper('customer')->__('Not confirmed, cannot login');
+        }
+        return Mage::helper('customer')->__('Not confirmed, can login');
     }
 
     public function getCreatedInStore()

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -340,9 +340,16 @@ class Mage_Catalog_Model_Category_Api extends Mage_Catalog_Model_Api_Resource
     protected function _getProductId($productId)
     {
         $product = Mage::getModel('catalog/product');
+
         $idBySku = $product->getIdBySku($productId);
         if ($idBySku) {
             $productId = $idBySku;
+        }
+
+        $product->load($productId);
+
+        if (!$product->getId()) {
+            $this->_fault('not_exists','Product not exists.');
         }
 
         return $productId;

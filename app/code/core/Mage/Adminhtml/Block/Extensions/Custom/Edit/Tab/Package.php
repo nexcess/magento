@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -57,14 +57,14 @@ class Mage_Adminhtml_Block_Extensions_Custom_Edit_Tab_Package
 
         $fieldset->addField('summary', 'textarea', array(
             'name' => 'summary',
-            'label' => 'Summary',
+            'label' => Mage::helper('adminhtml')->__('Summary'),
             'style' => 'height:50px;',
             'required' => true,
         ));
 
         $fieldset->addField('description', 'textarea', array(
             'name' => 'description',
-            'label' => 'Description',
+            'label' => Mage::helper('adminhtml')->__('Description'),
             'style' => 'height:200px;',
             'required' => true,
         ));

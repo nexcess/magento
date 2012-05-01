@@ -14,7 +14,7 @@
  *
  * @category    Mage
  * @package     Mage_Checkout
- * @copyright   Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright   Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -119,7 +119,7 @@ class Mage_Checkout_Block_Cart_Item_Renderer extends Mage_Core_Block_Template
                     }
                     $options[] = array(
                         'label' => $option->getTitle(),
-                        'value' => $formatedValue,
+                        'value' => $this->htmlEscape($formatedValue),
                     );
                 }
             }
@@ -212,17 +212,17 @@ class Mage_Checkout_Block_Cart_Item_Renderer extends Mage_Core_Block_Template
             $_truncatedValue = nl2br($_truncatedValue);
             return array('value' => $_truncatedValue);
         } else {
-            $_truncatedValue = Mage::helper('core/string')->truncate($optionValue, 100, '');
-            $_truncatedValue = nl2br($this->htmlEscape($_truncatedValue));
+            $_truncatedValue = Mage::helper('core/string')->truncate($optionValue, 55, '');
+            $_truncatedValue = nl2br($_truncatedValue);
         }
 
         $formateOptionValue = array(
             'value' => $_truncatedValue
         );
 
-        if (Mage::helper('core/string')->strlen($optionValue) > 100) {
-            $formateOptionValue['value'] = $formateOptionValue['value'] . '...';
-            $optionValue = nl2br($this->htmlEscape($optionValue));
+        if (Mage::helper('core/string')->strlen($optionValue) > 55) {
+            $formateOptionValue['value'] = $formateOptionValue['value'] . ' <a href="#" class="dots" onclick="return false">...</a>';
+            $optionValue = nl2br($optionValue);
             $formateOptionValue = array_merge($formateOptionValue, array('full_view' => $optionValue));
 
         }

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -124,7 +124,7 @@ class Mage_Core_Controller_Request_Http extends Zend_Controller_Request_Http
 
             $this->_originalPathInfo = (string) $pathInfo;
 
-            $this->_requestString = $pathInfo . ($pos!==false ? substr($requestUri, $pos) : '');
+            $this->_requestString = $this->_escapeParam($pathInfo . ($pos!==false ? substr($requestUri, $pos) : ''));
         }
 
         $this->_pathInfo = (string) $pathInfo;
@@ -176,5 +176,29 @@ class Mage_Core_Controller_Request_Http extends Zend_Controller_Request_Http
     public function getRouteName()
     {
         return $this->_route;
+    }
+
+    /**
+     * Set a userland parameter
+     *
+     * Uses $key to set a userland parameter. If $key is an alias, the actual
+     * key will be retrieved and used to set the parameter.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return Zend_Controller_Request_Http
+     */
+    public function setParam($key, $value)
+    {
+        return parent::setParam($this->_escapeParam($key), $this->_escapeParam($value));
+    }
+
+    protected function _escapeParam($value)
+    {
+        $value = str_replace('"', '%22', $value);
+        $value = str_replace("'", '%27', $value);
+        $value = str_replace('>', '%3E', $value);
+        $value = str_replace('<', '%3C', $value);
+        return $value;
     }
 }

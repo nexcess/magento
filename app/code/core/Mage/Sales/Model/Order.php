@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -1265,9 +1265,9 @@ class Mage_Sales_Model_Order extends Mage_Core_Model_Abstract
          */
         if (!$this->getId()) {
             foreach ($this->getAllItems() as $item) {
-            	if ($parent = $item->getQuoteParentItemId()) {
+                if ($parent = $item->getQuoteParentItemId() && !$item->getParentItem()) {
                     $item->setParentItem($this->getItemByQuoteItemId($parent));
-            	}
+                }
             }
         }
 
@@ -1344,5 +1344,77 @@ class Mage_Sales_Model_Order extends Mage_Core_Model_Abstract
     {
         $rates = Mage::getModel('sales/order_tax')->getCollection()->loadByOrder($this)->toArray();
         return Mage::getSingleton('tax/calculation')->reproduceProcess($rates['items']);
+    }
+
+    /**
+     * Create new invoice with maximum qty for invoice for each item
+     *
+     * @return Mage_Sales_Model_Order_Invoice
+     */
+    public function prepareInvoice($qtys = array())
+    {
+        $convertor = Mage::getModel('sales/convert_order');
+        $invoice = $convertor->toInvoice($this);
+        foreach ($this->getAllItems() as $orderItem) {
+            if (!$orderItem->isDummy() && !$orderItem->getQtyToInvoice()) {
+                continue;
+            }
+            if ($orderItem->isDummy() && !$this->_needToAddDummy($orderItem, $qtys)) {
+                continue;
+            }
+            $item = $convertor->itemToInvoiceItem($orderItem);
+            if ($orderItem->isDummy()) {
+                $qty = 1;
+            } else {
+                if (isset($qtys[$orderItem->getId()])) {
+                    $qty = $qtys[$orderItem->getId()];
+                } else {
+                    $qty = $orderItem->getQtyToInvoice();
+                }
+            }
+
+            $item->setQty($qty);
+            $invoice->addItem($item);
+        }
+        $invoice->collectTotals();
+
+        return $invoice;
+    }
+
+    /**
+     * Decides if we need to create dummy invoice item or not
+     * for eaxample we don't need create dummy parent if all
+     * children are not in process
+     *
+     * @param Mage_Sales_Model_Order_Item $item
+     * @param array $qtys
+     * @return bool
+     */
+    protected function _needToAddDummy($item, $qtys = array()) {
+        if ($item->getHasChildren()) {
+            foreach ($item->getChildrenItems() as $child) {
+                if (empty($qtys)) {
+                    if ($child->getQtyToInvoice() > 0) {
+                        return true;
+                    }
+                } else {
+                    if (isset($qtys[$child->getId()]) && $qtys[$child->getId()] > 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else if($item->getParentItem()) {
+            if (empty($qtys)) {
+                if ($item->getParentItem()->getQtyToInvoice() > 0) {
+                    return true;
+                }
+            } else {
+                if (isset($qtys[$child->getId()]) && $qtys[$child->getId()] > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

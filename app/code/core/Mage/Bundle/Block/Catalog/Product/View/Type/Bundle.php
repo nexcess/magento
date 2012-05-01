@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -41,7 +41,6 @@ class Mage_Bundle_Block_Catalog_Product_View_Type_Bundle extends Mage_Catalog_Bl
             $selectionCollection = $this->getProduct()->getTypeInstance()->getSelectionsCollection(
                     $this->getProduct()->getTypeInstance()->getOptionsIds()
                 );
-
 
             $this->_options = $optionCollection->appendSelections($selectionCollection, false, false);
         }

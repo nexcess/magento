@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -584,6 +584,7 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
      */
     public function addProduct(Mage_Catalog_Model_Product $product, $request=null)
     {
+
         if ($request === null) {
             $request = 1;
         }
@@ -599,6 +600,7 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
         /**
          * Error message
          */
+
         if (is_string($cartCandidates)) {
             return $cartCandidates;
         }
@@ -610,8 +612,12 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
             $cartCandidates = array($cartCandidates);
         }
 
+
+
+
         $parentItem = null;
         foreach ($cartCandidates as $candidate) {
+
             $item = $this->_addCatalogProduct($candidate, $candidate->getCartQty());
 
             /**
@@ -623,8 +629,16 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
             if ($parentItem && $candidate->getParentProductId()) {
                 $item->setParentItem($parentItem);
             }
+
+            /**
+             * We specify qty after we know about parent (for stocj)
+             */
+            $item->addQty($candidate->getCartQty());
+
             if ($item->getHasError()) {
+
                 Mage::throwException($item->getMessage());
+
             }
         }
         return $item;
@@ -638,6 +652,7 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
      */
     protected function _addCatalogProduct(Mage_Catalog_Model_Product $product, $qty=1)
     {
+
         $item = $this->getItemByProduct($product);
         if (!$item) {
             $item = Mage::getModel('sales/quote_item');
@@ -652,8 +667,7 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
         }
 
         $item->setOptions($product->getCustomOptions())
-            ->setProduct($product)
-            ->addQty($qty);
+            ->setProduct($product);
 
         $this->addItem($item);
 
@@ -682,7 +696,17 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
         if (is_null($qty)) {
             $qty = 0;
             foreach ($this->getAllItems() as $item) {
-                $qty+= $item->getQty();
+                if ($item->getParentItem()) {
+                    continue;
+                }
+
+                if (($children = $item->getChildren()) && $item->isShipSeparately()) {
+                    foreach ($children as $child) {
+                        $qty+= $child->getQty()*$item->getQty();
+                    }
+                } else {
+                    $qty+= $item->getQty();
+                }
             }
             $this->setData('all_items_qty', $qty);
         }
@@ -695,8 +719,20 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
         if (is_null($qty)) {
             $qty = 0;
             foreach ($this->getAllItems() as $item) {
-                if ($item->getProduct()->getIsVirtual()) {
-                    $qty+= $item->getQty();
+                if ($item->getParentItem()) {
+                    continue;
+                }
+
+                if (($children = $item->getChildren()) && $item->isShipSeparately()) {
+                    foreach ($children as $child) {
+                        if ($child->getProduct()->getIsVirtual()) {
+                            $qty+= $child->getQty();
+                        }
+                    }
+                } else {
+                    if ($item->getProduct()->getIsVirtual()) {
+                        $qty+= $item->getQty();
+                    }
                 }
             }
             $this->setData('virtual_items_qty', $qty);
@@ -777,17 +813,37 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
      */
     public function collectTotals()
     {
+        $this->setSubtotal(0);
+        $this->setBaseSubtotal(0);
+
+        $this->setSubtotalWithDiscount(0);
+        $this->setBaseSubtotalWithDiscount(0);
+
         $this->setGrandTotal(0);
         $this->setBaseGrandTotal(0);
+
         foreach ($this->getAllAddresses() as $address) {
+            $address->setSubtotal(0);
+            $address->setBaseSubtotal(0);
+
+            $address->setSubtotalWithDiscount(0);
+            $address->setBaseSubtotalWithDiscount(0);
+
             $address->setGrandTotal(0);
             $address->setBaseGrandTotal(0);
 
             $address->collectTotals();
 
+            $this->setSubtotal((float) $this->getSubtotal()+$address->getSubtotal());
+            $this->setBaseSubtotal((float) $this->getBaseSubtotal()+$address->getBaseSubtotal());
+
+            $this->setSubtotalWithDiscount((float) $this->getSubtotalWithDiscount()+$address->getSubtotalWithDiscount());
+            $this->setBaseSubtotalWithDiscount((float) $this->getBaseSubtotalWithDiscount()+$address->getBaseSubtotalWithDiscount());
+
             $this->setGrandTotal((float) $this->getGrandTotal()+$address->getGrandTotal());
             $this->setBaseGrandTotal((float) $this->getBaseGrandTotal()+$address->getBaseGrandTotal());
         }
+
         Mage::helper('sales')->checkQuoteAmount($this, $this->getGrandTotal());
         Mage::helper('sales')->checkQuoteAmount($this, $this->getBaseGrandTotal());
 
@@ -796,11 +852,33 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
         $this->setVirtualItemsQty(0);
 
         foreach ($this->getAllVisibleItems() as $item) {
-            if ($item->getProduct()->getIsVirtual()) {
-                $this->setVirtualItemsQty($this->getVirtualItemsQty() + $item->getQty());
+
+            //if ($item->getProduct()->getIsVirtual()) {
+            //    $this->setVirtualItemsQty($this->getVirtualItemsQty() + $item->getQty());
+            //}
+
+            if ($item->getParentItem()) {
+                continue;
             }
-            $this->setItemsCount($this->getItemsCount()+1);
-            $this->setItemsQty((float) $this->getItemsQty()+$item->getQty());
+
+            if (($children = $item->getChildren()) && $item->isShipSeparately()) {
+                foreach ($children as $child) {
+                    if ($child->getProduct()->getIsVirtual()) {
+                        $this->setVirtualItemsQty($this->getVirtualItemsQty() + $child->getQty()*$item->getQty());
+                    }
+                    $this->setItemsCount($this->getItemsCount()+1);
+                    $this->setItemsQty((float) $this->getItemsQty()+$child->getQty()*$item->getQty());
+                }
+            } else {
+                if ($item->getProduct()->getIsVirtual()) {
+                    $this->setVirtualItemsQty($this->getVirtualItemsQty() + $item->getQty());
+                }
+                $this->setItemsCount($this->getItemsCount()+1);
+                $this->setItemsQty((float) $this->getItemsQty()+$item->getQty());
+            }
+
+            //$this->setItemsCount($this->getItemsCount()+1);
+            //$this->setItemsQty((float) $this->getItemsQty()+$item->getQty());
         }
         return $this;
     }
@@ -881,7 +959,7 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
         $countItems = 0;
         foreach ($this->getItemsCollection() as $_item) {
             /* @var $_item Mage_Sales_Model_Quote_Item */
-            if ($_item->isDeleted()) {
+            if ($_item->isDeleted() || $_item->getParentItemId()) {
                 continue;
             }
             $countItems ++;
@@ -911,6 +989,9 @@ class Mage_Sales_Model_Quote extends Mage_Core_Model_Abstract
     {
         $hasVirtual = false;
         foreach ($this->getItemsCollection() as $_item) {
+            if ($_item->getParentItemId()) {
+                continue;
+            }
             if ($_item->getProduct()->getTypeInstance()->isVirtual()) {
                 $hasVirtual = true;
             }

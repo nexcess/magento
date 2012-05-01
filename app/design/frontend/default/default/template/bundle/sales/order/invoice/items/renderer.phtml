@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -113,9 +113,23 @@
     <td>
         <?php if($_options = $this->getItemOptions()): ?>
         <dl class="item-options">
-        <?php foreach ($_options as $_option): ?>
+        <?php foreach ($_options as $_option) : ?>
             <dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
-            <dd><?php echo $this->htmlEscape($_option['value']); ?></dd>
+            <?php if (!$this->getPrintStatus()): ?>
+                <?php $_formatedOptionValue = $this->getFormatedOptionValue($_option['value']) ?>
+                <dd<?php if (isset($_formatedOptionValue['full_view'])): ?> class="truncated"<?php endif; ?>><?php echo $_formatedOptionValue['value'] ?>
+                    <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                    <div class="truncated_full_value">
+                        <dl class="item-options">
+                            <dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+                            <dd><?php echo $_formatedOptionValue['full_view'] ?></dd>
+                        </dl>
+                    </div>
+                    <?php endif; ?>
+                </dd>
+            <?php else: ?>
+                <dd><?php echo $this->htmlEscape($_option['value']) ?>
+            <?php endif; ?>
         <?php endforeach; ?>
         </dl>
         <?php endif; ?>

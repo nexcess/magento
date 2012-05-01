@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -43,7 +43,7 @@ class Mage_Catalog_Model_Product_Website extends Mage_Core_Model_Abstract
     {
         try {
             $this->_getResource()->removeProducts($websiteIds, $productIds);
-            $this->_refreshRewrites($productsIds);
+            $this->_refreshRewrites($productIds);
         }
         catch (Exception $e) {
             Mage::throwException(
@@ -81,10 +81,10 @@ class Mage_Catalog_Model_Product_Website extends Mage_Core_Model_Abstract
      */
     protected function _refreshRewrites($productIds)
     {
-        $urlModel = Mage::getModel('catalog/url');
+//        $urlModel = Mage::getModel('catalog/url');
         /* @var $urlModel Mage_Catalog_Model_Url */
         foreach ($productIds as $productId) {
-            $urlModel->refreshProductRewrite($productId);
+//            $urlModel->refreshProductRewrite($productId);
         }
     }
 } // Class Mage_Catalog_Model_Product_Website End

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -42,7 +42,7 @@ class Mage_Core_Helper_Url extends Mage_Core_Helper_Abstract
      */
     public function getCurrentBase64Url()
     {
-        return base64_encode($this->getCurrentUrl());
+        return $this->urlEncode($this->getCurrentUrl());
     }
 
     public function getEncodedUrl($url=null)

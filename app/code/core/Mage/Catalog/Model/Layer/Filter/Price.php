@@ -12,17 +12,17 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @category   Mage
- * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @category    Mage
+ * @package     Mage_Catalog
+ * @copyright   Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 /**
  * Layer price filter
  *
- * @category   Mage
- * @package    Mage_Catalog
+ * @category    Mage
+ * @package     Mage_Catalog
  * @author      Magento Core Team <core@magentocommerce.com>
  */
 class Mage_Catalog_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Filter_Abstract
@@ -62,7 +62,7 @@ class Mage_Catalog_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Fil
     {
         $maxPrice = $this->getData('max_price_int');
         if (is_null($maxPrice)) {
-            $maxPrice = Mage::getSingleton('catalogindex/price')->getMaxValue($this->getAttributeModel(), $this->_getFilterEntityIds());
+            $maxPrice = Mage::getSingleton('catalogindex/price')->getMaxValue($this->getAttributeModel(), $this->_getBaseCollectionSql());
             $maxPrice = floor($maxPrice);
             $this->setData('max_price_int', $maxPrice);
         }
@@ -73,7 +73,8 @@ class Mage_Catalog_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Fil
     {
         $items = $this->getData('range_item_counts_'.$range);
         if (is_null($items)) {
-            $items = Mage::getSingleton('catalogindex/price')->getCount($this->getAttributeModel(), $range, $this->_getFilterEntityIds());
+            //$items = Mage::getSingleton('catalogindex/price')->getCount($this->getAttributeModel(), $range, $this->_getFilterEntityIds());
+            $items = Mage::getSingleton('catalogindex/price')->getCount($this->getAttributeModel(), $range, $this->_getBaseCollectionSql());
             $this->setData('range_item_counts_'.$range, $items);
         }
         return $items;
@@ -82,7 +83,6 @@ class Mage_Catalog_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Fil
     protected function _renderItemLabel($range, $value)
     {
         $store = Mage::app()->getStore();
-        //return $store->convertPrice(($value-1)*$range, true).' - '.$store->convertPrice($value*$range, true);
         return $store->formatPrice(($value-1)*$range) . ' - ' . $store->formatPrice($value*$range);
     }
 
@@ -130,17 +130,11 @@ class Mage_Catalog_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Fil
 
         if ((int)$index && (int)$range) {
             $this->setPriceRange((int)$range);
-            //$range = $this->getPriceRange();
             $entityIds = Mage::getSingleton('catalogindex/price')->getFilteredEntities($this->getAttributeModel(), $range, $index, $this->_getFilterEntityIds());
             if ($entityIds) {
                 $this->getLayer()->getProductCollection()
                     ->addFieldToFilter('entity_id', $entityIds);
 
-            /*$this->getLayer()->getProductCollection()
-                ->addFieldToFilter('price', array(
-                    'from'  => ($index-1)*$range,
-                    'to'    => $index*$range-0.001,
-                ));*/
                 $this->getLayer()->getState()->addFilter(
                     $this->_createItem($this->_renderItemLabel($range, $index), $filter)
                 );

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -72,6 +72,18 @@ class Mage_Customer_Model_Entity_Customer extends Mage_Eav_Model_Entity_Abstract
             Mage::throwException(Mage::helper('customer')->__('Customer email already exists'));
         }
 
+        // set confirmation key logic
+        if ($customer->getForceConfirmed()) {
+            $customer->setConfirmation(null);
+        }
+        elseif ((!$customer->getId()) && ($customer->isConfirmationRequired())) {
+            $customer->setConfirmation($customer->getRandomConfirmationKey());
+        }
+        // remove customer confirmation key from database, if empty
+        if (!$customer->getConfirmation()) {
+            $customer->setConfirmation(null);
+        }
+
         return $this;
     }
 
@@ -125,6 +137,7 @@ class Mage_Customer_Model_Entity_Customer extends Mage_Eav_Model_Entity_Abstract
             ->from($this->getEntityTable(), array($this->getEntityIdField()))
             //->where('email=?', $email);
             ->where('email=:customer_email');
+        // possible bug here!
         if ($customer->getSharingConfig()->isWebsiteScope()) {
             $select->where('website_id=?', (int) $customer->getWebsiteId());
         }

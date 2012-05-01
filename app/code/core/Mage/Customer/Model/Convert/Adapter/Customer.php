@@ -15,7 +15,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -57,6 +57,8 @@ class Mage_Customer_Model_Convert_Adapter_Customer
     protected $_shippingStreetFields= array();
 
     protected $_shippingRequiredFields = array();
+
+    protected $_addressFields = array();
 
     protected $_regions;
     protected $_websites;
@@ -226,6 +228,11 @@ class Mage_Customer_Model_Convert_Adapter_Customer
             if ($node->is('shipping')) {
                 $this->_shippingFields[] = 'shipping_'.$code;
             }
+
+            if ($node->is('billing') && $node->is('shipping')) {
+                $this->_addressFields[] = $code;
+            }
+
             if ($node->is('mapped') || $node->is('billing_mapped')) {
                 $this->_billingMappedFields['billing_'.$code] = $code;
             }
@@ -502,8 +509,9 @@ class Mage_Customer_Model_Convert_Adapter_Customer
 
         $importBillingAddress = $importShippingAddress = true;
         $savedBillingAddress = $savedShippingAddress = false;
+
         /**
-         * Billing address
+         * Check Billing address required fields
          */
         foreach ($this->_billingRequiredFields as $field) {
             if (empty($importData[$field])) {
@@ -511,6 +519,44 @@ class Mage_Customer_Model_Convert_Adapter_Customer
             }
         }
 
+        /**
+         * Check Sipping address required fields
+         */
+        foreach ($this->_shippingRequiredFields as $field) {
+            if (empty($importData[$field])) {
+                $importShippingAddress = false;
+            }
+        }
+
+        $onlyAddress = false;
+
+        /**
+         * Check addresses
+         */
+        if ($importBillingAddress && $importShippingAddress) {
+            $onlyAddress = true;
+            foreach ($this->_addressFields as $field) {
+                if (!isset($importData['billing_'.$field]) && !isset($importData['shipping_'.$field])) {
+                    continue;
+                }
+                if (!isset($importData['billing_'.$field]) || !isset($importData['shipping_'.$field])) {
+                    $onlyAddress = false;
+                    break;
+                }
+                if ($importData['billing_'.$field] != $importData['shipping_'.$field]) {
+                    $onlyAddress = false;
+                    break;
+                }
+            }
+
+            if ($onlyAddress) {
+                $importShippingAddress = false;
+            }
+        }
+
+        /**
+         * Import billing address
+         */
         if ($importBillingAddress) {
             $billingAddress = $this->getBillingAddressModel();
             if ($customer->getDefaultBilling()) {
@@ -520,26 +566,27 @@ class Mage_Customer_Model_Convert_Adapter_Customer
                 $billingAddress->setData(array());
             }
 
-            $billingStreet = array();
             foreach ($this->_billingFields as $field) {
                 $cleanField = Mage::helper('core/string')->substr($field, 8);
 
-                if (in_array($field, $this->_billingStreetFields) && isset($importData[$field])) {
-                    $billingStreet[] = $importData[$field];
-                    continue;
-                }
-
                 if (isset($importData[$field])) {
-                    $billingAddress->setData($cleanField, $importData[$field]);
+                    $billingAddress->setDataUsingMethod($cleanField, $importData[$field]);
                 }
                 elseif (isset($this->_billingMappedFields[$field])
                     && isset($importData[$this->_billingMappedFields[$field]])) {
-                    $billingAddress->setData($cleanField, $importData[$this->_billingMappedFields[$field]]);
+                    $billingAddress->setDataUsingMethod($cleanField, $importData[$this->_billingMappedFields[$field]]);
                 }
             }
 
-            $billingAddress->setStreet($billingStreet);
-            $billingAddress->implodeStreetAddress();
+            $street = array();
+            foreach ($this->_billingStreetFields as $field) {
+                if (!empty($importData[$field])) {
+                    $street[] = $importData[$field];
+                }
+            }
+            if ($street) {
+                $billingAddress->setDataUsingMethod('street', $street);
+            }
 
             $billingAddress->setCountryId($importData['billing_country']);
             $regionName = isset($importData['billing_region']) ? $importData['billing_region'] : '';
@@ -550,20 +597,21 @@ class Mage_Customer_Model_Convert_Adapter_Customer
 
             if ($customer->getId()) {
                 $billingAddress->setCustomerId($customer->getId());
+
                 $billingAddress->save();
                 $customer->setDefaultBilling($billingAddress->getId());
+
+                if ($onlyAddress) {
+                    $customer->setDefaultShipping($billingAddress->getId());
+                }
 
                 $savedBillingAddress = true;
             }
         }
+
         /**
-         * Shipping address
+         * Import shipping address
          */
-        foreach ($this->_shippingRequiredFields as $field) {
-            if (empty($importData[$field])) {
-                $importShippingAddress = false;
-            }
-        }
         if ($importShippingAddress) {
             $shippingAddress = $this->getShippingAddressModel();
             if ($customer->getDefaultShipping() && $customer->getDefaultBilling() != $customer->getDefaultShipping()) {
@@ -573,27 +621,27 @@ class Mage_Customer_Model_Convert_Adapter_Customer
                 $shippingAddress->setData(array());
             }
 
-            $shippingStreet = array();
-
             foreach ($this->_shippingFields as $field) {
                 $cleanField = Mage::helper('core/string')->substr($field, 9);
 
-                if (in_array($field, $this->_shippingStreetFields) && isset($importData[$field])) {
-                    $shippingStreet[] = $importData[$field];
-                    continue;
-                }
-
                 if (isset($importData[$field])) {
-                    $shippingAddress->setData($cleanField, $importData[$field]);
+                    $shippingAddress->setDataUsingMethod($cleanField, $importData[$field]);
                 }
                 elseif (isset($this->_shippingMappedFields[$field])
                     && isset($importData[$this->_shippingMappedFields[$field]])) {
-                    $shippingAddress->setData($cleanField, $importData[$this->_shippingMappedFields[$field]]);
+                    $shippingAddress->setDataUsingMethod($cleanField, $importData[$this->_shippingMappedFields[$field]]);
                 }
             }
 
-            $shippingAddress->setStreet($shippingStreet);
-            $shippingAddress->implodeStreetAddress();
+            $street = array();
+            foreach ($this->_shippingStreetFields as $field) {
+                if (!empty($importData[$field])) {
+                    $street[] = $importData[$field];
+                }
+            }
+            if ($street) {
+                $shippingAddress->setDataUsingMethod('street', $street);
+            }
 
             $shippingAddress->setCountryId($importData['shipping_country']);
             $regionName = isset($importData['shipping_region']) ? $importData['shipping_region'] : '';
@@ -619,6 +667,9 @@ class Mage_Customer_Model_Convert_Adapter_Customer
             $billingAddress->setCustomerId($customer->getId());
             $billingAddress->save();
             $customer->setDefaultBilling($billingAddress->getId());
+            if ($onlyAddress) {
+                $customer->setDefaultShipping($billingAddress->getId());
+            }
         }
         if ($importShippingAddress && !$savedShippingAddress) {
             $saveCustomer = true;

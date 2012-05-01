@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -120,14 +120,31 @@ class Mage_Core_Model_Design_Package
 
 	/**
 	 * Set package name
+	 * In case of any problem, the default will be set.
 	 *
 	 * @param  string $name
 	 * @return Mage_Core_Model_Design_Package
 	 */
-	public function setPackageName($name)
+	public function setPackageName($name = '')
 	{
-		$this->_name = $name;
-		return $this;
+        if (empty($name)) {
+            // see, if exceptions for user-agents defined in config
+    	    $customPackage = $this->_checkUserAgentAgainstRegexps('design/package/ua_regexp');
+    	    if ($customPackage) {
+    	        $this->_name = $customPackage;
+            }
+            else {
+                $this->_name = Mage::getStoreConfig('design/package/name');
+            }
+        }
+        else {
+            $this->_name = $name;
+        }
+        // make sure not to crash, if wrong package specified
+        if (!$this->designPackageExists($this->_name, $this->getArea())) {
+	        $this->_name = self::DEFAULT_PACKAGE;
+	    }
+	    return $this;
 	}
 
 	/**
@@ -164,19 +181,15 @@ class Mage_Core_Model_Design_Package
 	 */
 	public function getPackageName()
 	{
-		if (is_null($this->_name)) {
-			$this->_name = Mage::getStoreConfig('design/package/name');
-			if (empty($this->_name)) {
-				$this->_name = self::DEFAULT_PACKAGE;
-			}
+	    if (null === $this->_name) {
+	        $this->setPackageName();
+	    }
+	    return $this->_name;
+	}
 
-			// set exception value for package, if defined in config
-            $customPackage = $this->_checkUserAgentAgainstRegexps('design/package/ua_regexp');
-            if ($customPackage) {
-                $this->_name = $customPackage;
-            }
-		}
-		return $this->_name;
+	public function designPackageExists($packageName, $area = self::DEFAULT_AREA)
+	{
+	    return is_dir(Mage::getBaseDir('design') . DS . $area . DS . $packageName);
 	}
 
 	/**

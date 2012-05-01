@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -99,17 +99,14 @@ class Mage_Checkout_CartController extends Mage_Core_Controller_Front_Action
     public function indexAction()
     {
         $cart = $this->_getCart();
-        Varien_Profiler::start(__METHOD__ . 'cart_init');
-        $cart->init();
-        Varien_Profiler::stop(__METHOD__ . 'cart_init');
+        if ($cart->getQuote()->getItemsCount()) {
+            $cart->init();
+            $cart->save();
 
-        Varien_Profiler::start(__METHOD__ . 'cart_save');
-        $cart->save();
-        Varien_Profiler::stop(__METHOD__ . 'cart_save');
-
-        if (!$this->_getQuote()->validateMinimumAmount()) {
-            $warning = Mage::getStoreConfig('sales/minimum_order/description');
-            $cart->getCheckoutSession()->addNotice($warning);
+            if (!$this->_getQuote()->validateMinimumAmount()) {
+                $warning = Mage::getStoreConfig('sales/minimum_order/description');
+                $cart->getCheckoutSession()->addNotice($warning);
+            }
         }
 
         foreach ($cart->getQuote()->getMessages() as $message) {

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Wishlist
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -28,30 +28,23 @@
 
 class Mage_Wishlist_Block_Customer_Sidebar extends Mage_Catalog_Block_Product_Abstract
 {
-	protected  $_wishlist = null;
+    protected  $_wishlist = null;
 
-	public function getWishlistItems()
-	{
-		return $this->getWishlist()->getProductCollection();
-	}
+    public function getWishlistItems()
+    {
+        return $this->getWishlist()->getProductCollection();
+    }
 
-	public function getWishlist()
-	{
+    public function getWishlist()
+    {
         if(is_null($this->_wishlist)) {
             $this->_wishlist = Mage::getModel('wishlist/wishlist')
                 ->loadByCustomer(Mage::getSingleton('customer/session')->getCustomer());
 
             $collection = $this->_wishlist->getProductCollection()
-                ->addAttributeToSelect('name')
-                ->addAttributeToSelect('price')
-                ->addAttributeToSelect('special_price')
-                ->addAttributeToSelect('special_from_date')
-                ->addAttributeToSelect('special_to_date')
-                ->addAttributeToSelect('small_image')
-                ->addAttributeToSelect('thumbnail')
-                ->addAttributeToSelect('status')
-                ->addAttributeToSelect('tax_class_id')
-                ->addAttributeToFilter('store_id', array('in'=>$this->_wishlist->getSharedStoreIds()))
+                ->addAttributeToSelect(Mage::getSingleton('catalog/config')->getProductAttributes())
+                //->addAttributeToFilter('store_id', array('in'=>$this->_wishlist->getSharedStoreIds()))
+                ->addStoreFilter()
                 ->addAttributeToSort('added_at', 'desc')
                 ->setCurPage(1)
                 ->setPageSize(3)
@@ -64,27 +57,27 @@ class Mage_Wishlist_Block_Customer_Sidebar extends Mage_Catalog_Block_Product_Ab
         return $this->_wishlist;
     }
 
-	protected function _toHtml()
-	{
+    protected function _toHtml()
+    {
         if( sizeof($this->getWishlistItems()->getItems()) > 0 ){
-        	return parent::_toHtml();
+            return parent::_toHtml();
         } else {
             return '';
         }
-	}
+    }
 
-	public function getCanDisplayWishlist()
-	{
-		return Mage::getSingleton('customer/session')->isLoggedIn();
-	}
+    public function getCanDisplayWishlist()
+    {
+        return Mage::getSingleton('customer/session')->isLoggedIn();
+    }
 
-	public function getRemoveItemUrl($item)
-	{
-	    return $this->getUrl('wishlist/index/remove',array('item'=>$item->getWishlistItemId()));
-	}
+    public function getRemoveItemUrl($item)
+    {
+        return $this->getUrl('wishlist/index/remove',array('item'=>$item->getWishlistItemId()));
+    }
 
-	public function getAddToCartItemUrl($item)
-	{
-	    return Mage::helper('wishlist')->getAddToCartUrlBase64($item);
-	}
+    public function getAddToCartItemUrl($item)
+    {
+        return Mage::helper('wishlist')->getAddToCartUrlBase64($item);
+    }
 }

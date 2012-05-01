@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns:typens="urn:{{var wsdl.name}}" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" name="{{var wsdl.name}}" targetNamespace="urn:{{var wsdl.name}}">
+  <types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:Magento">
+    <import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://schemas.xmlsoap.org/soap/encoding/"/>
+    <complexType name="FixedArray">
+      <complexContent>
+        <restriction base="soapenc:Array">
+          <attribute ref="soapenc:arrayType" wsdl:arrayType="xsd:anyType[]"/>
+        </restriction>
+      </complexContent>
+    </complexType>
+    </schema>
+  </types>
   <message name="call">
     <part name="sessionId" type="xsd:string"/>
     <part name="resourcePath" type="xsd:string"/>
@@ -10,11 +22,11 @@
   </message>
   <message name="multiCall">
     <part name="sessionId" type="xsd:string"/>
-    <part name="calls" type="soapenc:Array" xsd:arrayType="xsd:anyType"/>
+    <part name="calls" type="typens:FixedArray"/>
     <part name="options" type="xsd:anyType"/>
   </message>
   <message name="multiCallResponse">
-    <part name="multiCallReturn" type="soapenc:Array" xsd:arrayType="xsd:anyType"/>
+    <part name="multiCallReturn" type="typens:FixedArray"/>
   </message>
   <message name="endSession">
     <part name="sessionId" type="xsd:string"/>
@@ -33,20 +45,20 @@
     <part name="sessionId" type="xsd:string"/>
   </message>
   <message name="resourcesResponse">
-    <part name="resourcesReturn" type="soapenc:Array" xsd:arrayType="xsd:anyType"/>
+    <part name="resourcesReturn" type="typens:FixedArray"/>
   </message>
   <message name="globalFaults">
     <part name="sessionId" type="xsd:string"/>
   </message>
   <message name="globalFaultsResponse">
-    <part name="globalFaultsReturn" type="soapenc:Array" xsd:arrayType="xsd:anyType"/>
+    <part name="globalFaultsReturn" type="typens:FixedArray"/>
   </message>
   <message name="resourceFaults">
     <part name="resourceName" type="xsd:string"/>
     <part name="sessionId" type="xsd:string"/>
   </message>
   <message name="resourceFaultsResponse">
-    <part name="resourceFaultsReturn" type="soapenc:Array" xsd:arrayType="xsd:anyType"/>
+    <part name="resourceFaultsReturn" type="typens:FixedArray"/>
   </message>
   <message name="startSession"/>
   <message name="startSessionResponse">

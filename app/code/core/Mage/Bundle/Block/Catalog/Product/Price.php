@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -27,5 +27,18 @@
  */
 class Mage_Bundle_Block_Catalog_Product_Price extends Mage_Catalog_Block_Product_Price
 {
+
+    public function isRatesGraterThenZero()
+    {
+        $_request = Mage::getSingleton('tax/calculation')->getRateRequest(false, false, false);
+        $_request->setProductClassId($this->getProduct()->getTaxClassId());
+        $defaultTax = Mage::getSingleton('tax/calculation')->getRate($_request);
+
+        $_request = Mage::getSingleton('tax/calculation')->getRateRequest();
+        $_request->setProductClassId($this->getProduct()->getTaxClassId());
+        $currentTax = Mage::getSingleton('tax/calculation')->getRate($_request);
+
+        return (floatval($defaultTax) > 0 || floatval($currentTax) > 0);
+    }
 
 }

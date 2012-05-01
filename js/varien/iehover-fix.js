@@ -11,7 +11,7 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 function toggleMenu(el, over)
@@ -45,6 +45,17 @@ ieHover = function() {
     		ieULs[j].insertBefore(iframe, ieULs[j].firstChild);
     		ieULs[j].style.zIndex="1";
     	}
+	}
+	var truncated=$$('.truncated_full_value .item-options');
+	for (var i=0; i<truncated.length; i++) {
+		    iframe = document.createElement('IFRAME');
+    		iframe.src = BLANK_URL;
+    		iframe.scrolling = 'no';
+    		iframe.frameBorder = 0;
+    		iframe.style.width = truncated[i].offsetWidth+"px";
+    		iframe.style.height = truncated[i].offsetHeight+"px";
+    		truncated[i].insertBefore(iframe, truncated[i].firstChild);
+    		truncated[i].style.zIndex="1";
 	}
 }
 

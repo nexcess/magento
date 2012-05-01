@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -27,34 +27,9 @@
 ?>
 <?php $_product = $this->getProduct() ?>
 <?php if($_product->isSaleable()): ?>
-
-    <?php $_tierPrices = $this->getTierPrices() ?>
-    <?php if(count($_tierPrices)>0): ?>
-    <div class="product-pricing">
-        <ul class="bare">
-        <?php foreach($_tierPrices as $_price): ?>
-            <?php if ($this->helper('tax')->displayBothPrices() && $_price['formated_price'] != $_price['formated_price_incl_tax']): ?>
-                <li><?php echo $this->__('Buy %s for %s (%s incl. tax) each', '<strong>'.$_price['price_qty'].'</strong>', $_price['formated_price'], '<strong>'.$_price['formated_price_incl_tax'].'</strong>') ?>
-            <?php else: ?>
-                <li><?php echo $this->__('Buy %s for %s each', '<strong>'.$_price['price_qty'].'</strong>',  '<strong>'.$_price['formated_price'].'</strong>') ?>
-            <?php endif; ?>
-            <?php if(($_product->getPrice() == $_product->getFinalPrice() && $_product->getPrice() > $_price['price'])
-            || ($_product->getPrice() != $_product->getFinalPrice() &&  $_product->getFinalPrice() > $_price['price'])): ?>
-                <?php echo $this->__('and') ?>&nbsp;<strong class="benefit"><?php echo $this->__('save %s%%', $_price['savePercent']) ?>
-            <?php endif ?></strong>
-            </li>
-        <?php endforeach ?>
-        </ul>
-    </div>
-    <?php endif; ?>
-
-    <p><small><?php echo $this->__('Availability: In stock.') ?></small></p>
+    <p class="availability"><?php echo $this->__('Availability: In stock.') ?></p>
 <?php else: ?>
-    <p><small><?php echo $this->__('Availability: Out of stock.') ?></small></p>
+    <p class="availability"><?php echo $this->__('Availability: Out of stock.') ?></p>
 <?php endif; ?>
 
 <?php echo $this->getPriceHtml($_product) ?>
-
-<script type="text/javascript">
-var spConfig = new Product.Config(<?php echo $this->getJsonConfig() ?>);
-</script>

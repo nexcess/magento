@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -85,6 +85,35 @@ class Mage_Core_Helper_String extends Mage_Core_Helper_Abstract
      */
     public function substr($str, $offset, $length = null)
     {
+        if (is_null($length)) {
+            $length = iconv_strlen($str, self::ICONV_CHARSET) - $offset;
+        }
         return iconv_substr($str, $offset, $length, self::ICONV_CHARSET);
+    }
+
+    /**
+     * Split string and appending $insert string after $needle
+     *
+     * @param string $str
+     * @param integer $length
+     * @param string $needle
+     * @param string $insert
+     * @return string
+     */
+    public function splitInjection($str, $length = 50, $needle = '-', $insert = ' ')
+    {
+        $str = str_split($str, $length);
+        $newStr = '';
+        foreach ($str as $part) {
+            if ($this->strlen($part) >= $length) {
+                $lastDelimetr = strpos(strrev($part), $needle);
+                $tmpNewStr = '';
+                $tmpNewStr = $this->substr(strrev($part), 0, $lastDelimetr).$insert.substr(strrev($part), $lastDelimetr);
+                $newStr .= strrev($tmpNewStr);
+            } else {
+                $newStr .= $part;
+            }
+        }
+        return $newStr;
     }
 }

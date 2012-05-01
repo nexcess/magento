@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -43,8 +43,21 @@ class Mage_Customer_Model_Session extends Mage_Core_Model_Session_Abstract
      */
     public function setCustomer(Mage_Customer_Model_Customer $customer)
     {
+        // check if customer is not confirmed
+        if ($customer->isConfirmationRequired()) {
+            if ($customer->getConfirmation()) {
+                throw new Exception('This customer is not confirmed and cannot log in.',
+                    Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED
+                );
+            }
+        }
         $this->_customer = $customer;
         $this->setId($customer->getId());
+        // save customer as confirmed, if it is not
+        if ((!$customer->isConfirmationRequired()) && $customer->getConfirmation()) {
+            $customer->setConfirmation(null)->save();
+            $customer->setIsJustConfirmed(true);
+        }
         return $this;
     }
 

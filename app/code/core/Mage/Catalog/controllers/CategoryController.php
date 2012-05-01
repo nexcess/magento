@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -46,7 +46,7 @@ class Mage_Catalog_CategoryController extends Mage_Core_Controller_Front_Action
         if (!Mage::helper('catalog/category')->canShow($category)) {
             return false;
         }
-
+        Mage::getSingleton('catalog/session')->setLastVisitedCategoryId($category->getId());
         Mage::register('current_category', $category);
         return $category;
     }
@@ -56,7 +56,9 @@ class Mage_Catalog_CategoryController extends Mage_Core_Controller_Front_Action
      */
     public function viewAction()
     {
+
         if ($category = $this->_initCatagory()) {
+
             Mage::getModel('catalog/design')->applyDesign($category, Mage_Catalog_Model_Design::APPLY_FOR_CATEGORY);
             Mage::getSingleton('catalog/session')->setLastViewedCategoryId($category->getId());
 

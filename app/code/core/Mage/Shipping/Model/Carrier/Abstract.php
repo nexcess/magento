@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Shipping
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -234,5 +234,20 @@ abstract class Mage_Shipping_Model_Carrier_Abstract extends Varien_Object
             $weight = $weight/$this->_numBoxes;
         }
         return $weight;
+    }
+
+    public function isStateProvinceRequired()
+    {
+        return false;
+    }
+
+    public function isCityRequired()
+    {
+        return false;
+    }
+
+    public function isZipCodeRequired()
+    {
+        return false;
     }
 }

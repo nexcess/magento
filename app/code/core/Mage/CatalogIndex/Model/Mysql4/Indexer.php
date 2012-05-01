@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogIndex
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -308,14 +308,13 @@ class Mage_CatalogIndex_Model_Mysql4_Indexer extends Mage_Core_Model_Mysql4_Abst
 
     protected function _commitInsert($table, $forced = true){
         if (isset($this->_insertData[$table]) && count($this->_insertData[$table]) && ($forced || count($this->_insertData[$table]) >= 100)) {
-            $query = 'INSERT INTO ' . $this->getTable($table) . ' (' . implode(', ', $this->_tableFields[$table]) . ') VALUES ';
+            $query = 'REPLACE INTO ' . $this->getTable($table) . ' (' . implode(', ', $this->_tableFields[$table]) . ') VALUES ';
             $separator = '';
             foreach ($this->_insertData[$table] as $row) {
                 $rowString = $this->_getWriteAdapter()->quoteInto('(?)', $row);
                 $query .= $separator . $rowString;
                 $separator = ', ';
             }
-
             $this->_getWriteAdapter()->query($query);
             $this->_insertData[$table] = array();
         }

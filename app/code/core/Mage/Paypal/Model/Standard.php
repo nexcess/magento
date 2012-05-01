@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Paypal
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -204,8 +204,11 @@ class Mage_Paypal_Model_Standard extends Mage_Payment_Model_Method_Abstract
             if ($items) {
                 $i = 1;
                 foreach($items as $item){
-                     //echo "<pre>"; print_r($item->getData()); echo"</pre>";
-                     $sArr = array_merge($sArr, array(
+                    if ($item->getParentItem()) {
+                        continue;
+                    }
+                    //echo "<pre>"; print_r($item->getData()); echo"</pre>";
+                    $sArr = array_merge($sArr, array(
                         'item_name_'.$i      => $item->getName(),
                         'item_number_'.$i      => $item->getSku(),
                         'quantity_'.$i      => $item->getQty(),
@@ -213,7 +216,7 @@ class Mage_Paypal_Model_Standard extends Mage_Payment_Model_Method_Abstract
                     ));
                     if($item->getBaseTaxAmount()>0){
                         $sArr = array_merge($sArr, array(
-                        'tax_'.$i      => sprintf('%.2f',$item->getBaseTaxAmount()),
+                        'tax_'.$i      => sprintf('%.2f',$item->getBaseTaxAmount()/$item->getQty()),
                         ));
                     }
                     $i++;
@@ -349,17 +352,7 @@ class Mage_Paypal_Model_Standard extends Mage_Payment_Model_Method_Abstract
                            //need to save transaction id
                            $order->getPayment()->setTransactionId($this->getIpnFormData('txn_id'));
                            //need to convert from order into invoice
-                           $convertor = Mage::getModel('sales/convert_order');
-                           $invoice = $convertor->toInvoice($order);
-                           foreach ($order->getAllItems() as $orderItem) {
-                               if (!$orderItem->getQtyToInvoice()) {
-                                   continue;
-                               }
-                               $item = $convertor->itemToInvoiceItem($orderItem);
-                               $item->setQty($orderItem->getQtyToInvoice());
-                               $invoice->addItem($item);
-                           }
-                           $invoice->collectTotals();
+                           $invoice = $order->prepareInvoice();
                            $invoice->register()->capture();
                            Mage::getModel('core/resource_transaction')
                                ->addObject($invoice)

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -240,5 +240,63 @@ class Mage_Adminhtml_Block_Widget_Tabs extends Mage_Adminhtml_Block_Widget
             return $tab->toHtml();
         }
         return $tab->getContent();
+    }
+
+    /**
+     * Mark tabs as dependant of each other
+     * Arbitrary number of tabs can be specified, but at least two
+     *
+     * @param string $tabOneId
+     * @param string $tabTwoId
+     * @param string $tabNId...
+     */
+    public function bindShadowTabs($tabOneId, $tabTwoId)
+    {
+        $tabs = array();
+        $args = func_get_args();
+        if ((!empty($args)) && (count($args) > 1)) {
+            foreach ($args as $tabId) {
+                if (isset($this->_tabs[$tabId])) {
+                    $tabs[$tabId] = $tabId;
+                }
+            }
+            $blockId = $this->getId();
+            foreach ($tabs as $tabId) {
+                foreach ($tabs as $tabToId) {
+                    if ($tabId !== $tabToId) {
+                        if (!$this->_tabs[$tabToId]->getData('shadow_tabs')) {
+                            $this->_tabs[$tabToId]->setData('shadow_tabs', array());
+                        }
+                        $this->_tabs[$tabToId]->setData('shadow_tabs', array_merge(
+                            $this->_tabs[$tabToId]->getData('shadow_tabs'),
+                            array($blockId . '_' . $tabId)
+                        ));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Obtain shadow tabs information
+     *
+     * @param bool $asJson
+     * @return array|string
+     */
+    public function getAllShadowTabs($asJson = true)
+    {
+        $result = array();
+        if (!empty($this->_tabs)) {
+            $blockId = $this->getId();
+            foreach (array_keys($this->_tabs) as $tabId) {
+                if ($this->_tabs[$tabId]->getData('shadow_tabs')) {
+                    $result[$blockId . '_' . $tabId] = $this->_tabs[$tabId]->getData('shadow_tabs');
+                }
+            }
+        }
+        if ($asJson) {
+            return Zend_Json::encode($result);
+        }
+        return $result;
     }
 }

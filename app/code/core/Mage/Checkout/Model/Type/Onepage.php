@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -148,7 +148,11 @@ class Mage_Checkout_Model_Type_Onepage
 
         if (!$this->getQuote()->getCustomerId() && 'register' == $this->getQuote()->getCheckoutMethod()) {
             $email = $address->getEmail();
-            $customer = Mage::getModel('customer/customer')->loadByEmail($email);
+            /**
+             * Fix for #5076
+             * @see Mage_Customer_Model_Entity_Customer::loadByEmail()
+             */
+            $customer = Mage::getModel('customer/customer')->setWebsiteId(Mage::app()->getWebsite()->getId())->loadByEmail($email);
             if ($customer->getId()) {
                 $res = array(
                     'error' => 1,
@@ -419,7 +423,11 @@ class Mage_Checkout_Model_Type_Onepage
         $order->setPayment($convertQuote->paymentToOrderPayment($this->getQuote()->getPayment()));
 
         foreach ($this->getQuote()->getAllItems() as $item) {
-            $order->addItem($convertQuote->itemToOrderItem($item));
+            $orderItem = $convertQuote->itemToOrderItem($item);
+            if ($item->getParentItem()) {
+                $orderItem->setParentItem($order->getItemByQuoteItemId($item->getParentItem()->getId()));
+            }
+            $order->addItem($orderItem);
         }
 
         /**
@@ -448,7 +456,12 @@ class Mage_Checkout_Model_Type_Onepage
                 $shipping->setCustomerId($customer->getId())->setCustomerAddressId($customerShippingId);
             }
 
-            $customer->sendNewAccountEmail();
+            if ($customer->isConfirmationRequired()) {
+                $customer->sendNewAccountEmail('confirmation');
+            }
+            else {
+                $customer->sendNewAccountEmail();
+            }
         }
 
         /**
@@ -489,7 +502,14 @@ class Mage_Checkout_Model_Type_Onepage
              * it would not create new quotes and merge it with old one.
              */
             $this->getQuote()->save();
-            Mage::getSingleton('customer/session')->loginById($customer->getId());
+            if ($customer->isConfirmationRequired()) {
+                Mage::getSingleton('checkout/session')->addSuccess(Mage::helper('customer')->__('Account confirmation is required. Please, check your e-mail for confirmation link. To resend confirmation email please <a href="%s">click here</a>.',
+                    Mage::helper('customer')->getEmailConfirmationUrl($customer->getEmail())
+                ));
+            }
+            else {
+                Mage::getSingleton('customer/session')->loginById($customer->getId());
+            }
         }
 
         $this->getQuote()->setIsActive(false);

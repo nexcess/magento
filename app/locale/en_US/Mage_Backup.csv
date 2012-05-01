@@ -1,4 +1,3 @@
-"",""
 "Action","Action"
 "All types","All types"
 "Backup file ""%s"" can\'t read or write","Backup file ""%s"" can\'t read or write"
@@ -13,6 +12,7 @@
 "Download","Download"
 "Error write to Backup file ""%s""","Error write to Backup file ""%s"""
 "File compressed with Zlib, but this extension is not installed on server","File compressed with Zlib, but this extension is not installed on server"
+"Notifications","Notifications"
 "Size, byte","Size, byte"
 "Time","Time"
 "Type","Type"

@@ -14,7 +14,7 @@
  *
  * @category   Varien
  * @package    Varien_Io
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -432,12 +432,20 @@ class Varien_Io_File extends Varien_Io_Abstract
         return $result;
     }
 
-    public function fileExists($file)
+    public function fileExists($file, $onlyFile = true)
     {
         @chdir($this->_cwd);
-        $result = file_exists($file) && is_file($file);
+        $result = file_exists($file);
+        if ($result && $onlyFile) {
+            $result = is_file($file);
+        }
         @chdir($this->_iwd);
         return $result;
+    }
+
+    public function isWriteable($path)
+    {
+        return is_writeable($path);
     }
 
     public function getDestinationFolder($filepath)

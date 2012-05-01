@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -108,7 +108,8 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product extends Mage_Catalog_Model_
     protected function _afterSave(Varien_Object $product)
     {
         $this->_saveWebsiteIds($product)
-            ->_saveCategories($product);
+            ->_saveCategories($product)
+            ->refreshIndex($product);
 
         parent::_afterSave($product);
     	return $this;
@@ -192,7 +193,6 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product extends Mage_Catalog_Model_
             if ($insertSql) {
                 $write->query("insert into {$this->_productCategoryTable} (category_id, product_id, position) values ".join(',', $insertSql));
             }
-
         }
 
         if (!empty($delete)) {
@@ -204,6 +204,118 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product extends Mage_Catalog_Model_
 
         if (!empty($insert) || !empty($delete)) {
             $object->setIsChangedCategories(true);
+        }
+
+        return $this;
+    }
+
+    public function refreshIndex($product)
+    {
+        $categoryIds = $product->getCategoryIds();
+
+        /**
+         * Refresh category/product index
+         */
+        $this->_getWriteAdapter()->delete($this->getTable('catalog/category_product_index'), 'product_id='.$product->getId());
+        if (!empty($categoryIds)) {
+            $categoriesSelect = $this->_getWriteAdapter()->select()->from($this->getTable('catalog/category'))
+                ->where('entity_id IN (?)', $categoryIds);
+            $categoriesInfo = $this->_getWriteAdapter()->fetchAll($categoriesSelect);
+            $indexCategoryIds = array();
+            foreach ($categoriesInfo as $categoryInfo) {
+                $ids = explode('/', $categoryInfo['path']);
+                $ids[] = $categoryInfo['entity_id'];
+                $indexCategoryIds = array_merge($indexCategoryIds, $ids);
+            }
+            $indexCategoryIds = array_unique($indexCategoryIds);
+            foreach ($indexCategoryIds as $categoryId) {
+                $data = array(
+                    'category_id'   => $categoryId,
+                    'product_id'    => $product->getId(),
+                    'position'      => 0,
+                    'is_parent'     => in_array($categoryId, $categoryIds)
+                );
+                $this->_getWriteAdapter()->insert($this->getTable('catalog/category_product_index'), $data);
+            }
+        }
+
+        /**
+         * Refresh enabled products index (visibility state)
+         */
+        $this->refreshEnabledIndex(null, $product);
+        return $this;
+    }
+
+    /**
+     * Refresh index for visibility of enabled product in store
+     * if store parameter is null - index will refreshed for all stores
+     * if product parameter is null - idex will be refreshed for all products
+     *
+     * @param   Mage_Core_Model_Store $store
+     * @param   Mage_Core_Model_Product $product
+     * @return  Mage_Catalog_Model_Resource_Eav_Mysql4_Product
+     */
+    public function refreshEnabledIndex($store=null, $product=null)
+    {
+        $statusAttribute        = $this->getAttribute('status');
+        $visibilityAttribute    = $this->getAttribute('visibility');
+        $statusAttributeId      = $statusAttribute->getId();
+        $visibilityAttributeId  = $visibilityAttribute->getId();
+        $statusTable    = $statusAttribute->getBackend()->getTable();
+        $visibilityTable= $visibilityAttribute->getBackend()->getTable();
+
+        $indexTable = $this->getTable('catalog/product_enabled_index');
+        if (is_null($store) && is_null($product)) {
+            Mage::throwException(Mage::helper('catalog')->__('For reindex enabled product(s) you need specify store or product'));
+        }
+        elseif (is_null($product)) {
+            $storeId    = $store->getId();
+            $websiteId  = $store->getWebsiteId();
+        	$this->_getWriteAdapter()->delete($indexTable, 'store_id='.$storeId);
+        	$query = "INSERT INTO $indexTable
+            SELECT
+                t_v_default.entity_id, {$storeId}, IFNULL(t_v.value, t_v_default.value)
+            FROM
+                {$visibilityTable} AS t_v_default
+            INNER JOIN {$this->getTable('catalog/product_website')} AS w
+                ON w.product_id=t_v_default.entity_id AND w.website_id={$websiteId}
+            LEFT JOIN {$visibilityTable} AS `t_v`
+                ON (t_v.entity_id = t_v_default.entity_id) AND (t_v.attribute_id='{$visibilityAttributeId}') AND (t_v.store_id='{$storeId}')
+            INNER JOIN {$statusTable} AS `t_s_default`
+                ON (t_s_default.entity_id = t_v_default.entity_id) AND (t_s_default.attribute_id='{$statusAttributeId}') AND t_s_default.store_id=0
+            LEFT JOIN {$statusTable} AS `t_s`
+                ON (t_s.entity_id = t_v_default.entity_id) AND (t_s.attribute_id='{$statusAttributeId}') AND (t_s.store_id='{$storeId}')
+            WHERE
+                t_v_default.attribute_id='{$visibilityAttributeId}' AND t_v_default.store_id=0
+                AND (IFNULL(t_s.value, t_s_default.value)=".Mage_Catalog_Model_Product_Status::STATUS_ENABLED.")";
+        	$this->_getWriteAdapter()->query($query);
+        }
+        elseif (is_null($store)) {
+            foreach ($product->getStoreIds() as $storeId) {
+            	$store = Mage::app()->getStore($storeId);
+            	$this->refreshEnabledIndex($store, $product);
+            }
+        }
+        else {
+            $productId  = $product->getId();
+            $storeId    = $store->getId();
+            $this->_getWriteAdapter()->delete($indexTable, 'product_id='.$productId.' AND store_id='.$storeId);
+            $query = "INSERT INTO $indexTable
+            SELECT
+                {$productId}, {$storeId}, IFNULL(t_v.value, t_v_default.value)
+            FROM
+                {$visibilityTable} AS t_v_default
+            LEFT JOIN {$visibilityTable} AS `t_v`
+                ON (t_v.entity_id = t_v_default.entity_id) AND (t_v.attribute_id='{$visibilityAttributeId}') AND (t_v.store_id='{$storeId}')
+            INNER JOIN {$statusTable} AS `t_s_default`
+                ON (t_s_default.entity_id = t_v_default.entity_id) AND (t_s_default.attribute_id='{$statusAttributeId}') AND t_s_default.store_id=0
+            LEFT JOIN {$statusTable} AS `t_s`
+                ON (t_s.entity_id = t_v_default.entity_id) AND (t_s.attribute_id='{$statusAttributeId}') AND (t_s.store_id='{$storeId}')
+            WHERE
+                t_v_default.entity_id={$productId}
+                AND t_v_default.attribute_id='{$visibilityAttributeId}' AND t_v_default.store_id=0
+                AND (IFNULL(t_s.value, t_s_default.value)=".Mage_Catalog_Model_Product_Status::STATUS_ENABLED.")";
+            $this->_getWriteAdapter()->query($query);
         }
 
         return $this;
@@ -270,5 +382,20 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Product extends Mage_Catalog_Model_
             ->where('e.entity_id in ('.new Zend_Db_Expr($groupedSelect).' UNION '.new Zend_Db_Expr($configurableSelect).')');
 
         return $this->_getReadAdapter()->fetchCol($select);
+    }
+
+    /**
+     * Check availability display product in category
+     *
+     * @param   int $categoryId
+     * @return  bool
+     */
+    public function canBeShowInCategory($product, $categoryId)
+    {
+        $select = $this->_getReadAdapter()->select()
+            ->from($this->getTable('catalog/category_product_index'), 'product_id')
+            ->where('product_id=?', $product->getId())
+            ->where('category_id=?', $categoryId);
+        return $this->_getReadAdapter()->fetchOne($select);
     }
 }

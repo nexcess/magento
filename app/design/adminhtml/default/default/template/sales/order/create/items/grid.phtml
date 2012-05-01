@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -82,7 +82,24 @@
                             <?php endif; ?>
                         </td>
                         <td class="price">
-                            <?php echo $this->getItemOrigPrice($_item) ?> <br/>
+                            <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <span class="price-excl-tax">
+                                    <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                        <span class="label"><?php echo $this->helper('tax')->__('Excl. Tax'); ?>:</span>
+                                    <?php endif; ?>
+                                    <?php echo $this->getItemOrigPrice($_item) ?> <br/>
+                                </span>
+                            <?php endif; ?>
+                            <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <span class="price-incl-tax">
+                        					<?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                      <span class="label"><?php echo $this->helper('tax')->__('Incl. Tax'); ?>:</span>
+                                  <?php endif; ?>
+                                  <?php echo $this->displayOriginalPriceInclTax($_item); ?>
+                                </span>
+                            <?php endif; ?>
+
+
                             <?php $_isCustomPrice = $this->usedCustomPriceForItem($_item) ?>
                             <?php if($_tier = $this->getTierHtml($_item)): ?>
                             <div id="item_tier_block_<?php echo $_item->getId() ?>"<?php if ($_isCustomPrice): ?> style="display:none"<?php endif; ?>>
@@ -92,18 +109,52 @@
                             <?php endif; ?>
                             <div class="nobr">
                             <input type="checkbox" id="item_use_custom_price_<?php echo $_item->getId() ?>"<?php if ($_isCustomPrice): ?> checked="checked"<?php endif; ?> onclick="order.toggleCustomPrice(this, 'item_custom_price_<?php echo $_item->getId() ?>', 'item_tier_block_<?php echo $_item->getId() ?>');"/>
-                            <label class="normal" for="item_use_custom_price_<?php echo $_item->getId() ?>"><?php echo $this->helper('sales')->__('Custom Price') ?></label>
+                            <label class="normal" for="item_use_custom_price_<?php echo $_item->getId() ?>"><?php echo $this->helper('sales')->__('Custom Price') ?>*</label>
                             </div>
-                            <input id="item_custom_price_<?php echo $_item->getId() ?>" name="item[<?php echo $_item->getId() ?>][custom_price]" value="<?php echo sprintf("%.2f", $this->getItemEditablePrice($_item))?>"<?php if (!$_isCustomPrice): ?> style="display:none" disabled="disabled"<?php endif; ?> class="input-text item-price"/>
+                            <input id="item_custom_price_<?php echo $_item->getId() ?>" name="item[<?php echo $_item->getId() ?>][custom_price]" value="<?php echo sprintf("%.2f", $this->getOriginalEditablePrice($_item))?>"<?php if (!$_isCustomPrice): ?> style="display:none" disabled="disabled"<?php endif; ?> class="input-text item-price"/>
                         </td>
                         <td><input name="item[<?php echo $_item->getId() ?>][qty]" class="input-text item-qty" value="<?php echo $_item->getQty()*1 ?>" maxlength="12" /></td>
-                        <td class="price"><?php echo $this->formatPrice($_item->getRowTotal()) ?></td>
+                        <td class="price">
+                        <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                            <span class="price-excl-tax">
+                                <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                    <span class="label"><?php echo $this->helper('tax')->__('Excl. Tax'); ?>:</span>
+                                <?php endif; ?>
+                                <?php echo $this->formatPrice($_item->getRowTotal()) ?>
+                            </span>
+                        <?php endif; ?>
+                        <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                            <span class="price-incl-tax">
+                    					<?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                  <span class="label"><?php echo $this->helper('tax')->__('Incl. Tax'); ?>:</span>
+                              <?php endif; ?>
+                              <?php echo $this->displaySubtotalInclTax($_item); ?>
+                            </span>
+                        <?php endif; ?>
+                        </td>
                         <td class="price">
                             <?php echo $this->formatPrice(-$_item->getDiscountAmount()) ?><br />
                             <input id="item_use_discount_<?php echo $_item->getId() ?>" name="item[<?php echo $_item->getId() ?>][use_discount]"<?php if (!$_item->getNoDiscount()): ?>checked="checked"<?php endif; ?> value="1" type="checkbox" />
                             <label for="item_use_discount_<?php echo $_item->getId() ?>" class="normal"><?php echo $this->helper('sales')->__('Apply') ?></label>
                         </td>
-                        <td class="price"><?php echo $this->formatPrice($_item->getRowTotalWithDiscount()) ?></td>
+                        <td class="price">
+                            <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <span class="price-excl-tax">
+                                    <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                        <span class="label"><?php echo $this->helper('tax')->__('Excl. Tax'); ?>:</span>
+                                    <?php endif; ?>
+                                    <?php echo $this->formatPrice($_item->getRowTotalWithDiscount()) ?>
+                                </span>
+                            <?php endif; ?>
+                            <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
+                                <span class="price-incl-tax">
+                        					<?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                      <span class="label"><?php echo $this->helper('tax')->__('Incl. Tax'); ?>:</span>
+                                  <?php endif; ?>
+                                  <?php echo $this->displayRowTotalWithDiscountInclTax($_item); ?>
+                                </span>
+                            <?php endif; ?>
+                        </td>
                         <?php if($this->isGiftMessagesAvailable()): ?>
                         <td>
                             <input type="checkbox" name="item[<?php echo $_item->getId() ?>][giftmessage]"<?php if($this->isAllowedForGiftMessage($_item)): ?> checked="checked"<?php endif; ?><?php if(!$this->isGiftMessagesAvailable($_item)): ?> disabled="disabled"<?php endif; ?>/>
@@ -136,8 +187,11 @@
     </div>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
+            <td width="50%"><?php echo $this->getInclExclTaxMessage(); ?></td>
+        </tr>
+        <tr>
             <td width="50%"><div id="order:coupons"><?php echo $this->getChildHtml('coupons') ?></div></td>
-            <td class="a-right"><?php echo $this->getButtonHtml($this->helper('sales')->__('Update Items and Qty\'s'),'order.itemsUpdate()'); ?></td>
+            <td class="a-right" rowspan="2"><?php echo $this->getButtonHtml($this->helper('sales')->__('Update Items and Qty\'s'),'order.itemsUpdate()'); ?></td>
         </tr>
     </table>
     <br/>

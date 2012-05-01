@@ -11,13 +11,13 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 var varienTabs = new Class.create();
 
 varienTabs.prototype = {
-    initialize : function(containerId, destElementId,  activeTabId){
+    initialize : function(containerId, destElementId,  activeTabId, shadowTabs){
         this.containerId    = containerId;
         this.destElementId  = destElementId;
         this.activeTab = null;
@@ -46,6 +46,17 @@ varienTabs.prototype = {
                         varienGlobalEvents.fireEvent('moveTab', {tab:this.tabs[tab]});
                     }
                 }
+            }
+/*
+            // this code is pretty slow in IE, so lets do it in tabs*.phtml
+            // mark ajax tabs as not loaded
+            if (Element.hasClassName($(this.tabs[tab].id), 'ajax')) {
+                Element.addClassName($(this.tabs[tab].id), 'notloaded');
+            }
+*/
+            // bind shadow tabs
+            if (this.tabs[tab].id && shadowTabs && shadowTabs[this.tabs[tab].id]) {
+                this.tabs[tab].shadowTabs = shadowTabs[this.tabs[tab].id];
             }
         }
 
@@ -113,6 +124,13 @@ varienTabs.prototype = {
         if (tabContentElement) {
             Element.show(tabContentElement);
             Element.addClassName(tab, 'active');
+            // load shadow tabs, if any
+            if (tab.shadowTabs && tab.shadowTabs.length) {
+                for (var k in tab.shadowTabs) {
+                    this.loadShadowTab($(tab.shadowTabs[k]));
+                }
+            }
+            Element.removeClassName(tab, 'notloaded');
             this.activeTab = tab;
         }
         if (varienGlobalEvents) {
@@ -139,6 +157,18 @@ varienTabs.prototype = {
             else {
                 this.showTabContentImmediately(tab);
             }
+        }
+    },
+
+    loadShadowTab : function(tab) {
+        var tabContentElement = $(this.getTabContentElementId(tab));
+        if (tabContentElement && Element.hasClassName(tab, 'ajax') && Element.hasClassName(tab, 'notloaded')) {
+            new Ajax.Updater(tabContentElement.id, tab.href, {
+                onComplete : function () {
+                    Element.removeClassName(tab, 'notloaded');
+                }.bind(this),
+                evalScripts : true
+            });
         }
     },
 

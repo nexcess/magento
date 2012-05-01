@@ -14,15 +14,13 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 /**
- * Block, that can insert other blocks as sorted children, depending on conditions.
- * Also it can spawn neighbours and insert blocks there, also as sorted children, depending on conditions.
- * Conditions are implemented in methods, that do actually insert blocks.
- * Data for conditions must be set before calling inserting method.
+ * Block, that can get data from layout or from registry.
+ * Can compare its data values by specified keys
  *
  * @category   Mage
  * @package    Mage_Core
@@ -30,8 +28,6 @@
  */
 class Mage_Core_Block_Template_Facade extends Mage_Core_Block_Template
 {
-    private $_neighbours = array();
-
     /**
      * Just set data, like Varien_Object
      *
@@ -63,104 +59,32 @@ class Mage_Core_Block_Template_Facade extends Mage_Core_Block_Template
     }
 
     /**
-     * Insert a block, if all data items by specified keys are equal
+     * Check if data values by specified keys are equal
+     * $conditionKeys can be array or arbitrary set of params (func_get_args())
      *
-     * The block must exist in layout.
-     * The block will be also inserted, if no data keys or only one key specified.
-     *
-     * Currently, the block is inserted only *before* all children
-     *
-     * @param string $blockName
-     * @param string $dataKey1
-     * @param string $dataKey2
-     * @param string $dataKeyN ...
-     * @return Mage_Core_Block_Template_Facade
+     * @param array $conditionKeys
+     * @return bool
      */
-    public function insertBlockIfEquals($blockName)
+    public function ifEquals($conditionKeys)
     {
-        $args = func_get_args();
-        return $this->_insertBlockIfEquals($this, $args);
-    }
-
-    /**
-     * Insert a block as a child of neighbour before
-     *
-     * @see insertBlockIfEquals()
-     * @param string $blockName
-     * @return Mage_Core_Block_Template
-     */
-    public function insertBlockBeforeIfEquals($blockName)
-    {
-        $args = func_get_args();
-        return $this->_insertBlockIfEquals($this->_getNeighbour('before'), $args);
-    }
-
-    /**
-     * Insert a block as a child of neighbour after
-     *
-     * @see insertBlockIfEquals()
-     * @param string $blockName
-     * @return Mage_Core_Block_Template
-     */
-    public function insertBlockAfterIfEquals($blockName)
-    {
-        $args = func_get_args();
-        return $this->_insertBlockIfEquals($this->_getNeighbour('after'), $args);
-    }
-
-    /**
-     * Get facade neighbour before
-     *
-     * @return Mage_Core_Block_Template
-     */
-    public function getBlockBefore()
-    {
-        return $this->_getNeighbour('before');
-    }
-
-    /**
-     * Get facade neighbour after
-     *
-     * @return Mage_Core_Block_Template
-     */
-    public function getBlockAfter()
-    {
-        return $this->_getNeighbour('after');
-    }
-
-    private function _getNeighbour($name)
-    {
-        if (!isset($this->_neighbours[$name])) {
-            $this->_neighbours[$name] = $this->getLayout()->createBlock('core/template');
-        }
-        return $this->_neighbours[$name];
-    }
-
-    private function _insertBlockIfEquals(Mage_Core_Block_Template $blockInsertTo, array $args)
-    {
-        $blockName     = array_shift($args);
-        $conditionKeys = $args;
-
-        // assume, that conditions keys are passed from layout as array
-        if ((count($conditionKeys) > 0) && (is_array($conditionKeys[1]))) {
-            $conditionKeys = $conditionKeys[1];
+        if (!is_array($conditionKeys)) {
+            $conditionKeys = func_get_args();
         }
 
         // evaluate conditions (equality)
         if (!empty($conditionKeys)) {
             foreach ($conditionKeys as $key) {
                 if (!isset($this->_data[$key])) {
-                    return $blockInsertTo;
+                    return false;
                 }
             }
             $lastValue = $this->_data[$key];
             foreach ($conditionKeys as $key) {
                 if ($this->_data[$key] !== $lastValue)  {
-                    return $blockInsertTo;
+                    return false;
                 }
             }
         }
-
-        return $blockInsertTo->insert($blockName);
+        return true;
     }
 }

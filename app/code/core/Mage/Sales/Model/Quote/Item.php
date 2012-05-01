@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -37,6 +37,7 @@ class Mage_Sales_Model_Quote_Item extends Mage_Sales_Model_Quote_Item_Abstract
     protected $_quote       = null;
     protected $_options = array();
     protected $_optionsByCode = array();
+    protected $_norRepresentOptions = array('info_buyRequest');
 
     function _construct()
     {
@@ -106,6 +107,8 @@ class Mage_Sales_Model_Quote_Item extends Mage_Sales_Model_Quote_Item_Abstract
     public function setQty($qty)
     {
         $qty    = $this->_prepareQty($qty);
+
+
         $oldQty = $this->_getData('qty');
         $this->setData('qty', $qty);
 
@@ -219,6 +222,9 @@ class Mage_Sales_Model_Quote_Item extends Mage_Sales_Model_Quote_Item_Abstract
 
         foreach ($itemOptions as $option) {
             $code = $option->getCode();
+            if (in_array($code, $this->_norRepresentOptions )) {
+            	continue;
+            }
             if ( !isset($productOptions[$code])
                 || ($productOptions[$code]->getValue() === null)
                 || $productOptions[$code]->getValue() != $option->getValue()) {

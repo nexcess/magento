@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -554,7 +554,14 @@ abstract class Mage_Eav_Model_Entity_Abstract
                     $instance = $attribute->getSource();
                     break;
             }
-            $results[$attrCode] = call_user_func_array(array($instance, $method), $args);
+            try {
+                $results[$attrCode] = call_user_func_array(array($instance, $method), $args);
+            }
+            catch (Exception $e) {
+                $exception = new Mage_Eav_Model_Entity_Attribute_Exception($e->getMessage());
+                $exception->setAttributeCode($attrCode)->setPart($part);
+                throw $exception;
+            }
         }
         return $results;
     }

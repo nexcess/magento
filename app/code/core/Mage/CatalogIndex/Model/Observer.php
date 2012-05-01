@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogIndex
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -57,15 +57,6 @@ class Mage_CatalogIndex_Model_Observer extends Mage_Core_Model_Abstract
         } elseif ($parentProductIds) {
             $this->_productIdsMassupdate = array_merge($this->_productIdsMassupdate, $parentProductIds);
         }
-    }
-
-    public function processAfterMassupdate(Varien_Event_Observer $observer)
-    {
-        if (count($this->_productIdsMassupdate) == 0) {
-            $this->_productIdsMassupdate = $observer->getEvent()->getProducts();
-        }
-
-        Mage::getSingleton('catalogindex/indexer')->plainReindex($this->_productIdsMassupdate);
     }
 
     public function processPriceScopeChange(Varien_Event_Observer $observer)

@@ -14,7 +14,7 @@
  *
  * @category   Varien
  * @package    Varien_Data
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -25,101 +25,174 @@
  * @package    Varien_Data
  * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Varien_Data_Form_Element_Multiselect extends Varien_Data_Form_Element_Abstract
+class Varien_Data_Form_Element_Checkboxes extends Varien_Data_Form_Element_Abstract
 {
+    /**
+     * Init Element
+     *
+     * @param array $attributes
+     */
     public function __construct($attributes=array())
     {
         parent::__construct($attributes);
-        $this->setType('select');
-        $this->setExtType('combobox');
+        $this->setType('checkbox');
+        $this->setExtType('checkbox');
     }
 
-    public function getElementHtml()
+    /**
+     * Retrieve allow attributes
+     *
+     * @return array
+     */
+    public function getHtmlAttributes()
     {
-        $this->addClass('select');
-        $html = '<select id="'.$this->getHtmlId().'" name="'.$this->getName().'" '.$this->serialize($this->getHtmlAttributes()).' multiple="multiple">'."\n";
+        return array('type', 'name', 'class', 'style', 'checked', 'onclick', 'onchange', 'disabled');
+    }
 
-        $value = $this->getValue();
-        if (!is_array($value)) {
-            $value = array($value);
+    /**
+     * Prepare value list
+     *
+     * @return array
+     */
+    protected function _prepareValues() {
+        $options = array();
+        $values  = array();
+
+        if ($this->getValues()) {
+            if (!is_array($this->getValues())) {
+                $options = array($this->getValues());
+            }
+            else {
+                $options = $this->getValues();
+            }
+        }
+        elseif ($this->getOptions() && is_array($this->getOptions())) {
+            $options = $this->getOptions();
         }
 
-        if ($values = $this->getValues()) {
-            foreach ($values as $option) {
-                if (is_array($option['value'])) {
-                    $html.='<optgroup label="'.$optionInfo['label'].'">'."\n";
-                    foreach ($optionInfo['value'] as $groupItem) {
-                        $html.= $this->_optionToHtml($groupItem, $value);
-                    }
-                    $html.='</optgroup>'."\n";
+        foreach ($options as $k => $v) {
+            if (is_string($v)) {
+                $values[] = array(
+                    'label' => $v,
+                    'value' => $k
+                );
+            }
+            elseif (isset($v['value'])) {
+                if (!isset($v['label'])) {
+                    $v['label'] = $v['value'];
                 }
-                else {
-                    $html.= $this->_optionToHtml($option, $value);
-                }
+                $values[] = array(
+                    'label' => $v['label'],
+                    'value' => $v['value']
+                );
             }
         }
 
-        $html.= '</select>'."\n";
-        $html.= $this->getAfterElementHtml();
+        return $values;
+    }
+
+    /**
+     * Retrieve HTML
+     *
+     * @return string
+     */
+    public function getElementHtml()
+    {
+        $values = $this->_prepareValues();
+
+        if (!$values) {
+            return '';
+        }
+
+        $html  = '<ul class="checkboxes">';
+        foreach ($values as $value) {
+            $html.= $this->_optionToHtml($value);
+        }
+        $html .= '</ul>'
+            . $this->getAfterElementHtml();
+
         return $html;
     }
 
-    public function getHtmlAttributes()
+    public function getChecked($value)
     {
-        return array('title', 'class', 'style', 'onclick', 'onchange', 'disabled', 'size');
-    }
-
-    public function getDefaultHtml()
-    {
-    	$result = ( $this->getNoSpan() === true ) ? '' : '<span class="field-row">'."\n";
-        $result.= $this->getLabelHtml();
-        $result.= $this->getElementHtml();
-
-
-        if($this->getSelectAll() && $this->getDeselectAll()) {
-    		$result.= '<a href="#" onclick="return ' . $this->getJsObjectName() . '.selectAll()">' . $this->getSelectAll() . '</a> <span class="separator">&nbsp;|&nbsp;</span>';
-    		$result.= '<a href="#" onclick="return ' . $this->getJsObjectName() . '.deselectAll()">' . $this->getDeselectAll() . '</a>';
-    	}
-
-        $result.= ( $this->getNoSpan() === true ) ? '' : '</span>'."\n";
-
-
-    	$result.= '<script type="text/javascript">' . "\n";
-    	$result.= '   var ' . $this->getJsObjectName() . ' = {' . "\n";
-    	$result.= '   	selectAll: function() { ' . "\n";
-    	$result.= '   		var sel = $("' . $this->getHtmlId() . '");' . "\n";
-    	$result.= '   		for(var i = 0; i < sel.options.length; i ++) { ' . "\n";
-    	$result.= '   			sel.options[i].selected = true; ' . "\n";
-    	$result.= '   		} ' . "\n";
-    	$result.= '   		return false; ' . "\n";
-    	$result.= '   	},' . "\n";
-    	$result.= '   	deselectAll: function() {' . "\n";
-		$result.= '   		var sel = $("' . $this->getHtmlId() . '");' . "\n";
-		$result.= '   		for(var i = 0; i < sel.options.length; i ++) { ' . "\n";
-    	$result.= '   			sel.options[i].selected = false; ' . "\n";
-    	$result.= '   		} ' . "\n";
-    	$result.= '   		return false; ' . "\n";
-    	$result.= '   	}' . "\n";
-    	$result.= '  }' . "\n";
-    	$result.= "\n</script>";
-
-    	return $result;
-    }
-
-    public function getJsObjectName() {
-    	 return $this->getHtmlId() . 'ElementControl';
-    }
-
-    protected function _optionToHtml($option, $selected)
-    {
-        $id = $this->getHtmlId().'.'.$this->_escape($option['value']);
-        $html = '<li><input type="checkbox" id="'.$id.'" name="'.$this->getName().'" class="input-checkbox" value="'.$this->_escape($option['value']).'"';
-        $html.= isset($option['title']) ? 'title="'.$option['title'].'"' : '';
-        $html.= isset($option['style']) ? 'style="'.$option['style'].'"' : '';
-        if (in_array($option['value'], $selected)) {
-            $html.= ' checked="selected"';
+        if ($checked = $this->getValue()) {
         }
-        $html.= '/><label for="'.$id.'">'.$option['label']. '</label></li>'."\n";
+        elseif ($checked = $this->getData('checked')) {
+        }
+        else {
+            return ;
+        }
+        if (!is_array($checked)) {
+            $checked = array(strval($checked));
+        }
+        else {
+            foreach ($checked as $k => $v) {
+                $checked[$k] = strval($v);
+            }
+        }
+
+        if (array_search(strval($value), $checked)) {
+            return 'checked';
+        }
+        return ;
+    }
+
+    public function getDisabled($value)
+    {
+        if ($disabled = $this->getData('disabled')) {
+            if (!is_array($disabled)) {
+                $disabled = array(strval($disabled));
+            }
+            else {
+                foreach ($disabled as $k => $v) {
+                    $disabled[$k] = strval($v);
+                }
+            }
+            if (array_search(strval($value), $disabled)) {
+                return 'disabled';
+            }
+        }
+        return ;
+    }
+
+    public function getOnclick($value)
+    {
+        if ($onclick = $this->getData('onclick')) {
+            return str_replace('$value', $value, $onclick);
+        }
+        return ;
+    }
+
+    public function getOnchange($value)
+    {
+        if ($onchange = $this->getData('onchange')) {
+            return str_replace('$value', $value, $onchange);
+        }
+        return ;
+    }
+
+//    public function getName($value)
+//    {
+//        if ($name = $this->getData('name')) {
+//            return str_replace('$value', $value, $name);
+//        }
+//        return ;
+//    }
+
+    protected function _optionToHtml($option)
+    {
+        $id = $this->getHtmlId().'_'.$this->_escape($option['value']);
+
+        $html = '<li><input id="'.$id.'"';
+        foreach ($this->getHtmlAttributes() as $attribute) {
+            if ($value = $this->getDataUsingMethod($attribute, $option['value'])) {
+                $html .= ' '.$attribute.'="'.$value.'"';
+            }
+        }
+        $html .= ' value="'.$option['value'].'" />'
+            . ' <label for="'.$id.'">' . $option['label'] . '</label></li>'
+            . "\n";
         return $html;
     }
 }

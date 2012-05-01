@@ -11,7 +11,7 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 var AdminOrder = new Class.create();
@@ -43,12 +43,16 @@ AdminOrder.prototype = {
     setCustomerId : function(id){
         this.customerId = id;
         this.loadArea('header', true);
+        $(this.getAreaId('header')).callback = 'setCustomerAfter';
         $('back_order_top_button').hide();
         $('reset_order_top_button').show();
+    },
+
+    setCustomerAfter : function () {
         this.customerSelectorHide();
         if (this.storeId) {
             $(this.getAreaId('data')).callback = 'dataShow';
-            this.loadArea(['header', 'data'], true);
+            this.loadArea(['data'], true);
         }
         else {
             this.storeSelectorShow();
@@ -670,13 +674,13 @@ AdminOrder.prototype = {
         else {
             parentEl.addClassName('ignore-validate');
         }
-        
+
         if (Prototype.Browser.IE) {
             parentEl.getElementsBySelector('select').each(function (elem) {
                 show ? elem .show() : elem.hide();
             });
         }
-        
+
         el.setStyle({
             display: show ? 'none' : '',
             position: 'absolute',

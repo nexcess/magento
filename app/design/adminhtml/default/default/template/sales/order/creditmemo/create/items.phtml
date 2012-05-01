@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -81,14 +81,14 @@
 <input type="hidden" name="creditmemo[do_offline]" id="creditmemo_do_offline" value="0" />
 
 <div class="box-left entry-edit">
-    <div class="entry-edit-head"><h4>Credit Memo Comments</h4></div>
+    <div class="entry-edit-head"><h4><?php echo Mage::helper('sales')->__('Credit Memo Comments') ?></h4></div>
     <fieldset id="history_form">
     <label class="normal" for="creditmemo_comment_text"><?php echo Mage::helper('sales')->__('Credit Memo Comments') ?></label><br/>
-    <textarea id="creditmemo_comment_text" name="creditmemo[comment_text]" rows="3" cols="5" style="width:95%;"></textarea>
+    <textarea id="creditmemo_comment_text" name="creditmemo[comment_text]" rows="3" cols="5" style="width:98%;"></textarea>
     </fieldset>
 </div>
 <div class="box-right entry-edit">
-    <div class="entry-edit-head"><h4>Refund Totals</h4></div>
+    <div class="entry-edit-head"><h4><?php echo Mage::helper('sales')->__('Refund Totals') ?></h4></div>
     <div class="order-totals">
 				<?php echo $this->getChildHtml('order_totals') ?>
         <div class="order-totals-bottom">

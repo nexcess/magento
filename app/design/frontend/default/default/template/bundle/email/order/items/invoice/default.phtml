@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -37,7 +37,7 @@
     <?php $attributes = $this->getSelectionAttributes($_item) ?>
     <?php if ($_prevOptionId != $attributes['option_id']): ?>
     <tr>
-        <td align="left" valign="top" style="padding:3px 24px"><strong><?php echo $attributes['option_label'] ?></strong></td>
+        <td align="left" valign="top" style="padding:3px 9px"><strong><em><?php echo $attributes['option_label'] ?></em></strong></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
@@ -47,13 +47,9 @@
 <?php endif; ?>
 <tr id="order-item-row-<?php echo $_item->getId() ?>">
     <?php if (!$_item->getOrderItem()->getParentItem()): ?>
-    <td align="left" valign="top" style="padding:3px 9px">
-        <?php echo $this->htmlEscape($_item->getName()) ?>
-    </td>
+    <td align="left" valign="top" style="padding:3px 9px"><?php echo $this->htmlEscape($_item->getName()) ?></td>
     <?php else: ?>
-    <td align="left" valign="top" style="padding:3px 24px">
-        <?php echo $this->getValueHtml($_item)?>
-    </td>
+    <td align="left" valign="top" style="padding:3px 19px"><?php echo $this->getValueHtml($_item)?></td>
     <?php endif; ?>
     <td align="center" valign="top" style="padding:3px 9px"><?php echo $_item->getSku() ?></td>
     <td align="center" valign="top" style="padding:3px 9px">
@@ -77,11 +73,12 @@
 <tr>
     <td align="left" valign="top" style="padding:3px 9px">
         <?php if ($this->getItemOptions()): ?>
-        <ul style="list-style:none;margin:0; padding:0;">
+        <dl style="margin:0; padding:0;">
             <?php foreach ($this->getItemOptions() as $option): ?>
-            <li><strong><?php echo $option['label'] ?>:</strong><br /><?php echo $option['value'] ?></li>
+            <dt><strong><em><?php echo $option['label'] ?></em></strong></dt>
+            <dd style="margin:0; padding:0 0 0 9px;"><?php echo $option['value'] ?></dd>
             <?php endforeach; ?>
-        </ul>
+        </dl>
         <?php endif; ?>
         <?php echo $_item->getDescription() ?>
     </td>

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -55,6 +55,16 @@ abstract class Mage_Catalog_Model_Layer_Filter_Abstract extends Varien_Object
     public function getRequestVar()
     {
         return $this->_requestVar;
+    }
+
+    /**
+     * Get filter value for reset current filter state
+     *
+     * @return mixed
+     */
+    public function getResetValue()
+    {
+        return null;
     }
 
     /**
@@ -123,6 +133,11 @@ abstract class Mage_Catalog_Model_Layer_Filter_Abstract extends Varien_Object
     protected function _getFilterEntityIds()
     {
         return $this->getLayer()->getProductCollection()->getAllIdsCache();
+    }
+
+    protected function _getBaseCollectionSql()
+    {
+        return $this->getLayer()->getProductCollection()->getSelect();
     }
 
     public function setAttributeModel($attribute)

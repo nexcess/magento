@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Rss
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -38,38 +38,32 @@ class Mage_Rss_Block_Catalog_Tag extends Mage_Rss_Block_Abstract
 
     protected function _toHtml()
     {
-         //store id is store view id
-         $storeId = $this->_getStoreId();
-         $tagName = $this->getRequest()->getParam('tagName');
+        //store id is store view id
+        $storeId = $this->_getStoreId();
+        $tagModel = Mage::registry('tag_model');
+        $newurl = Mage::getUrl('rss/catalog/new');
+        $title = Mage::helper('rss')->__('Products tagged with %s', $tagModel->getName());
+        $lang = Mage::getStoreConfig('general/locale/code');
 
-         $tagModel = Mage::getModel('tag/tag');
-         $tagModel->loadByName($tagName);
+        $rssObj = Mage::getModel('rss/rss');
+        $data = array('title' => $title,
+            'description' => $title,
+            'link'        => $newurl,
+            'charset'     => 'UTF-8',
+            'language'    => $lang
+        );
+        $rssObj->_addHeader($data);
 
-         if ($tagModel->getId() && $tagModel->getStatus()==$tagModel->getApprovedStatus()) {
-            $newurl = Mage::getUrl('rss/catalog/new');
-            $title = Mage::helper('rss')->__('Products tagged with %s', $tagModel->getName());
-            $lang = Mage::getStoreConfig('general/locale/code');
+        $_collection = $tagModel->getEntityCollection()
+            ->addTagFilter($tagModel->getId())
+            ->addStoreFilter($storeId);
 
-            $rssObj = Mage::getModel('rss/rss');
-            $data = array('title' => $title,
-                'description' => $title,
-                'link'        => $newurl,
-                'charset'     => 'UTF-8',
-                'language'    => $lang
-            );
-            $rssObj->_addHeader($data);
+        $product = Mage::getModel('catalog/product');
 
-            $_collection = $tagModel->getEntityCollection()
-                ->addTagFilter($tagModel->getId())
-                ->addStoreFilter($storeId);
+        Mage::getSingleton('core/resource_iterator')
+                ->walk($_collection->getSelect(), array(array($this, 'addTaggedItemXml')), array('rssObj'=> $rssObj, 'product'=>$product));
 
-            $product = Mage::getModel('catalog/product');
-
-            Mage::getSingleton('core/resource_iterator')
-                    ->walk($_collection->getSelect(), array(array($this, 'addTaggedItemXml')), array('rssObj'=> $rssObj, 'product'=>$product));
-
-            return $rssObj->createRssXml();
-         }
+        return $rssObj->createRssXml();
     }
 
     public function addTaggedItemXml($args)

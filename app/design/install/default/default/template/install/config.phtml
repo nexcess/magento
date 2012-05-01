@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -77,6 +77,13 @@
         <li>
             <label for="base_url"><?php echo $this->__('Base URL') ?> <span class="required">*</span></label><br/>
             <input type="text" name="config[unsecure_base_url]" id="base_url" value="<?php echo $this->getFormData()->getUnsecureBaseUrl() ?>" title="<?php echo $this->__('Base URL') ?>" class="required-entry input-text"/>
+        </li>
+        <li>
+            <label for="admin_frontname"><?php echo $this->__('Admin Path') ?> <span class="required">*</span></label><br/>
+            <input type="text" name="config[admin_frontname]" id="admin_frontname" value="<?php echo $this->getFormData()->getAdminFrontname() ?>" title="<?php echo $this->__('Admin Path') ?>" class="required-entry validate-data input-text"/>
+            <p style="margin-top:4px; line-height:1.3em; color:#666;">
+                <small><?php echo $this->__('Additional path added after Base URL to access your Administrative Panel (e.g. admin, backend, control etc.).') ?></small>
+            </p>
         </li>
         <li>
             <input type="checkbox" name="skip_base_url_validation" id="skip_base_url_validation" value="1" <?php if($this->getSkipBaseUrlValidation()): ?>checked="checked"<?php endif ?>>

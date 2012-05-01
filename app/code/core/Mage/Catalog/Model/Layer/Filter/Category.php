@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -28,6 +28,7 @@
 class Mage_Catalog_Model_Layer_Filter_Category extends Mage_Catalog_Model_Layer_Filter_Abstract
 {
     protected $_categoryId;
+    protected $_appliedCategory = null;
 
     public function __construct()
     {
@@ -35,20 +36,39 @@ class Mage_Catalog_Model_Layer_Filter_Category extends Mage_Catalog_Model_Layer_
         $this->_requestVar = 'cat';
     }
 
+    /**
+     * Get filter value for reset current filter state
+     *
+     * @return mixed
+     */
+    public function getResetValue()
+    {
+        if ($this->_appliedCategory) {
+            /**
+             * Revert path ids
+             */
+        	$pathIds = array_reverse($this->_appliedCategory->getPathIds());
+        	$curCategoryId = $this->getLayer()->getCurrentCategory()->getId();
+            if (isset($pathIds[1]) && $pathIds[1] != $curCategoryId) {
+            	return $pathIds[1];
+            }
+        }
+        return null;
+    }
+
     public function apply(Zend_Controller_Request_Abstract $request, $filterBlock)
     {
         $filter = (int) $request->getParam($this->getRequestVar());
         $this->_categoryId = $filter;
-        $category = Mage::getModel('catalog/category')->load($filter);
+        $this->_appliedCategory = Mage::getModel('catalog/category')->load($filter);
 
-        if ($this->_isValidCategory($category)) {
+        if ($this->_isValidCategory($this->_appliedCategory)) {
             $this->getLayer()->getProductCollection()
-                ->addCategoryFilter($category, true);
+                ->addCategoryFilter($this->_appliedCategory, true);
 
             $this->getLayer()->getState()->addFilter(
-                $this->_createItem($category->getName(), $filter)
+                $this->_createItem($this->_appliedCategory->getName(), $filter)
             );
-            //$this->_items = array();
         }
 
         return $this;

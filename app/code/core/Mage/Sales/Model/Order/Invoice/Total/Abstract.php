@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -24,21 +24,5 @@ abstract class Mage_Sales_Model_Order_Invoice_Total_Abstract
     public function collect(Mage_Sales_Model_Order_Invoice $invoice)
     {
         return $this;
-    }
-
-    public function isItemSkipped(Mage_Sales_Model_Order_Invoice_Item $item)
-    {
-        /**
-         * Skipping child if parent price calculated by itself
-         */
-        if ($orderItem = $item->getOrderItem()->getParentItem()) {
-            return !$orderItem->isChildrenCalculated();
-        } else {
-            /**
-             * Skipping parent if its price calculated by childs
-             */
-            return $item->getOrderItem()->isChildrenCalculated();
-        }
-        return false;
     }
 }

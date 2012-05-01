@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -102,7 +102,7 @@ abstract class Mage_Eav_Model_Entity_Attribute_Frontend_Abstract implements Mage
         elseif ($this->getConfigField('input')=='multiselect') {
             $value = $this->getOption($value);
             if (is_array($value)) {
-                $value = implode(',', $value);
+                $value = implode(', ', $value);
             }
         }
         return $value;

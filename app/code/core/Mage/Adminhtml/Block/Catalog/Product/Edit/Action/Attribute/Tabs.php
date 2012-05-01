@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -28,37 +28,12 @@
  */
 class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tabs extends Mage_Adminhtml_Block_Widget_Tabs
 {
-
-    public function __construct()
+    protected function _construct()
     {
-        parent::__construct();
+        parent::_construct();
+
         $this->setId('attributes_update_tabs');
         $this->setDestElementId('attributes_edit_form');
         $this->setTitle(Mage::helper('catalog')->__('Products Information'));
     }
-
-    protected function _prepareLayout()
-    {
-        $this->addTab('attributes', array(
-            'label'     => Mage::helper('catalog')->__('Attributes'),
-            'content'   => $this->getLayout()->createBlock(
-                                'adminhtml/catalog_product_edit_action_attribute_tab_attributes'
-                           )->toHtml(),
-        ));
-
-        $this->addTab('inventory', array(
-            'label'     => Mage::helper('catalog')->__('Inventory'),
-            'content'   => $this->getLayout()->createBlock(
-                                'adminhtml/catalog_product_edit_action_attribute_tab_inventory'
-                           )->toHtml(),
-        ));
-
-        $this->addTab('websites', array(
-            'label'     => Mage::helper('catalog')->__('Websites'),
-            'content'   => $this->getLayout()->createBlock(
-                                'adminhtml/catalog_product_edit_action_attribute_tab_websites'
-                           )->toHtml(),
-        ));
-    }
-
 }

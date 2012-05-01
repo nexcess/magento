@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -29,44 +29,47 @@
 class Mage_Catalog_Block_Product_List_Upsell extends Mage_Catalog_Block_Product_Abstract
 {
     protected $_columnCount = 4;
+
     protected $_items;
+
     protected $_itemCollection;
+
     protected $_itemLimits = array();
 
     protected function _prepareData()
     {
-        $collection = Mage::registry('product')->getUpSellProductCollection()
+        $product = Mage::registry('product');
+        /* @var $product Mage_Catalog_Model_Product */
+        $this->_itemCollection = $product->getUpSellProductCollection()
             ->addAttributeToSelect(Mage::getSingleton('catalog/config')->getProductAttributes())
             ->addAttributeToSort('position', 'asc')
             ->addStoreFilter()
             ->addMinimalPrice()
             ->addExcludeProductFilter(Mage::getSingleton('checkout/cart')->getProductIds());
 
-        Mage::getSingleton('catalog/product_status')->addSaleableFilterToCollection($collection);
-        Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($collection);
+//        Mage::getSingleton('catalog/product_status')->addSaleableFilterToCollection($this->_itemCollection);
+        Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($this->_itemCollection);
 
         if ($this->getItemLimit('upsell') > 0) {
-            $collection->setPageSize($this->getItemLimit('upsell'));
+            $this->_itemCollection->setPageSize($this->getItemLimit('upsell'));
         }
 
-        $collection->load();
+        $this->_itemCollection->load();
 
         /**
          * Updating collection with desired items
          */
         Mage::dispatchEvent('catalog_product_upsell', array(
-                'product'=>Mage::registry('product'),
-                'collection'=>$collection,
-                'limit'=>$this->getItemLimit()));
-
-        $this->_itemCollection = $collection;
+            'product'       => $product,
+            'collection'    => $this->_itemCollection,
+            'limit'         => $this->getItemLimit()
+        ));
 
         foreach ($this->_itemCollection as $product) {
             $product->setDoNotUseCategoryId(true);
         }
 
         return $this;
-
     }
 
     protected function _beforeToHtml()
@@ -80,7 +83,8 @@ class Mage_Catalog_Block_Product_List_Upsell extends Mage_Catalog_Block_Product_
         return $this->_itemCollection;
     }
 
-    public function getItems() {
+    public function getItems()
+    {
         if (is_null($this->_items)) {
             $this->_items = $this->getItemCollection()->getItems();
         }
@@ -141,9 +145,9 @@ class Mage_Catalog_Block_Product_List_Upsell extends Mage_Catalog_Block_Product_
         }
         if (isset($this->_itemLimits[$type])) {
             return $this->_itemLimits[$type];
-        } else {
+        }
+        else {
             return 0;
         }
     }
-
-}// Mage_Catalog_Block_Product_Link_Upsell END
+}

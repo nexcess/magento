@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -31,8 +31,8 @@ class Mage_Adminhtml_Block_Checkout_Agreement extends Mage_Adminhtml_Block_Widge
     public function __construct()
     {
         $this->_controller      = 'checkout_agreement';
-        $this->_headerText      = Mage::helper('checkout')->__('Manage Checkout Agreements');
-        $this->_addButtonLabel  = Mage::helper('checkout')->__('Add New Agreement');
+        $this->_headerText      = Mage::helper('checkout')->__('Manage Checkout Terms and Conditions');
+        $this->_addButtonLabel  = Mage::helper('checkout')->__('Add New Condition');
         parent::__construct();
     }
 }

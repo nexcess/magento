@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -110,7 +110,8 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category extends Mage_Catalog_Model
             $this->_savePath($object);
             //$this->save($object);
         }
-
+        $categoryIds = explode('/', $object->getPath());
+        $this->refreshProductIndex($categoryIds);
         return parent::_afterSave($object);
     }
 
@@ -411,5 +412,39 @@ class Mage_Catalog_Model_Resource_Eav_Mysql4_Category extends Mage_Catalog_Model
             $this->_isActiveAttributeId = $this->_getReadAdapter()->fetchOne($select);
         }
         return $this->_isActiveAttributeId;
+    }
+
+    public function refreshProductIndex($categoryIds = array())
+    {
+        $select = $this->_getReadAdapter()->select()
+            ->from($this->getTable('catalog/category'))
+            ->order('level')
+            ->order('path');
+        if (is_array($categoryIds) && !empty($categoryIds)) {
+        	$select->where('entity_id IN (?)', $categoryIds);
+        }
+        elseif (is_numeric($categoryIds)) {
+        	$select->where('entity_id=?', $categoryIds);
+        }
+
+        $categories = $this->_getWriteAdapter()->fetchAll($select);
+        $indexTable = $this->getTable('catalog/category_product_index');
+        foreach ($categories as $category) {
+            $categoryId = $category['entity_id'];
+            $this->_getWriteAdapter()->delete($indexTable, 'category_id='.$categoryId);
+
+            $query = "INSERT INTO {$indexTable}
+            SELECT $categoryId, product_id, position, $categoryId=category_id as is_parent
+             FROM {$this->getTable('catalog/category_product')}
+            WHERE category_id IN(
+                SELECT entity_id FROM {$this->getTable('catalog/category')}
+                WHERE path LIKE '{$category['path']}%'
+            )
+            GROUP BY product_id
+            ORDER BY is_parent desc";
+
+            $this->_getWriteAdapter()->query($query);
+        }
+        return $this;
     }
 }

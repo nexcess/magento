@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -65,26 +65,6 @@ class Mage_Catalog_Block_Product_View extends Mage_Catalog_Block_Product_Abstrac
         return Mage::registry('product');
     }
 
-    public function getAdditionalData()
-    {
-        $data = array();
-        $product = $this->getProduct();
-        $attributes = $product->getAttributes();
-        foreach ($attributes as $attribute) {
-            if ($attribute->getIsVisibleOnFront() && $attribute->getIsUserDefined()) {
-
-                $value = $attribute->getFrontend()->getValue($product);
-                if (strlen($value) && $product->hasData($attribute->getAttributeCode())) {
-                    $data[$attribute->getAttributeCode()] = array(
-                       'label' => $attribute->getFrontend()->getLabel(),
-                       'value' => $value//$product->getData($attribute->getAttributeCode())
-                    );
-                }
-            }
-        }
-        return $data;
-    }
-
     public function canEmailToFriend()
     {
         $sendToFriendModel = Mage::registry('send_to_friend_model');
@@ -118,18 +98,46 @@ class Mage_Catalog_Block_Product_View extends Mage_Catalog_Block_Product_Abstrac
         $_priceInclTax = Mage::helper('tax')->getPrice($this->getProduct(), $_finalPrice, true);
         $_priceExclTax = Mage::helper('tax')->getPrice($this->getProduct(), $_finalPrice);
 
+        $idSuffix = '__none__';
+        if ($this->hasOptions()) {
+            $idSuffix = '_clone';
+        }
+
         $config = array(
-            'productId' => $this->getProduct()->getId(),
-            'priceFormat' => Mage::app()->getLocale()->getJsPriceFormat(),
-            'includeTax' => Mage::helper('tax')->priceIncludesTax() ? 'true' : 'false',
+            'productId'      => $this->getProduct()->getId(),
+            'priceFormat'    => Mage::app()->getLocale()->getJsPriceFormat(),
+            'includeTax'     => Mage::helper('tax')->priceIncludesTax() ? 'true' : 'false',
             'showIncludeTax' => $this->helper('tax')->displayPriceIncludingTax(),
-            'productPrice' => Mage::helper('core')->currency($_finalPrice, false, false),
-            'skipCalculate' => ($_priceExclTax != $_priceInclTax ? 0 : 1),
-            'defaultTax' => $defaultTax,
-            'currentTax' => $currentTax
+            'productPrice'   => Mage::helper('core')->currency($_finalPrice, false, false),
+            'skipCalculate'  => ($_priceExclTax != $_priceInclTax ? 0 : 1),
+            'defaultTax'     => $defaultTax,
+            'currentTax'     => $currentTax,
+            'idSuffix'       => $idSuffix
         );
 
         return Zend_Json::encode($config);
     }
 
+    /**
+     * Return true if product has options
+     *
+     * @return bool
+     */
+    public function hasOptions()
+    {
+        if ($this->getProduct()->getTypeInstance()->hasOptions()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if product has required options
+     *
+     * @return bool
+     */
+    public function hasRequiredOptions()
+    {
+        return $this->getProduct()->getTypeInstance()->hasRequiredOptions();
+    }
 }

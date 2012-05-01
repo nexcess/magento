@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -106,6 +106,12 @@
                     <td class="value"><strong><?php echo Mage::helper('core')->formatDate($_dob, 'medium') ?></strong></td>
                 </tr>
                 <?php endif; ?>
+                <?php if ($_taxvat = $_order->getCustomerTaxvat()):?>
+                <tr>
+                    <td class="label"><label><?php echo Mage::helper('sales')->__('TAX/VAT Number') ?></label></label></td>
+                    <td class="value"><strong><?php echo $this->htmlEscape($_taxvat)?></strong></td>
+                </tr>
+                <?php endif;?>
                 </table>
               </div>
             </div>

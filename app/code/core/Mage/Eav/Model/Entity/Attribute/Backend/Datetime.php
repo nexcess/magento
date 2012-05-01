@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -32,7 +32,13 @@ class Mage_Eav_Model_Entity_Attribute_Backend_Datetime extends Mage_Eav_Model_En
     		return null;
     	}
         if (!is_numeric($date)) {
-            $date = strtotime($date);
+            $_date = Mage::app()->getLocale()->date(
+                    $date,
+                    Mage::app()->getLocale()->getDateFormat(Mage_Core_Model_Locale::FORMAT_TYPE_SHORT),
+                    Mage::app()->getDistroLocaleCode(),
+                    false
+                );
+            $date = strtotime($_date->toString());
         }
         if ($date == -1){
             return null;

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Backup
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -102,8 +102,8 @@ class Mage_Backup_Model_Db
         $backup->write($this->getResource()->getHeader());
 
         foreach ($tables as $table) {
-            $backup->write("\n" . $this->getResource()->getTableDropSql($table) . "\n");
-            $backup->write($this->getResource()->getTableCreateSql($table, false) . "\n\n");
+            $backup->write($this->getResource()->getTableHeader($table) . $this->getResource()->getTableDropSql($table) . "\n");
+            $backup->write($this->getResource()->getTableCreateSql($table, false) . "\n");
 
             $tableStatus = $this->getResource()->getTableStatus($table);
 

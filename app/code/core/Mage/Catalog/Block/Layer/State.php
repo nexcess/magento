@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -27,12 +27,12 @@
  */
 class Mage_Catalog_Block_Layer_State extends Mage_Core_Block_Template
 {
-    public function __construct() 
+    public function __construct()
     {
         parent::__construct();
         $this->setTemplate('catalog/layer/state.phtml');
     }
-    
+
     public function getActiveFilters()
     {
         $filters = Mage::getSingleton('catalog/layer')->getState()->getFilters();
@@ -41,9 +41,17 @@ class Mage_Catalog_Block_Layer_State extends Mage_Core_Block_Template
         }
         return $filters;
     }
-    
+
     public function getClearUrl()
     {
-        return Mage::getUrl('*/*/*', array('id'=>$this->getRequest()->getParam('id')));
+        $filterState = array();
+        foreach ($this->getActiveFilters() as $item) {
+            $filterState[$item->getFilter()->getRequestVar()] = $item->getFilter()->getResetValue();
+        }
+        $params = $filterState;
+        $params['_current'] = true;
+        $params['_use_rewrite'] = true;
+        $params['_query']   = $filterState;
+        return Mage::getUrl('*/*/*', $params);
     }
 }

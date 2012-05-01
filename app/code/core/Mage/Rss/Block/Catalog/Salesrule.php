@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Rss
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -63,10 +63,10 @@ class Mage_Rss_Block_Catalog_Salesrule extends Mage_Rss_Block_Abstract
         $collection = $_saleRule->getResourceCollection()
                     ->addFieldToFilter('from_date', array('date'=>true, 'to' => $now))
                     ->addFieldToFilter('website_ids',array('finset' => $websiteId))
-        			->addFieldToFilter('customer_group_ids', array('finset' => $custGroup))
-        			->addFieldToFilter('is_rss',1)
-        			->addFieldToFilter('is_active',1)
-        			->setOrder('from_date','desc');
+                    ->addFieldToFilter('customer_group_ids', array('finset' => $custGroup))
+                    ->addFieldToFilter('is_rss',1)
+                    ->addFieldToFilter('is_active',1)
+                    ->setOrder('from_date','desc');
         $collection->getSelect()->where('to_date is null or to_date>=?', $now);
         $collection->load();
 
@@ -76,7 +76,7 @@ class Mage_Rss_Block_Catalog_Salesrule extends Mage_Rss_Block_Abstract
             $description = '<table><tr>'.
             '<td style="text-decoration:none;">'.$sr->getDescription().
             '<br/>Discount Start Date: '.$this->formatDate($sr->getFromDate(), 'medium').
-            '<br/>Discount End Date: '.$this->formatDate($sr->getToDate(), 'medium').
+            ( $sr->getToDate() ? ('<br/>Discount End Date: '.$this->formatDate($sr->getToDate(), 'medium')):'').
             ($sr->getCouponCode() ? '<br/> Coupon Code: '.$sr->getCouponCode().'' : '').
             '</td>'.
             '</tr></table>';

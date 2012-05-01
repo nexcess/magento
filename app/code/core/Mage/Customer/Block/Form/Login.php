@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -27,12 +27,14 @@
  */
 class Mage_Customer_Block_Form_Login extends Mage_Core_Block_Template
 {
+    private $_username = -1;
+
     protected function _prepareLayout()
     {
         $this->getLayout()->getBlock('head')->setTitle(Mage::helper('customer')->__('Customer Login'));
         return parent::_prepareLayout();
     }
-    
+
     /**
      * Retrieve form posting url
      *
@@ -42,7 +44,7 @@ class Mage_Customer_Block_Form_Login extends Mage_Core_Block_Template
     {
         return $this->helper('customer')->getLoginPostUrl();
     }
-    
+
     /**
      * Retrieve create new account url
      *
@@ -56,7 +58,7 @@ class Mage_Customer_Block_Form_Login extends Mage_Core_Block_Template
         }
         return $url;
     }
-    
+
     /**
      * Retrieve password forgotten url
      *
@@ -66,7 +68,7 @@ class Mage_Customer_Block_Form_Login extends Mage_Core_Block_Template
     {
         return $this->helper('customer')->getForgotPasswordUrl();
     }
-    
+
     /**
      * Retrieve username for form field
      *
@@ -74,6 +76,9 @@ class Mage_Customer_Block_Form_Login extends Mage_Core_Block_Template
      */
     public function getUsername()
     {
-        return Mage::getSingleton('customer/session')->getUsername(true);
+        if (-1 === $this->_username) {
+            $this->_username = Mage::getSingleton('customer/session')->getUsername(true);
+        }
+        return $this->_username;
     }
 }

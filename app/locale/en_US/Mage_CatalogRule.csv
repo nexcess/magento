@@ -56,7 +56,7 @@
 "Status","Status"
 "Stop further rules processing","Stop further rules processing"
 "The page you are trying to save no longer exists","The page you are trying to save no longer exists"
-"There are rules that has been changed but not applied. To see immediate effect in catalog, please click Apply Rules","There are rules that has been changed but not applied. To see immediate effect in catalog, please click Apply Rules"
+"There are rules that have been changed but not applied. Please, click Apply Rules in order to see immediate effect in catalog.","There are rules that have been changed but not applied. Please, click Apply Rules in order to see immediate effect in catalog."
 "This rule no longer exists","This rule no longer exists"
 "To Date","To Date"
 "Unable to apply rules","Unable to apply rules"

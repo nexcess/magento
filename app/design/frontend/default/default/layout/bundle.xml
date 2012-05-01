@@ -15,7 +15,7 @@
  *
  * @category   design_default
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -175,25 +175,27 @@ Additional block for bundle product type
         <reference name="head">
             <action method="addItem"><type>skin_js</type><name>js/bundle.js</name></action>
         </reference>
-
         <reference name="product.info">
             <block type="bundle/catalog_product_view_type_bundle" name="product.info.bundle" as="product_type_data" template="bundle/catalog/product/view/type/bundle.phtml">
                 <action method="addPriceBlockType"><type>bundle</type><block>bundle/catalog_product_price</block><template>bundle/catalog/product/price.phtml</template></action>
+                <block type="bundle/catalog_product_price" name="bundle.prices" as="bundle_prices" template="bundle/catalog/product/view/price.phtml" />
             </block>
         </reference>
-
-        <block type="bundle/catalog_product_view_type_bundle" name="product.info.bundle.options" as="type_bundle_options" template="bundle/catalog/product/view/type/bundle/options.phtml">
-            <action method="addRenderer"><type>select</type><block>bundle/catalog_product_view_type_bundle_option_select</block></action>
-            <action method="addRenderer"><type>multi</type><block>bundle/catalog_product_view_type_bundle_option_multi</block></action>
-            <action method="addRenderer"><type>radio</type><block>bundle/catalog_product_view_type_bundle_option_radio</block></action>
-            <action method="addRenderer"><type>checkbox</type><block>bundle/catalog_product_view_type_bundle_option_checkbox</block></action>
-        </block>
-
-        <reference name="product.info.container1">
-            <action method="insertBlockIfEquals"><block>product.info.bundle.options</block><if>alias_in_layout</if><equals>options_container</equals></action>
+        <reference name="product.info.options.wrapper">
+            <block type="bundle/catalog_product_view_type_bundle" name="product.info.bundle.options" as="type_bundle_options" template="bundle/catalog/product/view/type/bundle/options.phtml">
+                <action method="addRenderer"><type>select</type><block>bundle/catalog_product_view_type_bundle_option_select</block></action>
+                <action method="addRenderer"><type>multi</type><block>bundle/catalog_product_view_type_bundle_option_multi</block></action>
+                <action method="addRenderer"><type>radio</type><block>bundle/catalog_product_view_type_bundle_option_radio</block></action>
+                <action method="addRenderer"><type>checkbox</type><block>bundle/catalog_product_view_type_bundle_option_checkbox</block></action>
+            </block>
+            <action method="insert"><block>product.info.bundle.options</block></action>
         </reference>
-        <reference name="product.info.container2">
-            <action method="insertBlockIfEquals"><block>product.info.bundle.options</block><if>alias_in_layout</if><equals>options_container</equals></action>
+        <reference name="product.info.options.wrapper.bottom">
+            <remove name="product.tierprices" />
+            <block type="bundle/catalog_product_view" name="bundle.tierprices" as="tierprices" before="-" template="bundle/catalog/product/view/tierprices.phtml"/>
+        </reference>
+        <reference name="product.clone_prices">
+            <action method="addPriceBlockType"><type>bundle</type><block>bundle/catalog_product_price</block><template>bundle/catalog/product/view/price.phtml</template></action>
         </reference>
     </PRODUCT_TYPE_bundle>
 

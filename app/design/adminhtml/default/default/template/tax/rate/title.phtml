@@ -1,10 +1,10 @@
-<table class="dynamic-grid" cellspacing="0" id="tax-rate-titles-table">
-    <tr>
+<?php /* <table class="dynamic-grid" cellspacing="0" id="tax-rate-titles-table"> */ ?>
+    <tr class="dynamic-grid">
     <?php foreach ($this->getStores() as $_store): ?>
         <th><?php echo $_store->getName() ?></th>
     <?php endforeach; ?>
     </tr>
-    <tr>
+    <tr class="dynamic-grid">
         <?php $_labels = $this->getTitles() ?>
         <?php foreach ($this->getStores() as $_store): ?>
         <td>
@@ -12,9 +12,9 @@
         </td>
         <?php endforeach; ?>
     </tr>
-    <tr>
+    <tr class="dynamic-grid">
         <td colspan="<?php echo count($this->getStores()); ?>" class="tax-rate-titles-note-td">
             Note: Leave empty to use tax identifier
         </td>
     </tr>
-</table>
+<?php /* </table> */ ?>

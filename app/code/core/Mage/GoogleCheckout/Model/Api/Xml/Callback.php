@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_GoogleCheckout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -111,6 +111,7 @@ class Mage_GoogleCheckout_Model_Api_Xml_Callback extends Mage_GoogleCheckout_Mod
         $quoteId = $this->getData('root/shopping-cart/merchant-private-data/quote-id/VALUE');
         $quote = Mage::getModel('sales/quote')->load($quoteId);
 
+        $billingAddress = $quote->getBillingAddress();
         $address = $quote->getShippingAddress();
         $googleAddress = $this->getData('root/calculate/addresses/anonymous-address');
 
@@ -124,7 +125,12 @@ class Mage_GoogleCheckout_Model_Api_Xml_Callback extends Mage_GoogleCheckout_Mod
         foreach($googleAddresses as $googleAddress) {
             $addressId = $googleAddress['id'];
 
+
             $address->setCountryId($googleAddress['country-code']['VALUE'])
+                ->setRegion($googleAddress['region']['VALUE'])
+                ->setCity($googleAddress['city']['VALUE'])
+                ->setPostcode($googleAddress['postal-code']['VALUE']);
+            $billingAddress->setCountryId($googleAddress['country-code']['VALUE'])
                 ->setRegion($googleAddress['region']['VALUE'])
                 ->setCity($googleAddress['city']['VALUE'])
                 ->setPostcode($googleAddress['postal-code']['VALUE']);
@@ -164,7 +170,9 @@ class Mage_GoogleCheckout_Model_Api_Xml_Callback extends Mage_GoogleCheckout_Mod
 
                     if ($this->getData('root/calculate/tax/VALUE')=='true') {
                         $address->setCollectShippingRates(false)->collectTotals();
+                        $billingAddress->setCollectShippingRates(false)->collectTotals();
                         $taxAmount = $address->getTaxAmount();
+                        $taxAmount += $billingAddress->getTaxAmount();
                         $result->setTaxDetails($taxAmount);
                     }
 
@@ -188,8 +196,10 @@ class Mage_GoogleCheckout_Model_Api_Xml_Callback extends Mage_GoogleCheckout_Mod
                     }
                 }
             } elseif ($this->getData('root/calculate/tax/VALUE')=='true') {
+                $billingAddress->setCollectShippingRates(false)->collectTotals();
                 $address->setCollectShippingRates(false)->collectTotals();
                 $taxAmount = $address->getTaxAmount();
+                $taxAmount += $billingAddress->getTaxAmount();
                 $result = new GoogleResult($addressId);
                 $result->setTaxDetails($taxAmount);
                 $merchantCalculations->addResult($result);
@@ -445,15 +455,7 @@ class Mage_GoogleCheckout_Model_Api_Xml_Callback extends Mage_GoogleCheckout_Mod
     {
         $order = $this->getOrder();
 
-        $convertor  = Mage::getModel('sales/convert_order');
-        $invoice    = $convertor->toInvoice($order);
-
-        foreach ($order->getAllItems() as $orderItem) {
-            $item = $convertor->itemToInvoiceItem($orderItem);
-            $item->setQty($orderItem->getQtyOrdered());
-            $invoice->addItem($item);
-        }
-        $invoice->collectTotals();
+        $invoice = $order->prepareInvoice();
 
         if (!empty($data['comment_text'])) {
             $invoice->addComment(Mage::helper('googlecheckout')->__('Auto-generated from GoogleCheckout Charge'));

@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -225,10 +225,10 @@ billing.onSave = function(evt){
                 <h5 class="giftmessage-product-info"><?php echo $this->htmlEscape($_product->getName()) ?></h5>
                 <fieldset class="group-select no-padding no-border">
                     <input type="hidden" name="giftmessage[<?php echo $_item->getId() ?>][type]" value="quote_address_item"/>
+                    <input type="hidden" name="giftmessage[<?php echo $_item->getId() ?>][address]" value="<?php echo $this->getEntity()->getId()?>" />
                     <ul class="no-padding">
                         <li>
                             <div class="input-box">
-                                <input type="hidden" name="giftmessage[<?php echo $_item->getId() ?>][address]"    value="<?php echo $this->getEntity()->getId()?>" />
                                 <label for="gift-message-<?php echo $_item->getId() ?>-from"><?php echo $this->__('From') ?></label><br />
                                 <input type="text" name="giftmessage[<?php echo $_item->getId() ?>][from]" id="gift-message-<?php echo $_item->getId() ?>-from" title="<?php echo $this->__('From') ?>"  value="<?php echo $this->getEscaped($this->getMessage($_item)->getSender(), $this->getDefaultFrom()) ?>" class="input-text validation-passed" />
                             </div>

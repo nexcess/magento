@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Install
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -46,5 +46,43 @@ class Mage_Install_Model_Installer_Abstract
             $this->_installer = Mage::getSingleton('install/installer');
         }
         return $this->_installer;
+    }
+
+    /**
+     * Validate session storage value (files or db)
+     * If empty, will return 'files'
+     *
+     * @param string $value
+     * @return string
+     * @throws Exception
+     */
+    protected function _checkSessionSave($value)
+    {
+        if (empty($value)) {
+            return 'files';
+        }
+        if (!in_array($value, array('files', 'db'), true)) {
+            throw new Exception('session_save value must be "files" or "db".');
+        }
+        return $value;
+    }
+
+    /**
+     * Validate admin frontname value.
+     * If empty, "admin" will be returned
+     *
+     * @param string $value
+     * @return string
+     * @throws Exception
+     */
+    protected function _checkAdminFrontname($value)
+    {
+        if (empty($value)) {
+            return 'admin';
+        }
+        if (!preg_match('/^[a-z]+[a-z0-9_]+$/i', $value)) {
+            throw new Exception('admin_frontname value must contain only letters (a-z or A-Z), numbers (0-9) or underscore(_), first character should be a letter.');
+        }
+        return $value;
     }
 }

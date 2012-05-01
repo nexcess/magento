@@ -15,14 +15,14 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
 <config>
     <modules>
         <Mage_Customer>
-            <version>0.8.7</version>
+            <version>0.8.8</version>
         </Mage_Customer>
     </modules>
 
@@ -52,10 +52,15 @@
                 <middlename><billing>1</billing><shipping>1</shipping><mapped>1</mapped></middlename>
                 <lastname><billing>1</billing><shipping>1</shipping><required>1</required><mapped>1</mapped></lastname>
                 <suffix><billing>1</billing><shipping>1</shipping><mapped>1</mapped></suffix>
-                <street1><billing>1</billing><shipping>1</shipping><street>1</street></street1>
-                <street2><billing>1</billing><shipping>1</shipping><street>1</street></street2>
-                <street3><billing>1</billing><shipping>1</shipping><street>1</street></street3>
-                <street4><billing>1</billing><shipping>1</shipping><street>1</street></street4>
+                <street_full><billing>1</billing><shipping>1</shipping></street_full>
+                <street1><street>1</street></street1>
+                <street2><street>1</street></street2>
+                <street3><street>1</street></street3>
+                <street4><street>1</street></street4>
+                <street5><street>1</street></street5>
+                <street6><street>1</street></street6>
+                <street7><street>1</street></street7>
+                <street8><street>1</street></street8>
                 <city><billing>1</billing><shipping>1</shipping></city>
                 <region><billing>1</billing><shipping>1</shipping></region>
                 <country><billing>1</billing><shipping>1</shipping><billing_required>1</billing_required><shipping_required>1</shipping_required></country>
@@ -201,6 +206,16 @@ T: {{var telephone}}
                     <file>account_new.html</file>
                     <type>html</type>
                 </customer_create_account_email_template>
+                <customer_create_account_email_confirmation_template translate="label" module="customer">
+                    <label>New account confirmation key</label>
+                    <file>account_new_confirmation.html</file>
+                    <type>html</type>
+                </customer_create_account_email_confirmation_template>
+                <customer_create_account_email_confirmed_template translate="label" module="customer">
+                    <label>New account confirmed</label>
+                    <file>account_new_confirmed.html</file>
+                    <type>html</type>
+                </customer_create_account_email_confirmed_template>
                 <customer_password_forgot_email_template translate="label" module="customer">
                     <label>New password</label>
                     <file>password_new.html</file>
@@ -323,6 +338,8 @@ T: {{var telephone}}
                 <email_domain>emaildomain.com</email_domain>
                 <email_identity>general</email_identity>
                 <email_template>customer_create_account_email_template</email_template>
+                <email_confirmation_template>customer_create_account_email_confirmation_template</email_confirmation_template>
+                <email_confirmed_template>customer_create_account_email_confirmed_template</email_confirmed_template>
             </create_account>
 
             <default>

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -37,6 +37,7 @@ class Mage_Catalog_Block_Product_View_Options_Type_Select
         if ($_option->getType() == Mage_Catalog_Model_Product_Option::OPTION_TYPE_DROP_DOWN
             || $_option->getType() == Mage_Catalog_Model_Product_Option::OPTION_TYPE_MULTIPLE) {
             $require = ($_option->getIsRequire()) ? ' required-entry' : '';
+            $extraParams = '';
             $select = $this->getLayout()->createBlock('core/html_select')
                 ->setData(array(
                     'id' => 'select_'.$_option->getId(),
@@ -60,8 +61,9 @@ class Mage_Catalog_Block_Product_View_Options_Type_Select
                 );
             }
             if ($_option->getType() == Mage_Catalog_Model_Product_Option::OPTION_TYPE_MULTIPLE) {
-                $select->setExtraParams('multiple="multiple"');
+                $extraParams = ' multiple="multiple"';
             }
+            $select->setExtraParams('onchange="opConfig.reloadPrice()"'.$extraParams);
 
             return $select->getHtml();
         }
@@ -77,12 +79,12 @@ class Mage_Catalog_Block_Product_View_Options_Type_Select
                     $type = 'radio';
                     $class = 'form-radio';
                     if (!$_option->getIsRequire()) {
-                        $selectHtml .= '<li><label for="options_'.$_option->getId().'"><input type="radio" class="form-radio product-custom-option" name="options['.$_option->getId().']" value="" checked="checked" />' . $this->__('None') . '</label></li>';
+                        $selectHtml .= '<li><input type="radio" id="options_'.$_option->getId().'" class="form-radio product-custom-option" name="options['.$_option->getId().']" onclick="opConfig.reloadPrice()" value="" checked="checked" /><div class="label"><label for="options_'.$_option->getId().'">' . $this->__('None') . '</label></div></li>';
                     }
                     break;
                 case Mage_Catalog_Model_Product_Option::OPTION_TYPE_CHECKBOX:
                     $type = 'checkbox';
-                    $class = 'form-radio';
+                    $class = 'form-checkbox';
                     $arraySign = '[]';
                     break;
             }
@@ -94,7 +96,8 @@ class Mage_Catalog_Block_Product_View_Options_Type_Select
                     'pricing_value' => $_value->getPrice(true)
                 ));
                 $selectHtml .= '<li>' .
-                            '<label for="options_'.$_option->getId().'_'.$count.'"><input type="'.$type.'" class="'.$require.' '.$class.' product-custom-option" name="options['.$_option->getId().']'.$arraySign.'" id="options_'.$_option->getId().'_'.$count.'" value="'.$_value->getOptionTypeId().'" />'.$_value->getTitle().' '.$priceStr.'</label>';
+                               '<input type="'.$type.'" class="'.$require.' '.$class.' product-custom-option" onclick="opConfig.reloadPrice()" name="options['.$_option->getId().']'.$arraySign.'" id="options_'.$_option->getId().'_'.$count.'" value="'.$_value->getOptionTypeId().'" />' .
+                               '<div class="label"><label for="options_'.$_option->getId().'_'.$count.'">'.$_value->getTitle().' '.$priceStr.'</label></div>';
                 if ($_option->getIsRequire()) {
                     $selectHtml .= '<script type="text/javascript">' .
                                     '$(\'options_'.$_option->getId().'_'.$count.'\').advaiceContainer = \'options-'.$_option->getId().'-container\';' .

@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -70,16 +70,11 @@ class Mage_Sales_Block_Order_Print_Shipment extends Mage_Sales_Block_Items_Abstr
         return Mage::registry('current_shipment');
     }
 
-    public function getOrderOptions($item)
+    protected function _prepareItem(Mage_Core_Block_Abstract $renderer)
     {
-        if($options = $item->getOrderItem()->getProductOptions()) {
-            if (isset($options['options'])) {
-                return $options['options'];
-            } elseif (isset($options['admin_options'])) {
-                return $options['admin_options'];
-            }
-        }
-        return array();
+        $renderer->setPrintStatus(true);
+
+        return parent::_prepareItem($renderer);
     }
 }
 

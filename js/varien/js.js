@@ -11,7 +11,7 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 function popWin(url,win,para) {
@@ -426,15 +426,15 @@ Validation.addAllThese([
 ]);
 
 function truncateOptions() {
-    $$('.truncate-option').each(function(element){
+    $$('.truncated').each(function(element){
         Event.observe(element, 'mouseover', function(){
-            if ($(element.id+'_full_view')) {
-                $(element.id+'_full_view').style.display = 'block';
+            if (element.down('div.truncated_full_value')) {
+                element.down('div.truncated_full_value').addClassName('show')
             }
         });
         Event.observe(element, 'mouseout', function(){
-            if ($(element.id+'_full_view')) {
-                $(element.id+'_full_view').style.display = 'none';
+            if (element.down('div.truncated_full_value')) {
+                element.down('div.truncated_full_value').removeClassName('show')
             }
         });
 

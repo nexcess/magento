@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Chronopay
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -24,7 +24,7 @@ $installer = $this;
 $installer->startSetup();
 
 $installer->run("
-DROP TABLE IF EXISTS `{$installer->getTable('checkout_agreement')}`;
+// DROP TABLE IF EXISTS `{$installer->getTable('checkout_agreement')}`;
 CREATE TABLE `{$installer->getTable('checkout_agreement')}` (
    `agreement_id` int(10) unsigned NOT NULL auto_increment,
    `name` varchar(255) NOT NULL default '',

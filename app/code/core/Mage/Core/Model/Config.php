@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -736,10 +736,18 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
 
         $resourceModel = false;
 
-        if ((count($classArr)==2) && ($resourceInfo = $this->_xml->global->models->{$classArr[0]}->$classArr[1]->resourceModel)) {
+        if (!isset($this->_xml->global->models->{$classArr[0]})) {
+            return false;
+        }
+
+        $module = $this->_xml->global->models->{$classArr[0]};
+
+        if ((count($classArr)==2)
+            && isset($module->{$classArr[1]}->resourceModel)
+            && $resourceInfo = $module->{$classArr[1]}->resourceModel) {
             $resourceModel = (string) $resourceInfo;
         }
-        elseif ($resourceInfo = $this->_xml->global->models->{$classArr[0]}->resourceModel) {
+        elseif (isset($module->resourceModel) && $resourceInfo = $module->resourceModel) {
             $resourceModel = (string) $resourceInfo;
         }
 

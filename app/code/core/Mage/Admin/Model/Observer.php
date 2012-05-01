@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Admin
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -36,30 +36,34 @@ class Mage_Admin_Model_Observer
 
         if ($request->getActionName() == 'forgotpassword') {
             $request->setDispatched(true);
-        } elseif (!$user) {
-            if ($request->getPost('login')) {
-                $postLogin  = $request->getPost('login');
-                $username   = $postLogin['username'];
-                $password   = $postLogin['password'];
-                $user = $session->login($username, $password, $request);
+        }
+        else {
+            if($user) {
+                $user->reload();
             }
-            if (!$request->getParam('forwarded')) {
-                if($request->getParam('isAjax')) {
-                    $request->setParam('forwarded', true)
-                        ->setControllerName('index')
-                        ->setActionName('deniedJson')
-                        ->setDispatched(false);
-                } else {
-                    $request->setParam('forwarded', true)
-                        ->setRouteName('adminhtml')
-                        ->setControllerName('index')
-                        ->setActionName('login')
-                        ->setDispatched(false);
+            if (!$user || !$user->getId()) {
+                if ($request->getPost('login')) {
+                    $postLogin  = $request->getPost('login');
+                    $username   = $postLogin['username'];
+                    $password   = $postLogin['password'];
+                    $user = $session->login($username, $password, $request);
                 }
-                return false;
+                if (!$request->getParam('forwarded')) {
+                    if($request->getParam('isAjax')) {
+                        $request->setParam('forwarded', true)
+                            ->setControllerName('index')
+                            ->setActionName('deniedJson')
+                            ->setDispatched(false);
+                    } else {
+                        $request->setParam('forwarded', true)
+                            ->setRouteName('adminhtml')
+                            ->setControllerName('index')
+                            ->setActionName('login')
+                            ->setDispatched(false);
+                    }
+                    return false;
+                }
             }
-        } else {
-            $user->reload();
         }
 
         $session->refreshAcl();

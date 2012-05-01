@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -218,6 +218,11 @@
                             return;
                         }
 
+                        if (editSet.ConfigurableNodeExists(editSet.currentNode)) {
+                            alert('<?php echo Mage::helper('catalog')->__('This group contains attributes, used in configurable products. Please move these attributes to another group and try again.') ?>');
+                            return;
+                        }
+
                         if( editSet.currentNode && editSet.currentNode.attributes.cls == 'folder' ) {
                             TreePanels.root.removeChild(editSet.currentNode);
                             for( i in editSet.currentNode.childNodes ) {
@@ -244,6 +249,18 @@
                                 }
                             }
                         }
+                    },
+
+                    ConfigurableNodeExists : function(currentNode) {
+                        for (var i in currentNode.childNodes ) {
+                            if (currentNode.childNodes[i].id) {
+                                child = editSet.currentNode.childNodes[i];
+                                if (child.attributes.is_used_in_configurable) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
                     },
 
                     rightAppend : function(node) {

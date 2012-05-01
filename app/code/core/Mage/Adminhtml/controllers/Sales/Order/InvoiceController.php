@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -128,12 +128,60 @@ class Mage_Adminhtml_Sales_Order_InvoiceController extends Mage_Adminhtml_Contro
         $convertor  = Mage::getModel('sales/convert_order');
         $shipment    = $convertor->toShipment($invoice->getOrder());
 
-        foreach ($invoice->getAllItems() as $item) {
-            $qty = min($item->getQty(), $item->getOrderItem()->getQtyToShip());
-            $shipmentItem = $convertor->itemToShipmentItem($item->getOrderItem());
-            $shipmentItem->setQty($qty);
-            $shipment->addItem($shipmentItem);
+        $savedQtys = $this->_getItemQtys();
+        $skipedParent = array();
+        //echo "<pre>";
+        foreach ($invoice->getOrder()->getAllItems() as $item) {
+            //echo "\n".$item->getSku();
+            /*
+             * if this is child and its parent was skipped
+             * bc of something we need to skip child also
+             */
+            if ($item->getParentItem() && isset($skipedParent[$item->getParentItem()->getId()])){
+                continue;
+            }
+            //echo "1";
+            if (isset($savedQtys[$item->getId()])) {
+                $qty = min($savedQtys[$item->getId()], $item->getQtyToShip());
+            } else {
+                $qty = $item->getQtyToShip();
+            }
+            //echo "2";
+            if (!$item->isDummy(true) && !$item->getQtyToShip()) {
+                continue;
+            }
+            //echo "3";
+            /**
+             * if this is a dummy item and we don't need it. we skip it.
+             * also if this item is parent we need to mark that we skipped
+             * it so children will be also skipped
+             */
+            if ($item->isDummy(true) && !$this->_needToAddDummyForShipment($item, $savedQtys)) {
+                if ($item->getChildrenItems()) {
+                    $skipedParent[$item->getId()] = 1;
+                }
+                continue;
+            }
+            //echo "4";
+            if ($item->getIsVirtual()) {
+                continue;
+            }
+            //echo "5";
+            $shipItem = $convertor->itemToShipmentItem($item);
+
+            if ($item->isDummy(true)) {
+                $qty = 1;
+            }
+            //echo "Qty:".$qty;
+            $shipItem->setQty($qty);
+            $shipment->addItem($shipItem);
         }
+        //die;
+        if (!count($shipment->getAllItems())) {
+            // no need to create empty shipment
+            return false;
+        }
+
         $shipment->register();
 
         if ($tracks = $this->getRequest()->getPost('tracking')) {
@@ -250,7 +298,9 @@ class Mage_Adminhtml_Sales_Order_InvoiceController extends Mage_Adminhtml_Contro
                 $shipment = false;
                 if (!empty($data['do_shipment'])) {
                     $shipment = $this->_prepareShipment($invoice);
-                    $transactionSave->addObject($shipment);
+                    if ($shipment) {
+                        $transactionSave->addObject($shipment);
+                    }
                 }
                 $transactionSave->save();
 
@@ -415,6 +465,40 @@ class Mage_Adminhtml_Sales_Order_InvoiceController extends Mage_Adminhtml_Contro
             }
             return false;
         } else if($item->getParentItem()) {
+            if (isset($qtys[$item->getParentItem()->getId()]) && $qtys[$item->getParentItem()->getId()] > 0) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Decides if we need to create dummy shipment item or not
+     * for eaxample we don't need create dummy parent if all
+     * children are not in process
+     *
+     * @param Mage_Sales_Model_Order_Item $item
+     * @param array $qtys
+     * @return bool
+     */
+    protected function _needToAddDummyForShipment($item, $qtys) {
+        if ($item->getHasChildren()) {
+            foreach ($item->getChildrenItems() as $child) {
+                if ($child->getIsVirtual()) {
+                    continue;
+                }
+                if (isset($qtys[$child->getId()]) && $qtys[$child->getId()] > 0) {
+                    return true;
+                }
+            }
+            if ($item->isShipSeparately()) {
+                return true;
+            }
+            return false;
+        } else if($item->getParentItem()) {
+            if ($item->getIsVirtual()) {
+                return false;
+            }
             if (isset($qtys[$item->getParentItem()->getId()]) && $qtys[$item->getParentItem()->getId()] > 0) {
                 return true;
             }

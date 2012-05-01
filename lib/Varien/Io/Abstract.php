@@ -14,7 +14,7 @@
  *
  * @category   Varien
  * @package    Varien_Io
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -103,5 +103,10 @@ abstract class Varien_Io_Abstract implements Varien_Io_Interface
         }
 
         return $pathTokR . implode('/', $realPathParts);
+    }
+
+    public function allowedPath($haystackPath, $needlePath)
+    {
+        return strpos($this->getCleanPath($haystackPath), $this->getCleanPath($needlePath)) === 0;
     }
 }

@@ -14,13 +14,15 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 
 class Mage_Checkout_Block_Cart_Shipping extends Mage_Checkout_Block_Cart_Abstract
 {
+    private $_carriers;
+
     public function getEstimateRates()
     {
         if (empty($this->_rates)) {
@@ -30,6 +32,11 @@ class Mage_Checkout_Block_Cart_Shipping extends Mage_Checkout_Block_Cart_Abstrac
         return $this->_rates;
     }
 
+    /**
+     * Get address model
+     *
+     * @return Mage_Sales_Model_Quote_Address
+     */
     public function getAddress()
     {
         if (empty($this->_address)) {
@@ -94,5 +101,71 @@ class Mage_Checkout_Block_Cart_Shipping extends Mage_Checkout_Block_Cart_Abstrac
     public function getShippingPrice($price, $flag)
     {
         return $this->formatPrice($this->helper('tax')->getShippingPrice($price, $flag, $this->getAddress()));
+    }
+
+    /**
+     * Obtain available carriers instances
+     *
+     * @return array
+     */
+    public function getCarriers()
+    {
+        if (null === $this->_carriers) {
+            $this->_carriers = array();
+            $this->getEstimateRates();
+            foreach ($this->_rates as $rateGroup) {
+                if (!empty($rateGroup)) {
+                    foreach ($rateGroup as $rate) {
+                        $this->_carriers[] = $rate->getCarrierInstance();
+                    }
+                }
+            }
+        }
+        return $this->_carriers;
+    }
+
+    /**
+     * Check if one of carriers require state/province
+     *
+     * @return bool
+     */
+    public function isStateProvinceRequired()
+    {
+        foreach ($this->getCarriers() as $carrier) {
+            if ($carrier->isStateProvinceRequired()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if one of carriers require city
+     *
+     * @return bool
+     */
+    public function isCityRequired()
+    {
+        foreach ($this->getCarriers() as $carrier) {
+            if ($carrier->isCityRequired()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if one of carriers require zip code
+     *
+     * @return bool
+     */
+    public function isZipCodeRequired()
+    {
+        foreach ($this->getCarriers() as $carrier) {
+            if ($carrier->isZipCodeRequired()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

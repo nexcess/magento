@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -168,13 +168,18 @@ abstract class Mage_Sales_Model_Order_Pdf_Abstract extends Varien_Object
         $page->setFillColor(new Zend_Pdf_Color_GrayScale(1));
         $page->drawRectangle(25, 730, 570, $y);
         $page->setFillColor(new Zend_Pdf_Color_GrayScale(0));
-        $page->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), 7);
+        
+        $font = Zend_Pdf_Font::fontWithPath(Mage::getBaseDir()."/lib/LinLibertineFont/LinLibertineC_Re-2.8.0.ttf");
+        
+		//$page->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), 7);
+		$page->setFont($font, 7);
+        
 
         $this->y = 720;
 
         foreach ($billingAddress as $value){
             if ($value!=='') {
-                $page->drawText(strip_tags($value), 35, $this->y, 'UTF-8');
+                $page->drawText(strip_tags(ltrim($value)), 35, $this->y, 'UTF-8');
                 $this->y -=10;
             }
         }
@@ -183,7 +188,7 @@ abstract class Mage_Sales_Model_Order_Pdf_Abstract extends Varien_Object
             $this->y = 720;
             foreach ($shippingAddress as $value){
                 if ($value!=='') {
-                    $page->drawText(strip_tags($value), 285, $this->y, 'UTF-8');
+                    $page->drawText(strip_tags(ltrim($value)), 285, $this->y, 'UTF-8');
                     $this->y -=10;
                 }
 
@@ -247,13 +252,23 @@ abstract class Mage_Sales_Model_Order_Pdf_Abstract extends Varien_Object
                 $yShipments -=17;
                 $page->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), 6);
                 foreach ($order->getTracksCollection() as $track) {
-                    $carrier = Mage::getSingleton('shipping/config')->getCarrierInstance($track->getCarrierCode());
-                    $carrierTitle = $carrier->getConfigData('title');
+                	
+                	$CarrierCode = $track->getCarrierCode();
+                	if ($CarrierCode!='custom')
+                	{
+                		$carrier = Mage::getSingleton('shipping/config')->getCarrierInstance($CarrierCode);			
+                		$carrierTitle = $carrier->getConfigData('title');
+                	}
+                	else 
+                	{
+                		$carrierTitle = Mage::helper('sales')->__('Custom Value');
+                	}
+                    
                     $truncatedCarrierTitle = substr($carrierTitle, 0, 35) . (strlen($carrierTitle) > 35 ? '...' : '');
                     $truncatedTitle = substr($track->getTitle(), 0, 45) . (strlen($track->getTitle()) > 45 ? '...' : '');
                     //$page->drawText($truncatedCarrierTitle, 285, $yShipments , 'UTF-8');
-                    $page->drawText($truncatedTitle, 285, $yShipments , 'UTF-8');
-                    $page->drawText($track->getNumber(), 380, $yShipments , 'UTF-8');
+                    $page->drawText($truncatedTitle, 300, $yShipments , 'UTF-8');
+                    $page->drawText($track->getNumber(), 395, $yShipments , 'UTF-8');
                     $yShipments -=7;
                 }
             } else {

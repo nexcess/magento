@@ -15,7 +15,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
@@ -256,6 +256,7 @@
                         <name translate="label">
                             <label>Current package name</label>
                             <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_design_package</backend_model>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -324,23 +325,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </skin_ua_regexp>
-                        <default translate="label">
-                            <label>Default</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </default>
-                        <default_ua_regexp translate="comment">
-                            <label></label>
-                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>45</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </default_ua_regexp>
                         <layout translate="label">
                             <label>Layout</label>
                             <frontend_type>text</frontend_type>
@@ -358,6 +342,23 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </layout_ua_regexp>
+                        <default translate="label">
+                            <label>Default</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </default>
+                        <default_ua_regexp translate="comment">
+                            <label></label>
+                            <frontend_model>adminhtml/system_config_form_field_regexceptions</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>65</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </default_ua_regexp>
                     </fields>
                 </theme>
             </groups>

@@ -14,7 +14,7 @@
  *
  * @category    Mage
  * @package     Mage_Checkout
- * @copyright   Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright   Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -201,13 +201,16 @@ class Mage_Checkout_Model_Cart extends Varien_Object
         $product = $this->_getProduct($product);
         $request = $this->_getProductRequest($info);
 
-
+	
         if ($product->getId()) {
+        	
             $result = $this->getQuote()->addProduct($product, $request);
+       
             /**
              * String we can get if prepare process has error
              */
             if (is_string($result)) {
+            	
                 $this->getCheckoutSession()->setRedirectUrl($product->getProductUrl());
                 $this->getCheckoutSession()->setUseNotice(true);
                 Mage::throwException($result);

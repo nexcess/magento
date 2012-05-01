@@ -11,7 +11,7 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 var varienForm = new Class.create();
@@ -141,11 +141,17 @@ var varienElementMethods = {
 Element.addMethods(varienElementMethods);
 
 // Global bind changes
-function varienWindowOnload(){
+varienWindowOnloadCache = {};
+function varienWindowOnload(useCache){
     var dataElements = $$('input', 'select', 'textarea');
     for(var i=0; i<dataElements.length;i++){
         if(dataElements[i] && dataElements[i].id){
-            Event.observe(dataElements[i], 'change', dataElements[i].setHasChanges.bind(dataElements[i]));
+            if ((!useCache) || (!varienWindowOnloadCache[dataElements[i].id])) {
+                Event.observe(dataElements[i], 'change', dataElements[i].setHasChanges.bind(dataElements[i]));
+                if (useCache) {
+                    varienWindowOnloadCache[dataElements[i].id] = true;
+                }
+            }
         }
     }
 }

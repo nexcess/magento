@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -45,6 +45,18 @@ class Mage_Bundle_Model_Observer
         if ($selections = $request->getPost('bundle_selections')) {
             $product->setBundleSelectionsData($selections);
         }
+
+        if ($product->getPriceType() == '0') {
+            $product->setCanSaveCustomOptions(true);
+            if ($customOptions = $product->getProductOptions()) {
+                foreach ($customOptions as $key => $customOption) {
+                    $customOptions[$key]['is_delete'] = 1;
+                }
+                $product->setProductOptions($customOptions);
+            }
+        }
+
+        $product->setCanSaveBundleSelections((bool)$request->getPost('affect_bundle_product_selections'));
 
         return $this;
     }
@@ -114,6 +126,26 @@ class Mage_Bundle_Model_Observer
             $productOptions['bundle_selection_attributes'] = $attributes->getValue();
             $orderItem->setProductOptions($productOptions);
         }
+
+        return $this;
+    }
+
+    /**
+     * loadding product options for products if there is one bundle in collection
+     * only for front end
+     *
+     * @param Varien_Object $observer
+     * @return Mage_Bundle_Model_Observer
+     */
+    public function loadProductOptions($observer) {
+        $collection = $observer->getEvent()->getCollection();
+        foreach ($collection->getItems() as $item){
+            if ($item->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) {
+                $collection->addOptionsToResult();
+                return $this;
+            }
+        }
+        return $this;
     }
 
 }

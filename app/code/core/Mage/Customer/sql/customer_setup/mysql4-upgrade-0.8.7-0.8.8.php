@@ -1,3 +1,4 @@
+<?php
 /**
  * Magento
  *
@@ -11,12 +12,21 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @category   Mage
+ * @package    Mage_Customer
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-function switchDisplay(elementToHide, elementToShow)
-{
-    var display = elementToHide.style.display;
-    elementToHide.style.display = 'none';
-    elementToShow.style.display = display;
-}
+
+$installer = $this;
+
+/* @var $installer Mage_Customer_Model_Entity_Setup */
+$installer->startSetup();
+
+$installer->addAttribute('customer', 'confirmation', array(
+    'label'    => 'Is confirmed',
+    'visible'  => false,
+    'required' => false,
+));
+
+$installer->endSetup();

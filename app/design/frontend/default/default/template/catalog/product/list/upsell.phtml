@@ -14,11 +14,11 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php if($this->getItemCollection()->getSize()): ?>
+<?php if(count($this->getItemCollection()->getItems())): ?>
 <div class="collateral-box up-sell">
     <div class="head"><h4><?php echo $this->__('You may also be interested in the following product(s)') ?></h4></div>
     <table cellspacing="0" class="generic-product-grid catalog-listing" id="upsell-product-table">

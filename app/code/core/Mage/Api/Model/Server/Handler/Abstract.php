@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Api
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -262,7 +262,7 @@ abstract class Mage_Api_Model_Server_Handler_Abstract
             return $this->_fault($e->getMessage(), $resourceName, $e->getCustomMessage());
         } catch (Exception $e) {
             Mage::logException($e);
-            return $this->_fault('internal');
+            return $this->_fault('internal', null, $e->getMessage());
         }
     }
 

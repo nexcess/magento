@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -59,5 +59,12 @@ class Mage_Bundle_Model_Mysql4_Bundle extends Mage_CatalogIndex_Model_Mysql4_Dat
                 ->query("DELETE FROM ".$this->getTable('sales/quote_item')."
                         WHERE `parent_item_id` in (". $result['items'] .")");
         }
+    }
+
+    public function dropAllUnneededSelections($productId, $ids)
+    {
+        $this->_getWriteAdapter()
+            ->query("DELETE FROM ".$this->getTable('bundle/selection')."
+                    WHERE `parent_product_id` = ". $productId . ( count($ids) > 0 ? " and selection_id not in (" . implode(',', $ids) . ")": ''));
     }
 }

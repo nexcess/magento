@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -37,7 +37,7 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit_Form extends Mage_Adminhtml_B
         parent::__construct();
 
         $this->setId('checkoutAgreementForm');
-        $this->setTitle(Mage::helper('checkout')->__('Agreement Information'));
+        $this->setTitle(Mage::helper('checkout')->__('Terms and Conditions Information'));
     }
 
     /**
@@ -54,7 +54,7 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit_Form extends Mage_Adminhtml_B
         ));
 
         $fieldset   = $form->addFieldset('base_fieldset', array(
-            'legend'    => Mage::helper('checkout')->__('Agreement Information')
+            'legend'    => Mage::helper('checkout')->__('Terms and Conditions Information')
         ));
 
         if ($model->getId()) {
@@ -64,8 +64,8 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit_Form extends Mage_Adminhtml_B
         }
     	$fieldset->addField('name', 'text', array(
             'name'      => 'name',
-            'label'     => Mage::helper('checkout')->__('Agreement Name'),
-            'title'     => Mage::helper('checkout')->__('Agreement Name'),
+            'label'     => Mage::helper('checkout')->__('Condition Name'),
+            'title'     => Mage::helper('checkout')->__('Condition Name'),
             'required'  => true,
         ));
 
@@ -96,7 +96,7 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit_Form extends Mage_Adminhtml_B
             ));
             $model->setStoreId(Mage::app()->getStore(true)->getId());
         }
-    	
+
         $fieldset->addField('checkbox_text', 'editor', array(
             'name'      => 'checkbox_text',
             'label'     => Mage::helper('checkout')->__('Checkbox text'),
@@ -112,6 +112,14 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit_Form extends Mage_Adminhtml_B
             'style'     => 'width: 98%; height: 600px;',
             'wysiwyg'   => false,
             'required'  => true,
+        ));
+
+        $fieldset->addField('content_height', 'text', array(
+            'name'      => 'content_height',
+            'label'     => Mage::helper('checkout')->__('Content Height (css)'),
+            'title'     => Mage::helper('checkout')->__('Content Height'),
+            'maxlength' => 25,
+            'class'     => 'validate-css-length',
         ));
 
         $form->setValues($model->getData());

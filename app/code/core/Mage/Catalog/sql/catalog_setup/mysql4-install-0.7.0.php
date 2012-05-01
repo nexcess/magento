@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -500,6 +500,29 @@ ALTER TABLE `{$this->getTable('catalog_category_entity')}` ADD `path` VARCHAR( 2
 
 ALTER TABLE `{$installer->getTable('catalog_category_entity')}` ADD `level` INT NOT NULL;
 ALTER TABLE `{$installer->getTable('catalog_category_entity')}` ADD INDEX `IDX_LEVEL` ( `level` );
+
+
+CREATE TABLE `{$installer->getTable('catalog_category_product_index')}` (
+    `category_id` int(10) unsigned NOT NULL default '0',
+    `product_id` int(10) unsigned NOT NULL default '0',
+    `position` int(10) unsigned NOT NULL default '0',
+    `is_parent` tinyint(1) unsigned NOT NULL default '0',
+    UNIQUE KEY `UNQ_CATEGORY_PRODUCT` (`category_id`,`product_id`),
+    KEY `IDX_CATEGORY_POSITION` (`category_id`,`position`),
+    CONSTRAINT `FK_CATALOG_CATEGORY_PRODUCT_INDEX_PRODUCT_ENTITY` FOREIGN KEY (`product_id`) REFERENCES `{$installer->getTable('catalog_product_entity')}` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `FK_CATALOG_CATEGORY_PRODUCT_INDEX_CATEGORY_ENTITY` FOREIGN KEY (`category_id`) REFERENCES `{$installer->getTable('catalog_category_entity')}` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `{$installer->getTable('catalog_product_enabled_index')}` (
+    `product_id` int(10) unsigned NOT NULL default '0',
+    `store_id` smallint(5) unsigned NOT NULL default '0',
+    `visibility` smallint(5) unsigned NOT NULL default '0',
+    UNIQUE KEY `UNQ_PRODUCT_STORE` (`product_id`,`store_id`),
+    KEY `IDX_PRODUCT_VISIBILITY_IN_STORE` (`product_id`,`store_id`, `visibility`),
+    CONSTRAINT `FK_CATALOG_PRODUCT_ENABLED_INDEX_PRODUCT_ENTITY` FOREIGN KEY (`product_id`) REFERENCES `{$installer->getTable('catalog_product_entity')}` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `FK_CATALOG_PRODUCT_ENABLED_INDEX_STORE` FOREIGN KEY (`store_id`) REFERENCES `{$installer->getTable('core_store')}` (`store_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ");
 
 }

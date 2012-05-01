@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -354,6 +354,44 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
     }
 
     /**
+     * Call a child and unset it, if callback matched result
+     *
+     * $params will pass to child callback
+     * $params may be array, if called from layout with elements with same name, for example:
+     * ...<foo>value_1</foo><foo>value_2</foo><foo>value_3</foo>
+     *
+     * Or, if called like this:
+     * ...<foo>value_1</foo><bar>value_2</bar><baz>value_3</baz>
+     * - then it will be $params1, $params2, $params3
+     *
+     * It is no difference anyway, because they will be transformed in appropriate way.
+     *
+     * @param string $alias
+     * @param string $callback
+     * @param mixed $result
+     * @param array $params
+     * @return Mage_Core_Block_Abstract
+     */
+    public function unsetCallChild($alias, $callback, $result, $params)
+    {
+        $child = $this->getChild($alias);
+        if ($child) {
+            $args     = func_get_args();
+            $alias    = array_shift($args);
+            $callback = array_shift($args);
+            $result   = (string)array_shift($args);
+            if (!is_array($params)) {
+                $params = $args;
+            }
+
+            if ($result == call_user_func_array(array(&$child, $callback), $params)) {
+                $this->unsetChild($alias);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Unset all children blocks
      *
      * @return Mage_Core_Block_Abstract
@@ -407,6 +445,18 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
         } else {
             return $this->_getChildHtml($name, $useCache);
         }
+    }
+
+    public function getChildChildHtml($name, $childName = '', $useCache = true, $sorted = false)
+    {
+        if (empty($name)) {
+            return '';
+        }
+        $child = $this->getChild($name);
+        if (!$child) {
+            return '';
+        }
+        return $child->getChildHtml($childName, $useCache, $sorted);
     }
 
     /**
@@ -489,8 +539,14 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
     {
         if (is_string($block)) {
             $block = $this->getLayout()->getBlock($block);
+
             if (!$block) {
-                Mage::throwException(Mage::helper('core')->__('Invalid block name to set child %s: %s', $alias, $block));
+                /*
+                 * if we don't have block - don't throw exception because
+                 * block can simply removed using layout method remove
+                 */
+                //Mage::throwException(Mage::helper('core')->__('Invalid block name to set child %s: %s', $alias, $block));
+                return $this;
             }
         }
         if ($block->getIsAnonymous()) {
@@ -534,7 +590,7 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
     /**
      * Append child block
      *
-     * @param   Mage_Core_Block_Abstract $block
+     * @param   Mage_Core_Block_Abstract|string $block
      * @param   string $alias
      * @return  Mage_Core_Block_Abstract
      */
@@ -641,7 +697,7 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
      */
     public function getUrlBase64($route='', $params=array())
     {
-        return base64_encode($this->getUrl($route, $params));
+        return Mage::helper('core')->urlEncode($this->getUrl($route, $params));
     }
 
     /**

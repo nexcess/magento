@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -198,7 +198,7 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Options_Option extends Mage_
                 $value['id'] = $option->getOptionId();
                 $value['item_count'] = $this->getItemCount();
                 $value['option_id'] = $option->getOptionId();
-                $value['title'] = $option->getTitle();
+                $value['title'] = $this->htmlEscape($option->getTitle());
                 $value['type'] = $option->getType();
                 $value['is_require'] = $option->getIsRequire();
                 $value['sort_order'] = $option->getSortOrder();
@@ -220,10 +220,10 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Options_Option extends Mage_
                             'item_count' => max($itemCount, $_value->getOptionTypeId()),
                             'option_id' => $_value->getOptionId(),
                             'option_type_id' => $_value->getOptionTypeId(),
-                            'title' => $_value->getTitle(),
+                            'title' => $this->htmlEscape($_value->getTitle()),
                             'price' => $this->getPriceValue($_value->getPrice(), $_value->getPriceType()),
                             'price_type' => $_value->getPriceType(),
-                            'sku' => $_value->getSku(),
+                            'sku' => $this->htmlEscape($_value->getSku()),
                             'sort_order' => $_value->getSortOrder(),
                         );
 
@@ -240,7 +240,7 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Options_Option extends Mage_
                 } else {
                     $value['price'] = $this->getPriceValue($option->getPrice(), $option->getPriceType());
                     $value['price_type'] = $option->getPriceType();
-                    $value['sku'] = $option->getSku();
+                    $value['sku'] = $this->htmlEscape($option->getSku());
                     $value['max_characters'] = $option->getMaxCharacters();
                     $value['file_extension'] = $option->getFileExtension();
                     if ($this->getProduct()->getStoreId() != '0' && $scope == Mage_Core_Model_Store::PRICE_SCOPE_WEBSITE) {

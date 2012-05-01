@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Tax
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -389,5 +389,13 @@ class Mage_Tax_Helper_Data extends Mage_Core_Helper_Abstract
     public function getTaxBasedOn($store = null)
     {
         return Mage::getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_BASED_ON, $store);
+    }
+
+    public function applyTaxOnCustomPrice($store = null) {
+        return ((int) Mage::getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_BASED_ON, $store) == 0);
+    }
+
+    public function applyTaxOnOriginalPrice($store = null) {
+        return ((int) Mage::getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_BASED_ON, $store) == 1);
     }
 }

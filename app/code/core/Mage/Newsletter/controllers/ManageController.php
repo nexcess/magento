@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Newsletter
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -43,7 +43,10 @@ class Mage_Newsletter_ManageController extends Mage_Core_Controller_Front_Action
 
     public function indexAction()
     {
-        $this->loadLayout();
+     	    $this->loadLayout();
+            $this->_initLayoutMessages('customer/session');
+            $this->_initLayoutMessages('catalog/session');
+        
         if ($block = $this->getLayout()->getBlock('customer_newsletter')) {
             $block->setRefererUrl($this->_getRefererUrl());
         }

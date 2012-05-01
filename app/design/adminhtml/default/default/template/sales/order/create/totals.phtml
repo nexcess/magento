@@ -14,24 +14,15 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
     <!--<h4 class="icon-head fieldset-legend <?php echo $this->getHeaderCssClass() ?>"><?php echo $this->getHeaderText() ?></h4>-->
-    <table cellspacing="5" cellpadding="8" width="100%">
+    <table cellspacing="0" cellpadding="8" width="100%">
         <?php $_store = $this->getStore() ?>
         <tbody>
-            <?php $_totals = $this->getTotals(); ?>
-            <?php $_count = count($_totals); ?>
-            <?php $_i = 0; ?>
-            <?php foreach ($_totals as $_total): ?>
-                <?php $_i++; ?>
-                <tr class="<?php echo $_total->getCode() ?> <?php echo ($_i >= $_count ? ' last' : '' ) ?>">
-                    <td style="<?php echo $_total->getStyle() ?>" class="label"><?php echo $_total->getTitle() ?></td>
-                    <td class="last" style="<?php echo $_total->getStyle() ?>"><span class="nobr"><?php echo $this->formatPrice($_total->getValue()) ?></span></td>
-                </tr>
-            <?php endforeach; ?>
+            <?php echo $this->renderTotals(); ?>
         </tbody>
     </table>
 	<div class="divider"></div>

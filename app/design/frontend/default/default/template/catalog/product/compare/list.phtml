@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -50,7 +50,7 @@
                     <a href="#" onclick="setPLocation('<?php echo $_item->getProductUrl() ?>', true)" title="<?php echo $this->htmlEscape($_item->getName()) ?>"><img src="<?php echo $this->helper('catalog/image')->init($_item, 'small_image')->resize(125, 125); ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_item->getName()) ?>" /></a>
                     <h5><a href="#" onclick="setPLocation('<?php echo $_item->getProductUrl() ?>', true)" title="<?php echo $this->htmlEscape($_item->getName()) ?>"><?php echo $this->htmlEscape($_item->getName()) ?></a></h5>
                     <?php echo $this->getReviewsSummaryHtml($_item, 'short') ?>
-                    <?php echo $this->getPriceHtml($_item) ?>
+                    <?php echo $this->getPriceHtml($_item, true) ?>
                     <?php if($_item->isSaleable()): ?>
                     <button class="form-button" onclick="setPLocation('<?php echo $this->helper('catalog/product_compare')->getAddToCartUrl($_item) ?>', true)"><span><?php echo $this->__('Add to Cart') ?></span></button><br/>
                     <?php else: ?>
@@ -69,12 +69,12 @@
                 <?php $_i=0 ?>
                 <?php foreach($this->getItems() as $_item): ?>
                 <?php if($_i++%10==0): ?>
-                <td class="label"><?php echo $_attribute->getFrontendLabel() ?></td>
+                <td class="label"><?php echo $this->__($_attribute->getFrontendLabel()) ?></td>
                 <?php endif; ?>
                 <td>
                     <?php switch ($_attribute->getAttributeCode()) {
                         case "price": ?>
-                            <?php echo $this->getPriceHtml($_item) ?>
+                            <?php echo $this->getPriceHtml($_item, true) ?>
                             <?php break;
                         case "small_image": ?>
                             <img src="<?php echo $this->helper('catalog/image')->init($_item, 'small_image')->resize(125, 125); ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_item->getName()) ?>" />
@@ -96,7 +96,7 @@
                  <td class="label">&nbsp;</td>
                 <?php endif; ?>
                 <td>
-                    <?php echo $this->getPriceHtml($_item) ?>
+                    <?php echo $this->getPriceHtml($_item, true) ?>
                     <?php if($_item->isSaleable()): ?>
                     <button class="form-button" onclick="setPLocation('<?php echo $this->helper('catalog/product_compare')->getAddToCartUrl($_item) ?>', true)"><span><?php echo $this->__('Add to Cart') ?></span></button><br/>
                     <?php else: ?>

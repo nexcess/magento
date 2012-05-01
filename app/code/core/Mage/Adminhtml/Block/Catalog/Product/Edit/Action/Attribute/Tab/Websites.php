@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -25,43 +25,45 @@
  * @package    Mage_Adminhtml
  * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tab_Websites extends Mage_Adminhtml_Block_Store_Switcher
+class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tab_Websites
+    extends Mage_Adminhtml_Block_Widget
+    implements Mage_Adminhtml_Block_Widget_Tab_Interface
 {
-    protected $_storeFromHtml;
-
-    public function __construct()
+    public function getWebsiteCollection()
     {
-        parent::__construct();
-        $this->setTemplate('catalog/product/edit/action/websites.phtml');
+        return Mage::app()->getWebsites();
     }
 
-    public function getStoreName($storeId)
+    public function getGroupCollection(Mage_Core_Model_Website $website)
     {
-        return Mage::app()->getStore($storeId)->getName();
+        return $website->getGroups();
     }
 
-    /* TODO: Add functionality for copy of data from existing stores
-    public function getChooseFromStoreHtml($storeTo)
+    public function getStoreCollection(Mage_Core_Model_Store_Group $group)
     {
-        if (!$this->_storeFromHtml) {
-            $this->_storeFromHtml = '<select name="copy_to_stores[__store_identifier__]" disabled>';
-            $this->_storeFromHtml.= '<option value="0">'.Mage::helper('catalog')->__('Default Values').'</option>';
-            foreach ($this->getWebsiteCollection() as $_website) {
-                if (!$this->hasWebsite($_website->getId())) {
-                    continue;
-                }
-                $this->_storeFromHtml .= '<optgroup label="' . $_website->getName() . '"></optgroup>';
-                foreach ($this->getGroupCollection($_website) as $_group) {
-                    $this->_storeFromHtml .= '<optgroup label="&nbsp;&nbsp;&nbsp;&nbsp;' . $_group->getName() . '">';
-                    foreach ($this->getStoreCollection($_group) as $_store) {
-                        $this->_storeFromHtml .= '<option value="' . $_store->getId() . '">&nbsp;&nbsp;&nbsp;&nbsp;' . $_store->getName() . '</option>';
-                    }
-                }
-                $this->_storeFromHtml .= '</optgroup>';
-            }
-            $this->_storeFromHtml.= '</select>';
-        }
-        return str_replace('__store_identifier__', $storeTo->getId(), $this->_storeFromHtml);
+        return $group->getStores();
     }
-    */
-} // Class Mage_Adminhtml_Block_Catalog_Product_Edit_Action_Attribute_Tab_Websites End
+
+    /**
+     * ######################## TAB settings #################################
+     */
+    public function getTabLabel()
+    {
+        return Mage::helper('catalog')->__('Websites');
+    }
+
+    public function getTabTitle()
+    {
+        return Mage::helper('catalog')->__('Websites');
+    }
+
+    public function canShowTab()
+    {
+        return true;
+    }
+
+    public function isHidden()
+    {
+        return false;
+    }
+}

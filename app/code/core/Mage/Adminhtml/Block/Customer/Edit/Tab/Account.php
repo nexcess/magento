@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -48,8 +48,8 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Account extends Mage_Adminhtml_Bloc
         $this->_setFieldset($customer->getAttributes(), $fieldset);
 
         if ($customer->getId()) {
-            $form->getElement('website_id')->setDisabled(true);
-            $form->getElement('created_in')->setDisabled(true);
+            $form->getElement('website_id')->setDisabled('disabled');
+            $form->getElement('created_in')->setDisabled('disabled');
         } else {
             $fieldset->removeField('created_in');
         }
@@ -65,6 +65,7 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Account extends Mage_Adminhtml_Bloc
 //        }
 
         if ($customer->getId()) {
+            // add password management fieldset
             $newFieldset = $form->addFieldset(
                 'password_fieldset',
                 array('legend'=>Mage::helper('customer')->__('Password Management'))
@@ -78,6 +79,29 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Account extends Mage_Adminhtml_Bloc
                 )
             );
             $field->setRenderer($this->getLayout()->createBlock('adminhtml/customer_edit_renderer_newpass'));
+
+            // prepare customer confirmation control (only for existing customers)
+            $confirmationKey = $customer->getConfirmation();
+            if ($confirmationKey || $customer->isConfirmationRequired()) {
+                $confirmationAttribute = $customer->getAttribute('confirmation');
+                if (!$confirmationKey) {
+                    $confirmationKey = $customer->getRandomConfirmationKey();
+                }
+                $element = $fieldset->addField('confirmation', 'select', array(
+                    'name'  => 'confirmation',
+                    'label' => Mage::helper('customer')->__($confirmationAttribute->getFrontendLabel()),
+                ))->setEntityAttribute($confirmationAttribute)
+                    ->setValues(array('' => 'Confirmed', $confirmationKey => 'Not confirmed'));
+
+                // prepare send welcome email checkbox, if customer is not confirmed
+                // no need to add it, if website id is empty
+                if ($customer->getConfirmation() && $customer->getWebsiteId()) {
+                    $fieldset->addField('sendemail', 'checkbox', array(
+                        'name'  => 'sendemail',
+                        'label' => Mage::helper('customer')->__('Send Welcome Email after Confirmation')
+                    ));
+                }
+            }
         }
         else {
             $newFieldset = $form->addFieldset(
@@ -94,12 +118,30 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Account extends Mage_Adminhtml_Bloc
             );
             $field->setRenderer($this->getLayout()->createBlock('adminhtml/customer_edit_renderer_newpass'));
 
+            // prepare send welcome email checkbox
             $fieldset->addField('sendemail', 'checkbox', array(
                 'label' => Mage::helper('customer')->__('Send welcome email'),
                 'name'  => 'sendemail',
                 'id'    => 'sendemail',
             ));
         }
+
+        // make sendemail disabled, if website_id has empty value
+        if ($sendemail = $form->getElement('sendemail')) {
+            $prefix = $form->getHtmlIdPrefix();
+            $sendemail->setAfterElementHtml(
+                '<script type="text/javascript">'
+                . "
+                $('{$prefix}website_id').disableSendemail = function() {
+                    $('{$prefix}sendemail').disabled = ('' == this.value || '0' == this.value);
+                }.bind($('{$prefix}website_id'));
+                Event.observe('{$prefix}website_id', 'click', $('{$prefix}website_id').disableSendemail);
+                $('{$prefix}website_id').disableSendemail();
+                "
+                . '</script>'
+            );
+        }
+
         $form->setValues($customer->getData());
         $this->setForm($form);
         return $this;

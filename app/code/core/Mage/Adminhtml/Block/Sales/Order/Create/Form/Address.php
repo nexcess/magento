@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -81,7 +81,7 @@ class Mage_Adminhtml_Block_Sales_Order_Create_Form_Address extends Mage_Adminhtm
                     $element = $fieldset->addField($attribute->getAttributeCode(), $inputType,
                         array(
                             'name'  => $attribute->getAttributeCode(),
-                            'label' => $attribute->getFrontend()->getLabel(),
+                            'label' => $this->__($attribute->getFrontend()->getLabel()),
                             'class' => $attribute->getFrontend()->getClass(),
                             'required' => $attribute->getIsRequired(),
                         )

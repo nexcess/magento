@@ -15,14 +15,14 @@
  *
  * @category   Mage
  * @package    Mage_CatalogIndex
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
 <config>
     <modules>
         <Mage_CatalogIndex>
-            <version>0.7.4</version>
+            <version>0.7.6</version>
         </Mage_CatalogIndex>
     </modules>
 
@@ -42,9 +42,6 @@
                     <virtual>
                         <index_data_retreiver>catalogindex/data_virtual</index_data_retreiver>
                     </virtual>
-                    <bundle>
-                        <index_data_retreiver>catalogindex/data_bundle</index_data_retreiver>
-                    </bundle>
                 </type>
             </product>
         </catalog>
@@ -121,15 +118,6 @@
                     </catalogindex>
                 </observers>
             </catalog_product_save_after>
-            <catalog_product_massupdate_after>
-                <observers>
-                    <catalogindex>
-                        <type>singleton</type>
-                        <class>catalogindex/observer</class>
-                        <method>processAfterMassupdate</method>
-                    </catalogindex>
-                </observers>
-            </catalog_product_massupdate_after>
             <catalog_entity_attribute_save_after>
                 <observers>
                     <catalogindex>
@@ -191,7 +179,7 @@
         <jobs>
             <catalogindex_reindex_all>
                 <schedule><cron_expr>0 2 * * *</cron_expr></schedule>
-                <run><model>catalogindex/indexer::plainReindex</model></run>
+                <run><model>catalogindex/observer::reindexAll</model></run>
             </catalogindex_reindex_all>
         </jobs>
     </crontab>

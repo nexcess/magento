@@ -14,23 +14,21 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
 <?php if (!$this->getAgreements()) return; ?>
-<div id="checkout-agreements">
-<ul>
+<ol id="checkout-agreements" class="checkout-agreements">
 <?php foreach ($this->getAgreements() as $_a): ?>
     <li>
-        <div class="content">
-            <?php echo nl2br($_a->getContent()) ?>
+        <div class="agreement-content"<?php echo ($_a->getContentHeight() ? ' style="height:' . $_a->getContentHeight() . '"' : '')?>>
+            <?php echo nl2br($this->htmlEscape($_a->getContent())) ?>
         </div>
-        <div class="agree">
-            <input type="checkbox" id="agreement-<?php echo $_a->getId()?>" name="agreement[<?php echo $_a->getId()?>]" value="1">
+        <p class="agree">
+            <input type="checkbox" id="agreement-<?php echo $_a->getId()?>" name="agreement[<?php echo $_a->getId()?>]" value="1" />&nbsp;
             <label for="agreement-<?php echo $_a->getId()?>"><?php echo $_a->getCheckboxText()?></label>
-        </div>
+        </p>
     </li>
 <?php endforeach ?>
-</ul>
-</div>
+</ol>

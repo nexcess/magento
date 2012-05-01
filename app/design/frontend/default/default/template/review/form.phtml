@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -23,11 +23,12 @@
 </div>
 <h4><?php echo $this->__("You're reviewing: %s", $this->htmlEscape($this->getProductInfo()->getName())) ?></h4>
 <form action="<?php echo $this->getAction() ?>" method="post" id="review-form">
-<div>
+<fieldset>
     <?php if( $this->getRatings() && $this->getRatings()->getSize()): ?>
+    <div class="product-review-box">
     <strong><?php echo $this->__('How do you rate this product?') ?><span class="required">*</span></strong><br />
     <span id="input-message-box"></span>
-    <table class="data-table product-review-box field-row" id="product-review-table" cellspacing="0">
+    <table class="data-table" id="product-review-table" cellspacing="0">
         <thead>
             <tr>
                 <th>&nbsp;</th>
@@ -56,6 +57,7 @@
     </table>
     <input type="hidden" name="validate_rating" class="validate-rating" value="" />
     <script type="text/javascript">decorateTable('product-review-table')</script>
+    </div>
     <?php endif; ?>
         <?php // do not remove div - some problem whith validator in IE ?>
         <div>
@@ -76,9 +78,10 @@
     <div class="button-set">
         <button class="form-button right" type="submit"><span><?php echo $this->__('Submit Review') ?></span></button>
     </div>
-</div>
+</fieldset>
 </form>
 <script type="text/javascript">
+//<![CDATA[
     var dataForm = new VarienForm('review-form');
 
     Validation.addAllThese(
@@ -110,4 +113,5 @@
             }]
     ]
     );
+//]]>
 </script>

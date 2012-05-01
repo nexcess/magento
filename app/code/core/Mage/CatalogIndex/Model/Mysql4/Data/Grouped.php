@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogIndex
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -52,7 +52,13 @@ class Mage_CatalogIndex_Model_Mysql4_Data_Grouped extends Mage_CatalogIndex_Mode
                 $retreiver = Mage::getSingleton('catalogindex/retreiver')->getRetreiver($type);
                 foreach ($typeIds as $id) {
                     $finalPrice = $retreiver->getFinalPrice($id, $storeObject, $group);
-                    $resultMinimal = $finalPrice;
+
+                    if (!is_null($resultMinimal)) {
+                        $resultMinimal = min($resultMinimal, $finalPrice);
+                    } else {
+                        $resultMinimal = $finalPrice;
+                    }
+
                     $tiers = $retreiver->getTierPrices($id, $storeObject);
                     foreach ($tiers as $tier) {
                         if ($tier['customer_group_id'] != $customerGroup && !$tier['all_groups']) {

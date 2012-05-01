@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -36,11 +36,6 @@ class Mage_Core_Model_Mysql4_Url_Rewrite extends Mage_Core_Model_Mysql4_Abstract
         $this->_init('core/url_rewrite', 'url_rewrite_id');
         $this->_tagTable = $this->getTable('url_rewrite_tag');
         $this->_uniqueFields = array(
-//            array(
-//                'field' => array('target_path','store_id'),
-//                'title' => Mage::helper('core')->__('Target path for specified store')
-//            ),
-//
             array(
                 'field' => array('id_path','store_id','is_system'),
                 'title' => Mage::helper('core')->__('Id path for specified store')

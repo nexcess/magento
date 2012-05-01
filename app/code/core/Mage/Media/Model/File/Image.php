@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Media
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -78,7 +78,7 @@ class Mage_Media_Model_File_Image extends Mage_Core_Model_Resource_Abstract
     public function getImage(Mage_Media_Model_Image $object)
     {
         $resource = false;
-        switch($object->getExtension()) {
+        switch(strtolower($object->getExtension())) {
             case 'jpg':
             case 'jpeg':
                 $resource = imagecreatefromjpeg($object->getFilePath());
@@ -161,7 +161,8 @@ class Mage_Media_Model_File_Image extends Mage_Core_Model_Resource_Abstract
             $extension = $object->getExtension();
         }
 
-        switch ($extension) {
+        $result = false;
+        switch (strtolower($extension)) {
             case 'jpg':
             case 'jpeg':
                 $result = imagejpeg($object->getTmpImage(), $object->getFilePath(true), 80);

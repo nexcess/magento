@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Eav
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -311,6 +311,32 @@ class Mage_Eav_Model_Mysql4_Entity_Attribute_Collection extends Mage_Core_Model_
             unset($attributeToSetInfo);
             unset($attributeIds);
         }
+    }
+
+    /**
+     * TODO: issue #5126
+     *
+     * @return unknown
+     */
+    public function checkConfigurableProducts()
+    {
+// was:
+/*
+SELECT `main_table`.*, `entity_attribute`.*
+FROM `eav_attribute` AS `main_table`
+    INNER JOIN `eav_entity_attribute` AS `entity_attribute` ON entity_attribute.attribute_id=main_table.attribute_id
+WHERE (entity_attribute.attribute_group_id='46') AND (main_table.is_visible=1)
+*/
+// to be done: left join catalog_product_super_attribute and count appropriate lines
+/*
+SELECT `main_table`.*, `entity_attribute`.*, COUNT(`super`.attribute_id) AS `is_used_in_configurable`
+FROM `eav_attribute` AS `main_table`
+    INNER JOIN `eav_entity_attribute` AS `entity_attribute` ON entity_attribute.attribute_id=main_table.attribute_id
+    LEFT JOIN `catalog_product_super_attribute` AS `super` ON `main_table`.attribute_id=`super`.attribute_id
+WHERE (entity_attribute.attribute_group_id='46') AND (main_table.is_visible=1)
+GROUP BY `main_table`.attribute_id
+*/
+        return $this;
     }
 
     protected function _afterLoad()

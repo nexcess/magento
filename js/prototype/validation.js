@@ -206,6 +206,8 @@ Object.extend(Validation, {
             advice = this.createAdvice(name, elm, false, errorMsg);
         }
         this.showAdvice(elm, advice, 'validate-ajax');
+        this.updateCallback(elm, 'failed');
+
         elm.addClassName('validation-failed');
         elm.addClassName('validate-ajax');
     },
@@ -511,6 +513,17 @@ Validation.addAllThese([
                 var ccNumberContainer = $(elm.id.substr(0,elm.id.indexOf('_cc_type')) + '_cc_number');
                 return Validation.get('validate-cc-type').test(ccNumberContainer.value, ccNumberContainer);
             }],
+     ['validate-cc-exp', 'Incorrect credit card expiration date', function(v, elm) {
+                var ccExpMonth   = v;
+                var ccExpYear    = $('ccsave_expiration_yr').value;
+                var currentTime  = new Date();
+                var currentMonth = currentTime.getMonth() + 1;
+                var currentYear  = currentTime.getFullYear();
+                if (ccExpMonth < currentMonth && ccExpYear == currentYear) {
+                    return false;
+                }
+                return true;
+            }],
      ['validate-cc-cvn', 'Please enter a valid credit card verification number.', function(v, elm) {
                 var ccTypeContainer = $(elm.id.substr(0,elm.id.indexOf('_cc_cid')) + '_cc_type');
                 if (!ccTypeContainer) {
@@ -534,6 +547,12 @@ Validation.addAllThese([
      ['validate-data', 'Please use only letters (a-z or A-Z), numbers (0-9) or underscore(_) in this field, first character should be a letter.', function (v) {
                 if(v != '' && v) {
                     return /^[A-Za-z]+[A-Za-z0-9_]+$/.test(v);
+                }
+                return true;
+            }],
+     ['validate-css-length', 'Please input a valid CSS-length. For example 100px or 77pt or 20em or .5ex or 50%', function (v) {
+                if (v != '' && v) {
+                    return /^[0-9\.]+(px|pt|em|ex|%)?$/.test(v) && (!(/\..*\./.test(v))) && !(/\.$/.test(v));
                 }
                 return true;
             }]

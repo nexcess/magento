@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -195,10 +195,25 @@ class Mage_Adminhtml_CustomerController extends Mage_Adminhtml_Controller_Action
                     $customer->setPassword($customer->generatePassword());
                 }
 
-                $customer->save();
-                if ($isNewCustomer && $customer->hasData('sendemail') && $customer->getWebsiteId()) {
-                    $customer->sendNewAccountEmail();
+                // force new customer active
+                if ($isNewCustomer) {
+                    $customer->setForceConfirmed(true);
                 }
+
+                $customer->save();
+
+                // send welcome email
+                if ($customer->getWebsiteId() && $customer->hasData('sendemail')) {
+                    if ($isNewCustomer) {
+                        $customer->sendNewAccountEmail();
+                    }
+                    // confirm not confirmed customer
+                    elseif ((!$customer->getConfirmation())) {
+                        $customer->sendNewAccountEmail('confirmed');
+                    }
+                }
+
+                // TODO? Send confirmation link, if deactivating account
 
                 if ($newPassword = $customer->getNewPassword()) {
                     if ($newPassword == 'auto') {

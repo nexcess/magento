@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_CatalogIndex
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -39,9 +39,9 @@ class Mage_CatalogIndex_Model_Price extends Mage_Core_Model_Abstract
         return $this->_getResource()->getMaxValue($attribute, $entityIdsFilter);
     }
 
-    public function getCount($attribute, $range, $entityIdsFilter)
+    public function getCount($attribute, $range, $entitySelect)
     {
-        return $this->_getResource()->getCount($range, $attribute, $entityIdsFilter);
+        return $this->_getResource()->getCount($range, $attribute, $entitySelect);
     }
 
     public function getFilteredEntities($attribute, $range, $index, $entityIdsFilter)
@@ -51,19 +51,13 @@ class Mage_CatalogIndex_Model_Price extends Mage_Core_Model_Abstract
 
     public function addMinimalPrices(Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $collection)
     {
-        $productIds = $collection->getAllIdsCache();
+        $minimalPrices = $this->_getResource()->getMinimalPrices($collection->getLoadedIds());
 
-        if (!count($productIds)) {
-            return;
-        }
-
-        $minimalPrices = $this->_getResource()->getMinimalPrices($productIds);
-
-        $indexValues = array();
         foreach ($minimalPrices as $row) {
             $item = $collection->getItemById($row['entity_id']);
-            if ($item)
+            if ($item) {
                 $item->setData('minimal_price', $row['value']);
+            }
         }
     }
 }

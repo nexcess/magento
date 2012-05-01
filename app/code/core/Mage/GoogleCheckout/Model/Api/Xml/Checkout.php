@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_GoogleCheckout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -68,9 +68,13 @@ EOT;
 EOT;
         $weightUnit = 'LB';
         foreach ($this->getQuote()->getAllItems() as $item) {
+            if ($item->getParentItem()) {
+                continue;
+            }
             $taxClass = ($item->getTaxClassId() == 0 ? 'none' : $item->getTaxClassId());
             $weight = (float) $item->getWeight();
             $digital = $item->getIsVirtual() ? 'true' : 'false';
+
             $xml .= <<<EOT
             <item>
                 <merchant-item-id><![CDATA[{$item->getSku()}]]></merchant-item-id>
@@ -184,10 +188,24 @@ EOT;
         return $xml;
     }
 
+    protected function _getVirtualOrderShippingXml()
+    {
+        $title = Mage::helper('googlecheckout')->__('Free Shipping');
+
+        $xml = <<<EOT
+            <shipping-methods>
+                <flat-rate-shipping name="{$title}">
+                    <price currency="{$this->getCurrency()}">0</price>
+                </flat-rate-shipping>
+            </shipping-methods>
+EOT;
+        return $xml;
+    }
+
     protected function _getShippingMethodsXml()
     {
         if ($this->_isOrderVirtual()) {
-            return '';
+            return $this->_getVirtualOrderShippingXml();
         }
 
         $xml = <<<EOT
@@ -476,7 +494,7 @@ EOT;
 
                 $xml .= <<<EOT
                         <{$type}-tax-table>
-                            <{$type}-tax-rules>
+                            <tax-rules>
                                 <{$type}-tax-rule>
                                     <tax-area>
                                         <world-area/>
@@ -484,7 +502,7 @@ EOT;
                                     <rate>{$taxRate}</rate>
                                     <shipping-taxed>true</shipping-taxed>
                                 </{$type}-tax-rule>
-                            </{$type}-tax-rules>
+                            </tax-rules>
                         </{$type}-tax-table>
 EOT;
             }

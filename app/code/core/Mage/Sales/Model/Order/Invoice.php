@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -273,19 +273,25 @@ class Mage_Sales_Model_Order_Invoice extends Mage_Core_Model_Abstract
         foreach ($this->getAllItems() as $item) {
             $item->cancel();
         }
-        $this->getOrder()->setTotalPaid(
-            $this->getOrder()->getTotalPaid()-$this->getGrandTotal()
-        );
-        $this->getOrder()->setBaseTotalPaid(
-            $this->getOrder()->getBaseTotalPaid()-$this->getBaseGrandTotal()
-        );
 
-        $this->getOrder()->setTotalInvoiced(
-            $this->getOrder()->getTotalInvoiced()-$this->getGrandTotal()
-        );
-        $this->getOrder()->setBaseTotalInvoiced(
-            $this->getOrder()->getBaseTotalInvoiced()-$this->getBaseGrandTotal()
-        );
+        /**
+         * Unregister order totals only for invoices in state PAID
+         */
+        if ($this->getState() == self::STATE_PAID) {
+            $this->getOrder()->setTotalPaid(
+                $this->getOrder()->getTotalPaid()-$this->getGrandTotal()
+            );
+            $this->getOrder()->setBaseTotalPaid(
+                $this->getOrder()->getBaseTotalPaid()-$this->getBaseGrandTotal()
+            );
+
+            $this->getOrder()->setTotalInvoiced(
+                $this->getOrder()->getTotalInvoiced()-$this->getGrandTotal()
+            );
+            $this->getOrder()->setBaseTotalInvoiced(
+                $this->getOrder()->getBaseTotalInvoiced()-$this->getBaseGrandTotal()
+            );
+        }
         $this->getOrder()->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
         Mage::dispatchEvent('sales_order_invoice_cancel', array($this->_eventObject=>$this));
         return $this;

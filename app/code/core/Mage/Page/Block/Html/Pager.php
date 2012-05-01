@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Page
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -239,9 +239,12 @@ class Mage_Page_Block_Html_Pager extends Mage_Core_Block_Template
 
     public function getPagerUrl($params=array())
     {
-        $params['_current'] = true;
-        $params['_escape'] = true;
-        return $this->getUrl('*/*/*', $params);
+        $urlParams = array();
+        $urlParams['_current']  = true;
+        $urlParams['_escape']   = true;
+        $urlParams['_use_rewrite']   = true;
+        $urlParams['_query']    = $params;
+        return $this->getUrl('*/*/*', $urlParams);
     }
 }
 

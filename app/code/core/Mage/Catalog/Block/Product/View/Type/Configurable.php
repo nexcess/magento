@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -30,20 +30,6 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
 {
     protected $_prices      = array();
     protected $_resPrices   = array();
-    /**
-     * Retrive product
-     *
-     * @return Mage_Catalog_Model_Product
-     */
-    public function getProduct()
-    {
-        $product = parent::getProduct();
-        if (is_null($product->getTypeInstance()->getStoreFilter())) {
-            $product->getTypeInstance()->setStoreFilter(Mage::app()->getStore());
-        }
-
-        return $product;
-    }
 
     public function getAllowAttributes()
     {
@@ -70,9 +56,9 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
             $products = array();
             $allProducts = $this->getProduct()->getTypeInstance()->getUsedProducts();
             foreach ($allProducts as $product) {
-            	if ($product->isSaleable()) {
-            	    $products[] = $product;
-            	}
+                if ($product->isSaleable()) {
+                    $products[] = $product;
+                }
             }
             $this->setAllowProducts($products);
         }
@@ -137,9 +123,9 @@ class Mage_Catalog_Block_Product_View_Type_Configurable extends Mage_Catalog_Blo
              * Prepare formated values for options choose
              */
             foreach ($optionPrices as $optionPrice) {
-            	foreach ($optionPrices as $additional) {
-            		$this->_preparePrice(abs($additional-$optionPrice));
-            	}
+                foreach ($optionPrices as $additional) {
+                    $this->_preparePrice(abs($additional-$optionPrice));
+                }
             }
             if($this->_validateAttributeInfo($info)) {
                $attributes[$attributeId] = $info;

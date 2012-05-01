@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Backup
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -166,6 +166,10 @@ class Mage_Backup_Model_Mysql4_Db
             foreach ($row as $field => $value) {
                 $statusObject->setData(strtolower($field), $value);
             }
+
+            $cntRow = $this->_read->fetchRow( $this->_read->select()->from($tableName, 'COUNT(*) as rows'));
+            $statusObject->setRows($cntRow['rows']);
+
             return $statusObject;
         }
 
@@ -197,7 +201,21 @@ class Mage_Backup_Model_Mysql4_Db
                 $sql .= ',';
             }
 
-            $sql .= $this->_read->quoteInto('(?)', $row);
+            //$sql .= $this->_read->quoteInto('(?)', $row);
+            $rowData = array();
+            foreach ($row as $v) {
+                if (is_null($v)) {
+                    $value = 'NULL';
+                }
+                elseif (is_numeric($v) && $v == intval($v)) {
+                    $value = $v;
+                }
+                else {
+                    $value = $this->_read->quoteInto('?', $v);
+                }
+                $rowData[] = $value;
+            }
+            $sql .= '('.join(',', $rowData).')';
         }
 
         if (!is_null($sql)) {
@@ -219,8 +237,9 @@ class Mage_Backup_Model_Mysql4_Db
         $script = '';
         if ($this->_read) {
             $quotedTableName = $this->_read->quoteIdentifier($tableName);
+
             if ($addDropIfExists) {
-                $script.= 'DROP TABLE IF EXISTS ' . $quotedTableName .";\n";
+                $script .= 'DROP TABLE IF EXISTS ' . $quotedTableName .";\n";
             }
             $sql = 'SHOW CREATE TABLE ' . $quotedTableName;
             $data = $this->_read->fetchRow($sql);
@@ -228,6 +247,19 @@ class Mage_Backup_Model_Mysql4_Db
         }
 
         return $script;
+    }
+
+    /**
+     * Retrieve table header comment
+     *
+     * @return string
+     */
+    public function getTableHeader($tableName)
+    {
+        $quotedTableName = $this->_read->quoteIdentifier($tableName);
+        return "\n--\n"
+            . "-- Table structure for table {$quotedTableName}\n"
+            . "--\n\n";
     }
 
     public function getTableDataDump($tableName, $step=100)
@@ -273,11 +305,13 @@ class Mage_Backup_Model_Mysql4_Db
     {
         $dbConfig = $this->_read->getConfig();
 
+        $versionRow = $this->_read->fetchRow('SHOW VARIABLES LIKE \'version\'');
+
         $header = "-- Magento DB backup\n"
             . "--\n"
             . "-- Host: {$dbConfig['host']}    Database: {$dbConfig['dbname']}\n"
             . "-- ------------------------------------------------------\n"
-            . "-- Create at: ".Mage::getSingleton('core/date')->gmtDate()." GMT\n\n"
+            . "-- Server version: {$versionRow['Value']}\n\n"
             . "/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\n"
             . "/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;\n"
             . "/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;\n"
@@ -301,7 +335,8 @@ class Mage_Backup_Model_Mysql4_Db
             . "/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;\n"
             . "/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;\n"
             . "/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;\n"
-            . "/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;";
+            . "/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;\n"
+            . "\n-- Dump completed on " . Mage::getSingleton('core/date')->gmtDate() . " GMT";
 
         return $footer;
     }
@@ -315,8 +350,11 @@ class Mage_Backup_Model_Mysql4_Db
     public function getTableDataBeforeSql($tableName)
     {
         $quotedTableName = $this->_read->quoteIdentifier($tableName);
-        return "LOCK TABLES {$quotedTableName} WRITE;\n"
-            . "ALTER TABLE {$quotedTableName} DISABLE KEYS;\n";
+        return "\n--\n"
+            . "-- Dumping data for table {$quotedTableName}\n"
+            . "--\n\n"
+            . "LOCK TABLES {$quotedTableName} WRITE;\n"
+            . "/*!40000 ALTER TABLE {$quotedTableName} DISABLE KEYS */;\n";
     }
 
     /**
@@ -328,7 +366,7 @@ class Mage_Backup_Model_Mysql4_Db
     public function getTableDataAfterSql($tableName)
     {
         $quotedTableName = $this->_read->quoteIdentifier($tableName);
-        return "ALTER TABLE {$quotedTableName} ENABLE KEYS;\n"
+        return "/*!40000 ALTER TABLE {$quotedTableName} ENABLE KEYS */;\n"
             . "UNLOCK TABLES;\n";
     }
 

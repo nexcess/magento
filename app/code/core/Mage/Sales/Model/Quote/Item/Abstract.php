@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -345,10 +345,12 @@ abstract class Mage_Sales_Model_Quote_Item_Abstract extends Mage_Core_Model_Abst
     public function getPrice()
     {
         if ($this->getHasChildren() && $this->getProduct()->getPriceType() == Mage_Catalog_Model_Product_Type_Abstract::CALCULATE_CHILD) {
-            $price = 0;
+            $price = $this->_getData('price');
+            /*
             foreach ($this->getChildren() as $child) {
-                $price+= $child->getPrice();
+                $price+= $child->getPrice()*$child->getQty();
             }
+            */
             return $price;
         }
         else {
@@ -356,12 +358,27 @@ abstract class Mage_Sales_Model_Quote_Item_Abstract extends Mage_Core_Model_Abst
         }
     }
 
-    public function setPrice($value)
+    public function setCustomPrice($value)
     {
-        return $this->setData('price', $this->_calculatePrice($value));
+        if (is_null($value)) {
+            return $this->setData('custom_price', $value);
+        }
+
+        $excludingTax = $this->_calculatePrice($value, Mage::helper('tax')->applyTaxOnCustomPrice());
+        $this->setData('original_custom_price', $value);
+        return $this->setData('custom_price', $excludingTax);
     }
 
-    protected function _calculatePrice($value)
+    public function setPrice($value)
+    {
+        $saveTaxes = true;
+        if (Mage::helper('tax')->applyTaxOnCustomPrice() && $this->hasCustomPrice()) {
+            $saveTaxes = false;
+        }
+        return $this->setData('price', $this->_calculatePrice($value, $saveTaxes));
+    }
+
+    protected function _calculatePrice($value, $saveTaxes = true)
     {
         $store = $this->getQuote()->getStore();
 
@@ -389,20 +406,22 @@ abstract class Mage_Sales_Model_Quote_Item_Abstract extends Mage_Core_Model_Abst
             $priceExcludingTax = Mage::helper('tax')->getPrice($this->getProduct()->setTaxPercent(null), $value, false, $sAddress, $bAddress, $this->getQuote()->getCustomerTaxClassId(), $store);
             $priceIncludingTax = Mage::helper('tax')->getPrice($this->getProduct()->setTaxPercent(null), $value, true, $sAddress, $bAddress, $this->getQuote()->getCustomerTaxClassId(), $store);
 
-            $taxAmount = $priceIncludingTax - $priceExcludingTax;
-            $this->setTaxPercent($this->getProduct()->getTaxPercent());
+            if ($saveTaxes) {
+                $taxAmount = $priceIncludingTax - $priceExcludingTax;
+                $this->setTaxPercent($this->getProduct()->getTaxPercent());
 
-            $qty = $this->getQty();
-            if ($this->getParentItem()) {
-                $qty = $qty*$this->getParentItem()->getQty();
+                $qty = $this->getQty();
+                if ($this->getParentItem()) {
+                    $qty = $qty*$this->getParentItem()->getQty();
+                }
+                $totalBaseTax = $taxAmount*$qty;
+                $totalTax = $this->getStore()->convertPrice($totalBaseTax);
+                $this->setTaxBeforeDiscount($totalTax);
+                $this->setBaseTaxBeforeDiscount($totalBaseTax);
+
+                $this->setTaxAmount($totalTax);
+                $this->setBaseTaxAmount($totalBaseTax);
             }
-            $totalBaseTax = $taxAmount*$qty;
-            $totalTax = $this->getStore()->convertPrice($totalBaseTax);
-            $this->setTaxBeforeDiscount($totalTax);
-            $this->setBaseTaxBeforeDiscount($totalBaseTax);
-
-            $this->setTaxAmount($totalTax);
-            $this->setBaseTaxAmount($totalBaseTax);
 
             $value = $priceExcludingTax;
         }

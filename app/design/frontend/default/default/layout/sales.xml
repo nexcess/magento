@@ -15,7 +15,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -78,7 +78,6 @@ Customer account home dashboard layout
             <block type="sales/order_view" name="sales.order.view">
                 <block type="sales/order_items" name="order_items" template="sales/order/items.phtml">
                     <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/items/renderer/default.phtml</template></action>
-                    <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/items/renderer/default.phtml</template></action>
                     <block type="sales/order_tax" name="tax" template="sales/order/tax.phtml" />
                 </block>
             </block>
@@ -98,7 +97,6 @@ Customer account home dashboard layout
             <block type="sales/order_invoice" name="sales.order.invoice">
                 <block type="sales/order_invoice_items" name="invoice_items" template="sales/order/invoice/items.phtml">
                     <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/invoice/items/renderer/default.phtml</template></action>
-                    <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/invoice/items/renderer/default.phtml</template></action>
                 </block>
             </block>
         </reference>
@@ -117,7 +115,6 @@ Customer account home dashboard layout
             <block type="sales/order_shipment" name="sales.order.shipment">
                 <block type="sales/order_shipment_items" name="shipment_items" template="sales/order/shipment/items.phtml">
                     <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/shipment/items/renderer/default.phtml</template></action>
-                    <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/shipment/items/renderer/default.phtml</template></action>
                 </block>
             </block>
         </reference>
@@ -136,7 +133,6 @@ Customer account home dashboard layout
             <block type="sales/order_creditmemo" name="sales.order.creditmemo">
                 <block type="sales/order_creditmemo_items" name="creditmemo_items" template="sales/order/creditmemo/items.phtml">
                     <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/creditmemo/items/renderer/default.phtml</template></action>
-                    <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/creditmemo/items/renderer/default.phtml</template></action>
                 </block>
             </block>
         </reference>
@@ -159,7 +155,6 @@ Customer account home dashboard layout
         <reference name="content">
             <block type="sales/order_print" name="sales.order.print" template="sales/order/print.phtml">
                 <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/items/renderer/default.phtml</template></action>
-                <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/items/renderer/default.phtml</template></action>
                 <block type="sales/order_tax" name="tax" template="sales/order/print/tax.phtml" />
             </block>
         </reference>
@@ -169,7 +164,6 @@ Customer account home dashboard layout
         <reference name="content">
             <block type="sales/order_print_invoice" name="sales.order.print.invoice" template="sales/order/print/invoice.phtml">
                 <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/invoice/items/renderer/default.phtml</template></action>
-                <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/invoice/items/renderer/default.phtml</template></action>
             </block>
         </reference>
     </sales_order_printinvoice>
@@ -178,7 +172,6 @@ Customer account home dashboard layout
         <reference name="content">
             <block type="sales/order_print_shipment" name="sales.order.print.shipment" template="sales/order/print/shipment.phtml">
                 <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/shipment/items/renderer/default.phtml</template></action>
-                <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/shipment/items/renderer/default.phtml</template></action>
             </block>
         </reference>
     </sales_order_printshipment>
@@ -187,7 +180,6 @@ Customer account home dashboard layout
         <reference name="content">
             <block type="sales/order_print_creditmemo" name="sales.order.print.creditmemo" template="sales/order/print/creditmemo.phtml">
                 <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/creditmemo/items/renderer/default.phtml</template></action>
-                <action method="addItemRender"><type>configurable</type><block>sales/order_item_renderer_configurable</block><template>sales/order/creditmemo/items/renderer/default.phtml</template></action>
             </block>
         </reference>
     </sales_order_printcreditmemo>

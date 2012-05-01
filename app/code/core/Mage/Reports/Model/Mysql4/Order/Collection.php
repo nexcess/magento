@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Reports
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -248,7 +248,8 @@ class Mage_Reports_Model_Mysql4_Order_Collection extends Mage_Sales_Model_Entity
         $countSql->from(array("order_items" => $this->getTable('sales/order_item')), array("sum(`order_items2`.`qty_ordered`)"))
             ->joinLeft(array("order_items2" => $this->getTable('sales/order_item')),
                 "order_items2.item_id = `order_items`.item_id", array())
-            ->where("`order_items`.`order_id` = `e`.`entity_id`");
+            ->where("`order_items`.`order_id` = `e`.`entity_id`")
+            ->where("`order_items2`.`parent_item_id` is NULL");
 
         $this->getSelect()->from("", array("items" => "SUM((".$countSql."))"));
 

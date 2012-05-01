@@ -14,7 +14,7 @@
  *
  * @category   design_default
  * @package    Mage
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -22,9 +22,15 @@
 <div class="page-head">
     <h3><?php echo $this->__('Your order has been received') ?></h3>
 </div>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 <p><strong><?php echo $this->__('Thank you for your purchase!') ?></strong></p>
 <p>
-    <?php echo $this->__('Your order # is: <a href="%s">%s</a>', $this->getViewOrderUrl(), $this->getOrderId()) ?>.<br/>
+ <?php if ($this->canPrint()) :?>
+  <?php echo $this->__('Your order # is: <a href="%s">%s</a>', $this->getViewOrderUrl(), $this->getOrderId()) ?>.<br/>
+  <?php  else :?>
+  <?php echo $this->__('Your order # is: %s', $this->getOrderId()) ?>.<br/>
+  <?php endif;?>
+    
     <?php echo $this->__('You will receive an order confirmation email with details of your order and a link to track its progress.') ?><br/>
     <?php if ($this->canPrint()) :?>
     <?php echo $this->__('Click <a href="%s" onclick="this.target=\'_blank\'">here to print</a> a copy of your order confirmation.', $this->getPrintUrl()) ?>

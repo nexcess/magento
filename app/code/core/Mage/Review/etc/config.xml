@@ -15,7 +15,7 @@
  *
  * @category   Mage
  * @package    Mage_Review
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
@@ -83,25 +83,25 @@
     </global>
     <adminhtml>
         <menu>
-            <catalog translate="title" module="catalog">
+            <catalog>
                 <children>
-                    <reviews_ratings translate="title" module="catalog">
+                    <reviews_ratings translate="title" module="review">
                         <title>Reviews and Ratings</title>
                         <children>
-                            <reviews translate="title" module="catalog">
+                            <reviews translate="title" module="review">
                                 <title>Customer Reviews</title>
                                 <children>
-                                    <pending translate="title" module="catalog">
+                                    <pending translate="title" module="review">
                                         <title>Pending Reviews</title>
                                         <action>adminhtml/catalog_product_review/pending/</action>
                                     </pending>
-                                    <all translate="title" module="catalog">
+                                    <all translate="title" module="review">
                                         <title>All Reviews</title>
                                         <action>adminhtml/catalog_product_review/</action>
                                     </all>
                                 </children>
                             </reviews>
-                            <ratings translate="title" module="catalog">
+                            <ratings translate="title" module="review">
                                 <title>Manage Ratings</title>
                                 <action>adminhtml/rating/</action>
                             </ratings>

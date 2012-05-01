@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Core
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -29,18 +29,39 @@
  */
 class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
 {
-
     const TYPE_CATEGORY = 1;
     const TYPE_PRODUCT  = 2;
     const TYPE_CUSTOM   = 3;
+    const REWRITE_REQUEST_PATH_ALIAS = 'rewrite_request_path';
+
     protected function _construct()
     {
         $this->_init('core/url_rewrite');
     }
 
+    /**
+     * Load rewrite information for request
+     *
+     * if $path is array - that mean what we need try load for each item
+     *
+     * @param   mixed $path
+     * @return  Mage_Core_Model_Url_Rewrite
+     */
     public function loadByRequestPath($path)
     {
-        $this->setId(null)->load($path, 'request_path');
+        $this->setId(null);
+
+        if (is_array($path)) {
+            foreach ($path as $pathInfo) {
+                $this->load($pathInfo, 'request_path');
+                if ($this->getId()) {
+                	return $this;
+                }
+            }
+        }
+        else {
+        	$this->load($path, 'request_path');
+        }
         return $this;
     }
 
@@ -125,6 +146,13 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
         return $this;
     }
 
+    /**
+     * Implement logic of custom rewrites
+     *
+     * @param   Zend_Controller_Request_Http $request
+     * @param   Zend_Controller_Response_Http $response
+     * @return  Mage_Core_Model_Url
+     */
     public function rewrite(Zend_Controller_Request_Http $request=null, Zend_Controller_Response_Http $response=null)
     {
         if (!Mage::app()->isInstalled()) {
@@ -140,12 +168,22 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
             $this->setStoreId(Mage::app()->getStore()->getId());
         }
 
-        $requestPath = $request->getPathInfo();
+        $requestCases = array();
+        $requestPath = trim($request->getPathInfo(), '/');
+
+        /**
+         * We need try to find rewrites information for both cases
+         * More priority has url with query params
+         */
         if ($queryString = $this->_getQueryString()) {
-            $requestPath .= '?'.$queryString;
+            $requestCases[] = $requestPath .'?'.$queryString;
+            $requestCases[] = $requestPath;
         }
-        $requestPath = trim($requestPath, '/');
-        $this->setId(null)->loadByRequestPath($requestPath);
+        else {
+            $requestCases[] = $requestPath;
+        }
+
+        $this->loadByRequestPath($requestCases);
 
         /**
          * Try to find rewrite by request path at first, if no luck - try to find by id_path
@@ -158,18 +196,18 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
                 return false;
             }
 
-            $this->setId(null)->setStoreId($fromStoreId)->loadByRequestPath($requestPath);
+            $this->setStoreId($fromStoreId)->loadByRequestPath($requestCases);
             if (!$this->getId()) {
                 return false;
             }
-            $this->setId(null)->setStoreId(Mage::app()->getStore()->getId())->loadByIdPath($this->getIdPath());
+            $this->setStoreId(Mage::app()->getStore()->getId())->loadByIdPath($this->getIdPath());
         }
 
         if (!$this->getId()) {
             return false;
         }
 
-        $request->setAlias('rewrite_request_path', $this->getRequestPath());
+        $request->setAlias(self::REWRITE_REQUEST_PATH_ALIAS, $this->getRequestPath());
         $external = substr($this->getTargetPath(), 0, 6);
         if ($external==='http:/' || $external==='https:') {
             header("Location: ".$this->getTargetPath());
@@ -183,6 +221,10 @@ class Mage_Core_Model_Url_Rewrite extends Mage_Core_Model_Abstract
             }
             header("Location: ".$targetUrl);
             exit;
+        }
+
+        if ($queryString = $this->_getQueryString()) {
+        	$targetUrl .= '?'.$queryString;
         }
 
         $request->setRequestUri($targetUrl);

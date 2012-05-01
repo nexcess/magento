@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Paypal
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -24,7 +24,7 @@ $installer = $this;
 
 $installer->startSetup();
 
-/*$installer->run("
+$installer->run("
 
 -- DROP TABLE IF EXISTS `{$this->getTable('paypal_api_debug')}`;
 CREATE TABLE `{$this->getTable('paypal_api_debug')}` (
@@ -37,7 +37,7 @@ CREATE TABLE `{$this->getTable('paypal_api_debug')}` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     ");
-*/
+
 $installer->endSetup();
 
 $installer->addAttribute('quote_payment', 'paypal_payer_id', array());

@@ -14,7 +14,7 @@
  *
  * @category    Mage
  * @package     Mage_Sales
- * @copyright   Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright   Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -69,8 +69,37 @@ class Mage_Sales_Block_Order_Item_Renderer_Default extends Mage_Core_Block_Templ
             if (isset($options['additional_options'])) {
                 $result = array_merge($result, $options['additional_options']);
             }
+            if (isset($options['attributes_info'])) {
+                $result = array_merge($result, $options['attributes_info']);
+            }
         }
 
         return $result;
+    }
+
+    public function getFormatedOptionValue($optionValue)
+    {
+        $formateOptionValue = array();
+        if (is_array($optionValue)) {
+            $_truncatedValue = implode("\n", $optionValue);
+            $_truncatedValue = nl2br($_truncatedValue);
+            return array('value' => $_truncatedValue);
+        } else {
+            $_truncatedValue = Mage::helper('core/string')->truncate($optionValue, 55, '');
+            $_truncatedValue = nl2br($_truncatedValue);
+        }
+
+        $formateOptionValue = array(
+            'value' => $_truncatedValue
+        );
+
+        if (Mage::helper('core/string')->strlen($optionValue) > 55) {
+            $formateOptionValue['value'] = $formateOptionValue['value'] . ' <a href="#" class="dots" onclick="return false">...</a>';
+            $optionValue = nl2br($optionValue);
+            $formateOptionValue = array_merge($formateOptionValue, array('full_view' => $optionValue));
+
+        }
+
+        return $formateOptionValue;
     }
 }

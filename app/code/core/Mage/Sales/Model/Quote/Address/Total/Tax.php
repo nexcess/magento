@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -164,6 +164,11 @@ class Mage_Sales_Model_Quote_Address_Total_Tax extends Mage_Sales_Model_Quote_Ad
                 $row['base_amount'] = 0;
                 $previouslyAppliedTaxes[$row['id']] = $row;
             }
+
+
+            $row['percent'] = $row['percent'] ? $row['percent'] : 1;
+            $rate = $rate ? $rate : 1;
+
             $appliedAmount = $amount/$rate*$row['percent'];
             $baseAppliedAmount = $baseAmount/$rate*$row['percent'];
 

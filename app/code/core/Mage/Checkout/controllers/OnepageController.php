@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Checkout
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -159,6 +159,7 @@ class Mage_Checkout_OnepageController extends Mage_Core_Controller_Front_Action
 
         Mage::getSingleton('checkout/session')->clear();
         $this->loadLayout();
+        $this->_initLayoutMessages('checkout/session');
         Mage::dispatchEvent('checkout_onepage_controller_success_action');
         $this->renderLayout();
     }
@@ -315,8 +316,8 @@ class Mage_Checkout_OnepageController extends Mage_Core_Controller_Front_Action
             catch (Exception $e) {
                 $result['error'] = $e->getMessage();
             }
-
-            if (empty($result['error'])) {
+            $redirectUrl = $this->getOnePage()->getQuote()->getPayment()->getCheckoutRedirectUrl();
+            if (empty($result['error']) && !$redirectUrl) {
                 $this->loadLayout('checkout_onepage_review');
 
                 $result['goto_section'] = 'review';
@@ -328,7 +329,7 @@ class Mage_Checkout_OnepageController extends Mage_Core_Controller_Front_Action
 //                $result['review_html'] = $this->getLayout()->getBlock('root')->toHtml();
             }
 
-            if ($redirectUrl = $this->getOnePage()->getQuote()->getPayment()->getCheckoutRedirectUrl()) {
+            if ($redirectUrl) {
                 $result['redirect'] = $redirectUrl;
             }
 
@@ -364,12 +365,14 @@ class Mage_Checkout_OnepageController extends Mage_Core_Controller_Front_Action
             Mage::logException($e);
             $result['success'] = false;
             $result['error'] = true;
+            $this->sendPaymentFaildEmail($e->getMessage());
             $result['error_messages'] = $e->getMessage();
         }
         catch (Exception $e) {
             Mage::logException($e);
             $result['success']  = false;
             $result['error']    = true;
+            $this->sendPaymentFaildEmail($e->getMessage());
             $result['error_messages'] = $this->__('There was an error processing your order. Please contact us or try again later.');
         }
 
@@ -383,4 +386,98 @@ class Mage_Checkout_OnepageController extends Mage_Core_Controller_Front_Action
 
         $this->getResponse()->setBody(Zend_Json::encode($result));
     }
+
+    public function sendPaymentFaildEmail($reason)
+    {
+        $translate = Mage::getSingleton('core/translate');
+        /* @var $translate Mage_Core_Model_Translate */
+        $translate->setTranslateInline(false);
+
+        $mailTemplate = Mage::getModel('core/email_template');
+        /* @var $mailTemplate Mage_Core_Model_Email_Template */
+
+        $template = Mage::getStoreConfig('checkout/payment_failed/template', $this->getStoreId());
+
+        $copyTo = $this->_getEmails('checkout/payment_failed/copy_to');
+        $copyMethod = Mage::getStoreConfig('checkout/payment_failed/copy_method', $this->getStoreId());
+        if ($copyTo && $copyMethod == 'bcc') {
+            $mailTemplate->addBcc($copyTo);
+        }
+
+        $_reciever = Mage::getStoreConfig('checkout/payment_failed/reciever', $this->getStoreId());
+        $sendTo = array(
+            array(
+                'email' => Mage::getStoreConfig('trans_email/ident_'.$_reciever.'/email', $this->getStoreId()),
+                'name'  => Mage::getStoreConfig('trans_email/ident_'.$_reciever.'/name', $this->getStoreId())
+            )
+        );
+
+        if ($copyTo && $copyMethod == 'copy') {
+            foreach ($copyTo as $email) {
+                $sendTo[] = array(
+                    'email' => $email,
+                    'name'  => null
+                );
+            }
+        }
+        $shippingMethod = '';
+        if ($shippingInfo = $this->getOnepage()->getQuote()->getShippingAddress()->getShippingMethod()) {
+            $data = explode('_', $shippingInfo);
+            $shippingMethod = $data[0];
+        }
+
+        $paymentMethod = '';
+        if ($paymentInfo = $this->getRequest()->getPost('payment', false)) {
+            $paymentMethod = $paymentInfo['method'];
+        }
+
+        $items = '';
+        foreach ($this->getOnepage()->getQuote()->getItemsCollection() as $_item) {
+            /* @var $_item Mage_Sales_Model_Quote_Item */
+            $items .= $_item->getProduct()->getName() . '  x '. $_item->getQty() . '  '
+                    . $this->getOnepage()->getQuote()->getStoreCurrencyCode() . ' ' . $_item->getProduct()->getFinalPrice($_item->getQty()) . "\n";
+        }
+        $total = $this->getOnepage()->getQuote()->getStoreCurrencyCode() . ' ' . $this->getOnepage()->getQuote()->getGrandTotal();
+
+        foreach ($sendTo as $recipient) {
+            $mailTemplate->setDesignConfig(array('area'=>'frontend', 'store'=>$this->getStoreId()))
+                ->sendTransactional(
+                    $template,
+                    Mage::getStoreConfig('checkout/payment_failed/identity', $this->getStoreId()),
+                    $recipient['email'],
+                    $recipient['name'],
+                    array(
+                        'reason' =>$reason,
+                        'dateAndTime' => Mage::app()->getLocale()->date(),
+                        'customer' => $this->getOnepage()->getQuote()->getCustomerFirstname() . ' ' . $this->getOnepage()->getQuote()->getCustomerLastname(),
+                        'customerEmail' => $this->getOnepage()->getQuote()->getCustomerEmail(),
+                        'billingAddress' => $this->getOnepage()->getQuote()->getBillingAddress(),
+                        'shippingAddress' => $this->getOnepage()->getQuote()->getShippingAddress(),
+                        'shippingMethod' => Mage::getStoreConfig('carriers/'.$shippingMethod.'/title'),
+                        'paymentMethod' => Mage::getStoreConfig('payment/'.$paymentMethod.'/title'),
+                        'items' => nl2br($items),
+                        'total' => $total
+                    )
+                );
+        }
+
+        $translate->setTranslateInline(true);
+
+        return $this;
+    }
+
+    public function getStoreId()
+    {
+        return $this->getOnepage()->getQuote()->getStoreId();
+    }
+
+    protected function _getEmails($configPath)
+    {
+        $data = Mage::getStoreConfig($configPath, $this->getStoreId());
+        if (!empty($data)) {
+            return explode(',', $data);
+        }
+        return false;
+    }
+
 }

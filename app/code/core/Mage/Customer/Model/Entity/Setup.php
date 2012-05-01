@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -130,9 +130,14 @@ class Mage_Customer_Model_Entity_Setup extends Mage_Eav_Model_Entity_Setup
                     ),
                     'taxvat' => array(
                         'label'         => 'Tax/VAT number',
-                        'visible'       => 1,
-                        'required'      => 0,
+                        'visible'       => true,
+                        'required'      => false,
                         'position'      => 1,
+                    ),
+                    'confirmation' => array(
+                        'label'         => 'Is confirmed',
+                        'visible'       => false,
+                        'required'      => false,
                     ),
                 ),
             ),

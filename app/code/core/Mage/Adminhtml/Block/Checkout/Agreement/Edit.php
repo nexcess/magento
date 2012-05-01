@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -39,8 +39,8 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit extends Mage_Adminhtml_Block_
 
         parent::__construct();
 
-        $this->_updateButton('save', 'label', Mage::helper('checkout')->__('Save Agreement'));
-        $this->_updateButton('delete', 'label', Mage::helper('checkout')->__('Delete Agreement'));
+        $this->_updateButton('save', 'label', Mage::helper('checkout')->__('Save Condition'));
+        $this->_updateButton('delete', 'label', Mage::helper('checkout')->__('Delete Condition'));
     }
 
     /**
@@ -51,10 +51,10 @@ class Mage_Adminhtml_Block_Checkout_Agreement_Edit extends Mage_Adminhtml_Block_
     public function getHeaderText()
     {
         if (Mage::registry('checkout_agreement')->getId()) {
-            return Mage::helper('checkout')->__("Edit Agreement");
+            return Mage::helper('checkout')->__('Edit Terms and Conditions');
         }
         else {
-            return Mage::helper('checkout')->__('New Agreement');
+            return Mage::helper('checkout')->__('New Condition');
         }
     }
 }

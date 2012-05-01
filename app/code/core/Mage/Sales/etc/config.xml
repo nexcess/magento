@@ -15,14 +15,14 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
 <config>
     <modules>
         <Mage_Sales>
-            <version>0.9.11</version>
+            <version>0.9.14</version>
         </Mage_Sales>
     </modules>
     <global>
@@ -43,6 +43,7 @@
                 <customer_note_notify><to_order>*</to_order></customer_note_notify>
                 <customer_is_guest><to_order>*</to_order></customer_is_guest>
                 <customer_dob><to_order>*</to_order></customer_dob>
+                <customer_taxvat><to_order>*</to_order></customer_taxvat>
 
                 <base_currency_code><to_order>*</to_order></base_currency_code>
                 <store_currency_code><to_order>*</to_order></store_currency_code>
@@ -152,6 +153,7 @@
                 <customer_email><to_quote>*</to_quote></customer_email>
                 <customer_group_id><to_quote>*</to_quote></customer_group_id>
                 <customer_tax_class_id><to_quote>*</to_quote></customer_tax_class_id>
+                <customer_taxvat><to_quote>*</to_quote></customer_taxvat>
 
                 <customer_note><to_quote>*</to_quote></customer_note>
                 <customer_note_notify><to_quote>*</to_quote></customer_note_notify>
@@ -261,6 +263,7 @@
                 <suffix><to_quote>customer_suffix</to_quote></suffix>
                 <group_id><to_quote>customer_group_id</to_quote></group_id>
                 <tax_class_id><to_quote>customer_tax_class_id</to_quote></tax_class_id>
+                <taxvat><to_quote>customer_taxvat</to_quote></taxvat>
             </customer_account>
 
             <customer_address>
@@ -451,6 +454,7 @@
                         <after>subtotal,shipping</after>
                         <before>grand_total</before>
                         <renderer>checkout/total_tax</renderer>
+                        <admin_renderer>adminhtml/sales_order_create_totals_tax</admin_renderer>
                     </tax>
                     <grand_total>
                         <class>sales/quote_address_total_grand</class>

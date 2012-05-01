@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -27,10 +27,11 @@
  */
 class Mage_Catalog_Model_Product extends Mage_Catalog_Model_Abstract
 {
-    const CACHE_TAG         = 'catalog_product';
-    protected $_cacheTag    = 'catalog_product';
-    protected $_eventPrefix = 'catalog_product';
-    protected $_eventObject = 'product';
+    const CACHE_TAG              = 'catalog_product';
+    protected $_cacheTag         = 'catalog_product';
+    protected $_eventPrefix      = 'catalog_product';
+    protected $_eventObject      = 'product';
+    protected $_canAffectOptions = false;
 
     /**
      * Product type instance
@@ -273,25 +274,73 @@ class Mage_Catalog_Model_Product extends Mage_Catalog_Model_Abstract
         return $attributes;
     }
 
+    /**
+     * Check product options and type options and save them, too
+     *
+     */
     protected function _beforeSave()
     {
         $this->cleanCache();
+        $this->setTypeHasOptions(false);
+        $this->setTypeHasRequiredOptions(false);
 
-        $options = $this->getProductOptions();
-        if (is_array($options)) {
-            foreach ($this->getProductOptions() as $option) {
-                $this->getOptionInstance()->addOption($option);
+        $this->getTypeInstance()->beforeSave();
+
+        $hasOptions         = false;
+        $hasRequiredOptions = false;
+        $this->canAffectOptions($this->_canAffectOptions && $this->getCanSaveCustomOptions());
+        if ($this->getCanSaveCustomOptions()) {
+            $options = $this->getProductOptions();
+            if (is_array($options)) {
+                foreach ($this->getProductOptions() as $option) {
+                    $this->getOptionInstance()->addOption($option);
+                    if ((!isset($option['is_delete'])) || $option['is_delete'] != '1') {
+                        $hasOptions = true;
+                    }
+                }
+                foreach ($this->getOptionInstance()->getOptions() as $option) {
+                    if ($option['is_require'] == '1') {
+                        $hasRequiredOptions = true;
+                        break;
+                    }
+                }
             }
         }
-        $this->setRequiredOptions(false);
-        foreach ($this->getOptionInstance()->getOptions() as $option) {
-            if ($option['is_require'] == '1') {
+
+        /**
+         * Set true, if any
+         * Set false, ONLY if options have been affected by Options tab and Type instance tab
+         */
+        if ($hasOptions || (bool)$this->getTypeHasOptions()) {
+            $this->setHasOptions(true);
+            if ($hasRequiredOptions || (bool)$this->getTypeHasRequiredOptions()) {
                 $this->setRequiredOptions(true);
-                break;
             }
+            elseif ($this->canAffectOptions()) {
+                $this->setRequiredOptions(false);
+            }
+        }
+        elseif ($this->canAffectOptions()) {
+            $this->setHasOptions(false);
+            $this->setRequiredOptions(false);
         }
 
         parent::_beforeSave();
+    }
+
+    /**
+     * Check/set if options can be affected when saving product
+     * If value specified, it will be set.
+     *
+     * @param bool $value
+     * @return bool
+     */
+    public function canAffectOptions($value = null)
+    {
+        if (null !== $value) {
+            $this->_canAffectOptions = (bool)$value;
+        }
+        return $this->_canAffectOptions;
     }
 
     /**
@@ -694,9 +743,20 @@ class Mage_Catalog_Model_Product extends Mage_Catalog_Model_Abstract
             ->setOriginalId($this->getId())
             ->setSku(null)
             ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
-            ->setId(null)
-            ->save();
+            ->setId(null);
+        /* @var $newProduct Mage_Catalog_Model_Product */
+
+        $newOptionsArray = array();
+        $newProduct->setCanSaveCustomOptions(true);
+        foreach ($this->getOptions() as $_option) {
+            /* @var $_option Mage_Catalog_Model_Product_Option */
+            $newOptionsArray[] = $_option->prepareOptionForDuplicate();
+        }
+        $newProduct->setProductOptions($newOptionsArray);
+
         $newId = $newProduct->getId();
+
+        $newProduct->save();
 
         /*if ($storeIds = $this->getWebsiteIds()) {
             foreach ($storeIds as $storeId) {
@@ -710,7 +770,6 @@ class Mage_Catalog_Model_Product extends Mage_Catalog_Model_Abstract
                     ->save();
             }
         }*/
-
         return $newProduct;
     }
 
@@ -1330,5 +1389,16 @@ class Mage_Catalog_Model_Product extends Mage_Catalog_Model_Abstract
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check availability display product in category
+     *
+     * @param   int $categoryId
+     * @return  bool
+     */
+    public function canBeShowInCategory($categoryId)
+    {
+        return $this->_getResource()->canBeShowInCategory($this, $categoryId);
     }
 }

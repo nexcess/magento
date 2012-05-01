@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Customer
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -38,6 +38,11 @@ class Mage_Customer_Block_Account_Dashboard_Info extends Mage_Core_Block_Templat
         return Mage::getUrl('*/account/edit/changepass/1');
     }
 
+    /**
+     * Get Customer Subscription Object Information
+     *
+     * @return Mage_Newsletter_Model_Subscriber
+     */
 	public function getSubscriptionObject()
     {
     	if(is_null($this->_subscription)) {
@@ -47,6 +52,11 @@ class Mage_Customer_Block_Account_Dashboard_Info extends Mage_Core_Block_Templat
     	return $this->_subscription;
     }
 
+    /**
+     * Gets Customer subscription status
+     *
+     * @return bool
+     */
     public function getIsSubscribed()
     {
     	return $this->getSubscriptionObject()->isSubscribed();

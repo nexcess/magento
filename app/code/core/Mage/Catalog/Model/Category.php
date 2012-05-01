@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Catalog
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -370,11 +370,12 @@ class Mage_Catalog_Model_Category extends Mage_Catalog_Model_Abstract
     public function getPathInStore()
     {
         $result = array();
-        $path = $this->getTreeModelInstance()->getPath($this->getId());
-        foreach ($path as $item) {
-            if ($item->getId() == Mage::app()->getStore()->getRootCategoryId())
+        //$path = $this->getTreeModelInstance()->getPath($this->getId());
+        $path = array_reverse($this->getPathIds());
+        foreach ($path as $itemId) {
+            if ($itemId == Mage::app()->getStore()->getRootCategoryId())
                 break;
-            $result[] = $item->getId();
+            $result[] = $itemId;
         }
         return implode(',', $result);
     }

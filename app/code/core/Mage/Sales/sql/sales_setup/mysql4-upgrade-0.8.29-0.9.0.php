@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Sales
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -260,34 +260,59 @@ $installer->endSetup();
 /**
  * Copy old quotes
  */
-$quotes = $installer->getConnection()->fetchAll("SELECT * FROM {$installer->getTable('sales_quote')}");
+@set_time_limit(0);
+
 $quoteFields = array_keys($installer->getConnection()->describeTable($installer->getTable('sales_flat_quote')));
 $itemFields  = array_keys($installer->getConnection()->describeTable($installer->getTable('sales_flat_quote_item')));
-foreach ($quotes as $quoteInfo) {
-	$quoteItems = $installer->getConnection()->fetchAll(
-	   "SELECT * FROM {$installer->getTable('sales_quote_item')} WHERE parent_id=".$quoteInfo['entity_id']
-	);
-	if (!empty($quoteItems)) {
-	    unset($quoteInfo['entity_id']);
-	    $quoteData = array();
+
+$quoteRows = array();
+$query = $installer->getConnection()->query(
+    $installer->getConnection()->select()
+        ->from($installer->getTable('sales_quote'), 'entity_id')
+);
+while ($row = $query->fetch()) {
+    $quoteRows[] = $row['entity_id'];
+}
+
+foreach ($quoteRows as $oldQuoteId) {
+    $quoteInfo = $installer->getConnection()->fetchRow(
+        $installer->getConnection()->select()
+            ->from($installer->getTable('sales_quote'))
+            ->where('entity_id=?', $oldQuoteId)
+    );
+
+    $quoteItems = $installer->getConnection()->fetchAll(
+        $installer->getConnection()->select()
+            ->from($installer->getTable('sales_quote_item'))
+            ->where('parent_id=?', $oldQuoteId)
+    );
+
+    if (!empty($quoteItems)) {
+        unset($quoteInfo['entity_id']);
+
+        $quoteData = array();
 	    foreach ($quoteFields as $field) {
 	    	if (isset($quoteInfo[$field])) {
 	    	    $quoteData[$field] = $quoteInfo[$field];
 	    	}
 	    }
+
 	    $installer->getConnection()->insert($installer->getTable('sales_flat_quote'), $quoteData);
         $quoteId = $installer->getConnection()->lastInsertId();
 
-	    foreach ($quoteItems as $itemInfo) {
-	        $itemData = array('quote_id'=>$quoteId);
-	        foreach ($itemFields as $field) {
+        foreach ($quoteItems as $itemInfo) {
+            $itemData = array(
+                'quote_id' => $quoteId
+            );
+
+            foreach ($itemFields as $field) {
 	        	if (isset($itemInfo[$field])) {
 	        	    $itemData[$field] = $itemInfo[$field];
 	        	}
 	        }
             $installer->getConnection()->insert($installer->getTable('sales_flat_quote_item'), $itemData);
 	    }
-	}
+    }
 }
 
 $installer->startSetup();

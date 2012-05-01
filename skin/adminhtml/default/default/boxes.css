@@ -11,7 +11,7 @@
  * obtain it through the world-wide-web, please send an email
  * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -259,6 +259,10 @@ table.actions td                { vertical-align:top; }
 .dynamic-grid th                { padding:2px;width:100px;}
 .dynamic-grid td                { padding:2px;}
 .dynamic-grid td input          { width:94px; }
+tr.dynamic-grid td,
+tr.dynamic-grid th {padding:2px 10px 2px 0; width:auto;}
+tr.dynamic-grid  .input-text {padding:2px; width:160px!important;}
+
 
 
 
@@ -291,7 +295,9 @@ img.accordion-btn       { float:right; margin-top:1px; margin-right:5px; }
 ul.tabs                         { border-top:1px solid #bebebe; background-color:#e7efef; }
 ul.tabs li                      { list-style:none; }
 ul.tabs a, ul.tabs span         { display:block; }
-ul.tabs a, ul.tabs a:hover      { color:#000; text-decoration:none; }
+ul.tabs a, ul.tabs a:hover      { text-decoration:none; }
+/* ul.tabs a.notloaded             { color:#999; } */
+ul.tabs a, ul.tabs a:hover      { color:#000; }
 ul.tabs, ul.tabs a              { background:url(images/tabs_link_bg.gif) repeat-y 100% #E7EFEF; }
 ul.tabs a:hover                 { background-color:#D8E6E6; background-image:url(images/tabs_link_over_bg.gif); }
 ul.tabs a.active                { padding:0; border-bottom:1px solid #bebebe; background:none; }
@@ -311,6 +317,7 @@ ul.tabs a.changed               { font-style:italic; }
 ul.tabs-horiz                   { list-style:none; margin:0 0 18px 0; background:url(images/horiz_tabs_ul_bg.gif) repeat-x 0 100% #f8f8f8; padding:8px 0 0 5px; }
 ul.tabs-horiz li                { float:left; margin:0 4px; }
 ul.tabs-horiz li a              { display:block; background:#e2e2e2; border:1px solid #ccc; padding:2px 10px; color:#333 !important; text-decoration:none !important; }
+ul.tabs-horiz li a.notloaded    { color:#999 !important; }
 ul.tabs-horiz li a.active       { border-bottom:1px solid #fff; background:#fff; }
 
 
@@ -423,7 +430,7 @@ select optgroup option          { padding-left:10px; }
 
 
 /* Form List */ /* Table for default form data */
-.form-list                      { width:100%; border:none !important; }
+.form-list                      { width:auto; border:none !important; }
 .main-col .form-list            { width:auto; }
 .form-list td                   { border:none !important; padding-top:5px !important; padding-bottom:5px !important; background:none !important;  }
 .form-list td.hidden            { border:none !important; padding:0px !important;background:none !important;}

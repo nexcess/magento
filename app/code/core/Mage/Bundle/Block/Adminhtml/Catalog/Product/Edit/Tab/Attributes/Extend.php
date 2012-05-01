@@ -14,7 +14,7 @@
  *
  * @category   Mage
  * @package    Mage_Bundle
- * @copyright  Copyright (c) 2004-2007 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -37,7 +37,7 @@ class Mage_Bundle_Block_Adminhtml_Catalog_Product_Edit_Tab_Attributes_Extend ext
         $switchAttributeCode = $this->getAttribute()->getAttributeCode().'_type';
         $switchAttributeValue = $this->getProduct()->getData($switchAttributeCode);
 
-        $html = '<select name="product[' . $switchAttributeCode . ']" id="' . $switchAttributeCode . '" type="select" class="required-entry select next-toinput">
+        $html = '<select name="product[' . $switchAttributeCode . ']" id="' . $switchAttributeCode . '" type="select" class="required-entry select next-toinput"' . ($this->getProduct()->getId() && $this->getAttribute()->getAttributeCode() == 'price' ? ' disabled="disabled"' : '') . '>
             <option value="">' . $this->__('--Select--') . '</option>
             <option ' . ($switchAttributeValue == self::DYNAMIC ? 'selected' : '') . ' value="' . self::DYNAMIC . '">' . $this->__('Dynamic') . '</option>
             <option ' . ($switchAttributeValue == self::FIXED ? 'selected' : '') . ' value="' . self::FIXED . '">' . $this->__('Fixed') . '</option>
@@ -47,13 +47,21 @@ class Mage_Bundle_Block_Adminhtml_Catalog_Product_Edit_Tab_Attributes_Extend ext
         if ($this->getDisableChild()) {
             $html .= "<script type=\"text/javascript\">
                 function " . $switchAttributeCode . "_change() {
-                    if ($('" . $switchAttributeCode . "').value == " . self::DYNAMIC . ") {
+                    if ($('" . $switchAttributeCode . "').value == '" . self::DYNAMIC . "') {
                         $('" . $this->getAttribute()->getAttributeCode() . "').disabled = true;
                         $('" . $this->getAttribute()->getAttributeCode() . "').value = '';
                         $('" . $this->getAttribute()->getAttributeCode() . "').removeClassName('required-entry');
+
+                        if ($('dynamic-price-warrning')) {
+                            $('dynamic-price-warrning').show();
+                        }
                     } else {
                         $('" . $this->getAttribute()->getAttributeCode() . "').disabled = false;
                         $('" . $this->getAttribute()->getAttributeCode() . "').addClassName('required-entry');
+
+                        if ($('dynamic-price-warrning')) {
+                            $('dynamic-price-warrning').hide();
+                        }
                     }
                 }
 
