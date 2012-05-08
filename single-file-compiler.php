@@ -43,7 +43,7 @@ class SingleFileCompiler {
         if( file_exists( $cacheFile = $this->getCacheFilename() ) ) {
             $origIncludePath = get_include_path();
             set_include_path( implode( ':', $this->_includePaths ) );
-            include_once $cacheFile;
+            include $cacheFile;
             set_include_path( $origIncludePath );
         } else {
             if( version_compare( phpversion(), '5.3.0', '>=' ) ) {
@@ -157,5 +157,5 @@ class SingleFileCompiler {
 }
 
 if( !isset( $_REQUEST['SFC_DISABLE'] ) ) {
-    SingleFileCompiler::get( 'var/cache/sfc', isset( $_REQUEST['SFC_DEBUG'] )->enable();
+    SingleFileCompiler::get( 'var/cache/sfc', isset( $_REQUEST['SFC_DEBUG'] ) )->enable();
 }
