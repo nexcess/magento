@@ -119,12 +119,12 @@ class SingleFileCompiler {
      */
     public function enable() {
         if( !$this->isEnabled() ) {
-            if( file_exists( $cacheFile = $this->getCacheFilename() ) ) {
+            if( $contentFilename = realpath( $this->getCacheFilename() ) ) {
                 //temporarily set include path to what magento will have to account
                 //for manually included files
                 $origIncludePath = get_include_path();
                 set_include_path( implode( ':', $this->_includePaths ) );
-                include $cacheFile;
+                include_once $contentFilename;
                 set_include_path( $origIncludePath );
                 $this->_cached = true;
             } else {
@@ -144,6 +144,7 @@ class SingleFileCompiler {
                 register_shutdown_function( array( $this, 'SFC_shutdown' ) );
                 $this->_cached = false;
             }
+            $this->_enabled = true;
         }
         return $this->_cached;
     }
@@ -176,6 +177,11 @@ class SingleFileCompiler {
             self::cleanUrl( self::getActiveUrl() ) );
     }
 
+    public function getContentFilename( $content ) {
+        return sprintf( '%s/SFC_%s.php', $this->_cacheDir,
+            hash( 'sha256', $content ) );
+    }
+
     /**
      * Autoload function to collect autoloaded classes
      *
@@ -202,9 +208,7 @@ class SingleFileCompiler {
             if( !is_dir( $this->_cacheDir ) ) {
                 mkdir( $this->_cacheDir, 0751, true );
             }
-            $start = microtime( true );
             $content = $this->_generateCacheFileContent();
-            $end = microtime( true );
             if( $this->_debug ) {
                 $content = str_replace( '?><?php', '',
                     sprintf( '<?php /* %s : %s (%d classes) */ ?>',
@@ -212,12 +216,15 @@ class SingleFileCompiler {
                         count( $this->_classStack ) ) . $content,
                     $c=1 );
             }
-            //write to temp file and rename because renames are atomic, file
-            //writes are not; hopefully avoids reading partially written cache
-            //files
-            file_put_contents( $tempFilename = tempnam( $this->_outputDir, 'SFC' ),
-                $content );
-            rename( $tempFilename, $cacheFilename );
+
+            if( !file_exists( $contentFilename =
+                    $this->getContentFilename( $content ) ) ) {
+                file_put_contents(
+                    $tempFilename = tempnam( $this->_outputDir, 'SFC' ),
+                    $content );
+                rename( $tempFilename, $contentFilename );
+            }
+            symlink( $contentFilename, $cacheFilename );
         }
     }
 
