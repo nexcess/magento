@@ -296,7 +296,8 @@ class SingleFileCompiler {
      * @return string
      */
     protected function _generateCacheFileContent() {
-        $classLoadOrder = array_reverse( $this->_classStack );
+        $classLoadOrder = $this->_classStack;
+        sort( $classLoadOrder );
         $this->_classStack = array();
         foreach( $classLoadOrder as $className ) {
             $this->_addToStack( $className );
