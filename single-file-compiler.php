@@ -22,7 +22,13 @@ class SingleFileCompiler {
      */
     protected $_classStack = null;
     /**
-     * Absolute directory path to store cache files in
+     * Absolute path to magento root directory
+     *
+     * @var string
+     */
+    protected $_baseDir = null;
+    /**
+     * Absolute path to store cache files in
      *
      * @var string
      */
