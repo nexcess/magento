@@ -99,11 +99,10 @@ class SingleFileCompiler {
         if( $cacheDir[0] == '/' ) {
             $this->_cacheDir = '/' . trim( $cacheDir, '/' );
         } else {
-            $this->_cacheDir = $this->_baseDir . DIRECTORY_SEPARATOR .
-                trim( $cacheDir, '/' );
+            $this->_cacheDir = $this->_baseDir . '/' . trim( $cacheDir, '/' );
         }
         $this->_debug = $debug;
-        foreach( $this->_includePaths as $includePath ) {
+        foreach( $this->_includePaths as &$includePath ) {
             $includePath = $this->_baseDir . '/' . $includePath;
         }
     }
