@@ -221,7 +221,7 @@ class SingleFileCompiler {
                         count( $this->_classStack ) ) . $content,
                     $c=1 );
             }
-
+            //cache the class content here, use rename for atomicity (is that even a word?)
             if( !file_exists( $contentFilename =
                     $this->getContentFilename( $content ) ) ) {
                 file_put_contents(
@@ -229,6 +229,8 @@ class SingleFileCompiler {
                     $content );
                 rename( $tempFilename, $contentFilename );
             }
+            //symlink so we don't cache the same content more than once, helps
+            //keep shared mem and disk usage down
             symlink( $contentFilename, $cacheFilename );
         }
     }
@@ -301,6 +303,7 @@ class SingleFileCompiler {
      */
     protected function _generateCacheFileContent() {
         $classLoadOrder = $this->_classStack;
+        //sort so class order is more consistent, helps with dedup
         sort( $classLoadOrder );
         $this->_classStack = array();
         foreach( $classLoadOrder as $className ) {
