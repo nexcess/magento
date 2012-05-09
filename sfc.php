@@ -277,8 +277,7 @@ class SingleFileCompiler {
     protected function _getClassContent( $className ) {
         $content = '';
         foreach( $this->_includePaths as $includePath ) {
-            $fullPath = $this->_baseDir . '/' . $includePath . '/' .
-                $this->getClassPath( $className );
+            $fullPath = $includePath . '/' . $this->getClassPath( $className );
             if( is_readable( $fullPath ) ) {
                 $subcontent = $this->_debug ? file_get_contents( $fullPath ) :
                     php_strip_whitespace( $fullPath );
