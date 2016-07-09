@@ -205,6 +205,7 @@ class Mage_ImportExport_Model_Export_Entity_Customer extends Mage_ImportExport_M
                     $row[$attrCode] = $attrValue;
                 }
             }
+            $item['website_id'] = isset($item['website_id']) ? $item['website_id'] : 0;
             $row[self::COL_WEBSITE] = $this->_websiteIdToCode[$item['website_id']];
             $row[self::COL_STORE]   = $this->_storeIdToCode[$item['store_id']];
 
